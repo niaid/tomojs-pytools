@@ -1,0 +1,17 @@
+This package contains additional command line utilities for
+the Neuroglancer precompute format. 
+
+The `mrc2ngpc` is a command line utility to convert MRC files to
+Neuroglancer precompute pyramid formats. 
+
+
+Installation
+------------
+
+Use `pip` to install the ngtool package:
+
+`python3 -m pip install ngtool`
+
+The requirements are specified conventionally in requirements.txt and
+setup.py, so they will be enforced at installation time. Additionally,
+the installation process installs the scripts as executables. 

@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4"]
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+junit_family="xunit2"
+
+[tool.black]
+line-length =  120
