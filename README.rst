@@ -7,9 +7,9 @@ Neuroglancer precompute pyramid formats.
 Installation
 ------------
 
-Use `pip` to install the pytools package:
+Use `pip` to install the tomojs_pytools package:
 
-`python3 -m pip install pytools`
+`python3 -m pip install  tomojs_pytools`
 
 The requirements are specified conventionally in requirements.txt and
 setup.py, so they will be enforced at installation time. Additionally,

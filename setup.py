@@ -20,7 +20,7 @@ with open("requirements.txt", "r") as fp:
     requirements = list(filter(bool, (line.strip() for line in fp)))
 
 setup(
-    name="tomojs-pytools",
+    name="tomojs_pytools",
     use_scm_version={"local_scheme": "dirty-tag"},
     author="Bradley Lowekamp",
     author_email="bioinformatics@niaid.nih.gov",
