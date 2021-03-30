@@ -2,4 +2,5 @@ pytest>=6.0
 setuptools_scm
 flake8
 black
+wheel
 -rrequirements.txt
