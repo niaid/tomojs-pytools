@@ -59,7 +59,7 @@ def main(input_image, output_precompute, flat, gzip):
         check_process = True
 
         # Task 1: Convert mrc to NIFTI with SimpleITK script
-        py_code_main = "import sys; from ngtool.mrc2nifti import main; sys.exit(main())"
+        py_code_main = "import sys; from pytools.ng.mrc2nifti import main; sys.exit(main())"
         cmd = [sys.executable, "-c", py_code_main, input_image, nifti_filename]
 
         logger.info("Executing conversion of MRC to NIFTI..")
