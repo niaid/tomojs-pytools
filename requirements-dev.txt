@@ -3,4 +3,5 @@ setuptools_scm
 flake8
 black
 wheel
+packaging
 -rrequirements.txt
