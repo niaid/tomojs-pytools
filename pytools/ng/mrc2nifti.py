@@ -72,7 +72,12 @@ def sub_volume_execute(inplace=True):
 
                 for d in range(iter_dim, dim):
                     step = reduce((lambda x, y: x * y), image.GetSize()[d + 1 :], 1)
-                    img_list = [sitk.JoinSeries(img_list[i::step], image.GetSpacing()[d]) for i in range(step)]
+
+                    join_series_filter = sitk.JoinSeriesImageFilter()
+                    join_series_filter.SetSpacing(image.GetSpacing()[d])
+                    join_series_filter.SetOrigin(image.GetOrigin()[d])
+
+                    img_list = [join_series_filter.Execute(img_list[i::step]) for i in range(step)]
 
                 assert len(img_list) == 1
                 image = img_list[0]
