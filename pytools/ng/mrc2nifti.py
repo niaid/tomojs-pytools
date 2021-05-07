@@ -115,7 +115,7 @@ def _img_convert_type(img: sitk.Image, output_type) -> sitk.Image:
         return sitk.Cast(img, output_type)
     else:
         raise Exception(
-            f"Converting from {img.GetPixelIDTypeAsString()} to"
+            f"Converting from {img.GetPixelIDTypeAsString()} to "
             f"{sitk.GetPixelIDValueAsString(output_type)} is not implemented."
         )
 
@@ -159,7 +159,7 @@ def main(input_image, output_image):
     if img.GetPixelID() in output_pixel_id_map:
         output_pixel_id = output_pixel_id_map[img.GetPixelID()]
         logger.info(
-            f"Converting image from {img.GetPixelIDTypeAsString()} to"
+            f"Converting image from {img.GetPixelIDTypeAsString()} to "
             f"{sitk.GetPixelIDValueAsString(output_pixel_id)}."
         )
         img = _img_convert_type(img, output_pixel_id)
