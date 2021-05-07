@@ -48,4 +48,4 @@ def test_mrc2nifti(image_mrc, expected_pixel_type):
 
     assert img.GetPixelID() == expected_pixel_type
     assert img.GetSize() == (10, 9, 8)
-    np.testing.assert_allclose(img.GetSpacing(), (1e-7, 1e-7, 1e-7))
+    np.testing.assert_allclose(img.GetSpacing(), (1.1e-7, 1.2e-7, 1.3e-7))
