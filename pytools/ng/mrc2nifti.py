@@ -143,6 +143,7 @@ def main(input_image, output_image):
     logger.info(f"\tPixel Type: {sitk.GetPixelIDValueAsString(reader.GetPixelIDValue())}")
     logger.info(f"\tSize: {reader.GetSize()}")
     logger.info(f"\tSpacing: {reader.GetSpacing()}")
+    logger.info(f"\tOrigin:  {reader.GetOrigin()}")
 
     logger.info(f'Reading "{reader.GetFileName()}" image data...')
     img = reader.Execute()
@@ -170,12 +171,17 @@ def main(input_image, output_image):
 
     # Convert MRC spacing to NIFTI millimeters
     img.SetSpacing([s * spacing_factor_to_mm for s in img.GetSpacing()])
+    img.SetOrigin([s * spacing_factor_to_mm for s in img.GetOrigin()])
 
     writer = sitk.ImageFileWriter()
     writer.SetFileName(output_image)
     writer.SetImageIO("NiftiImageIO")
 
     logger.info(f'Writing "{writer.GetFileName()}"...')
+    logger.info(f"\tPixel Type: {sitk.GetPixelIDValueAsString(img.GetPixelIDValue())}")
+    logger.info(f"\tSize: {img.GetSize()}")
+    logger.info(f"\tSpacing: {img.GetSpacing()}")
+    logger.info(f"\tOrigin:  {img.GetOrigin()}")
     writer.Execute(img)
 
 
