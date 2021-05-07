@@ -24,6 +24,7 @@ def image_mrc(request, tmp_path_factory):
     print(f"Calling image_mrc with {sitk.GetPixelIDValueAsString(pixel_type)}")
     fn = f"image_mrc_{sitk.GetPixelIDValueAsString(pixel_type).replace(' ', '_')}.mrc"
     img = sitk.Image([10, 9, 8], pixel_type)
+    img.SetSpacing([1.1, 1.2, 1.3])
     fn = tmp_path_factory.mktemp("data").joinpath(fn)
     sitk.WriteImage(img, str(fn))
     return str(fn)
