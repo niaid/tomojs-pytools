@@ -34,6 +34,7 @@ setup(
         "console_scripts": [
             "mrc2nifti = pytools.ng.mrc2nifti:main",
             "mrc2ngpc = pytools.ng.mrc2ngpc:main",
+            "mrc_visual_min_max = pytools.ng.build_histogram:main",
         ]
     },
     classifiers=[
