@@ -37,6 +37,12 @@ def weighted_quantile(values, quantiles, sample_weight=None, values_sorted=False
     if sample_weight is None:
         sample_weight = np.ones(len(values))
     sample_weight = np.array(sample_weight)
+
+    # Remove zero weighted samples
+    non_zero_mask = sample_weight != 0
+    sample_weight = sample_weight[non_zero_mask]
+    values = values[non_zero_mask]
+
     assert np.all(quantiles >= 0) and np.all(quantiles <= 1), "quantiles should be in [0, 1]"
 
     if not values_sorted:
