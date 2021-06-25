@@ -17,6 +17,7 @@ import pytest
 import SimpleITK as sitk
 import numpy as np
 from fixtures import image_mrc
+import json
 
 args = ["--help", "--version"]
 
@@ -34,12 +35,17 @@ def test_mrc2ngpc_main_help(cli_args):
         (sitk.sitkUInt8, sitk.sitkUInt8),
         (sitk.sitkInt16, sitk.sitkUInt16),
         (sitk.sitkUInt16, sitk.sitkUInt16),
-        (sitk.sitkFloat32, sitk.sitkFloat32),
     ],
     indirect=["image_mrc"],
 )
 def test_mrc2ngpc(image_mrc, expected_pixel_type):
     runner = CliRunner()
+    ng_path = "output_ngpc"
     with runner.isolated_filesystem():
-        result = runner.invoke(pytools.ng.mrc2ngpc.main, [image_mrc, "out_ngpc"])
+        result = runner.invoke(pytools.ng.mrc2ngpc.main, [image_mrc, ng_path])
         assert not result.exception
+
+        with open("mrc2ngpc-output.json") as fp:
+            mm = json.load(fp)
+            assert "min" in mm
+            assert "max" in mm

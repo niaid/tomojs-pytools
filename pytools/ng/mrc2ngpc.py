@@ -18,6 +18,7 @@ import tempfile
 import os.path
 import sys
 import logging
+from pathlib import Path
 
 
 @click.command()
@@ -39,6 +40,9 @@ def main(input_image, output_precompute, flat, gzip):
 
     The conversion is done in two steps first to a NIFTI file, then to precompute format. A temporary directory and file
     next to the OUTPUT_PRECOMPUTE path is used.
+
+    Additionally, in the same directory as OUTPUT_PRECOMPUTE, a mrc2ngpc-output.json file is created with additional
+    meta-data.
     """
 
     logger = logging.getLogger()
@@ -77,6 +81,17 @@ def main(input_image, output_precompute, flat, gzip):
         cmd = ["volume-to-precomputed-pyramid"] + cmd_opts + [nifti_filename, output_precompute]
 
         logger.info("Executing conversion of NIFTI to Neruoglancer precompute pyramid...")
+        logger.debug(f"Executing: {cmd}")
+        subprocess.run(cmd, check=check_process)
+
+        # Task 3: Process NIFTI file to create visualization min/max
+
+        json_output = os.path.join(output_path, "mrc2ngpc-output.json")
+        cmd_opts = ["--mad", "5", "--output-json", str(json_output)]
+        py_code_main = "import sys; from pytools.ng.build_histogram import main; sys.exit(main())"
+        cmd = [sys.executable, "-c", py_code_main, nifti_filename, *cmd_opts]
+
+        logger.info("Computing visualization min max...")
         logger.debug(f"Executing: {cmd}")
         subprocess.run(cmd, check=check_process)
 
