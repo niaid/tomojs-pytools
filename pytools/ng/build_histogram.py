@@ -218,7 +218,6 @@ def main(input_image, mad, sigma, percentile, output_json):
     if mad:
         stats = histogram_robust_stats(h, bins)
         logger.debug(f"stats: {stats}")
-        print(stats)
         min_max = (stats["median"] - stats["mad"] * mad, stats["median"] + stats["mad"] * mad)
     elif sigma:
         stats = histogram_stats(h, bins)
