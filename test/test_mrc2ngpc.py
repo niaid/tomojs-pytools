@@ -34,7 +34,6 @@ def test_mrc2ngpc_main_help(cli_args):
         (sitk.sitkUInt8, sitk.sitkUInt8),
         (sitk.sitkInt16, sitk.sitkUInt16),
         (sitk.sitkUInt16, sitk.sitkUInt16),
-        (sitk.sitkFloat32, sitk.sitkFloat32),
     ],
     indirect=["image_mrc"],
 )
