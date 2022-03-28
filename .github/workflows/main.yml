@@ -15,14 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.7
+    - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: 3.9
     - name: Install tools
       run: |
         python -m pip install --upgrade pip
-        python -m pip install black trufflehog3>=3.0
+        python -m pip install black trufflehog3>=3.0 click~=8.0.0
     - name: Lint with black
       run: |
         python -m black --check --diff .
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6]
+        python-version: [3.7, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
@@ -62,7 +62,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements-dev.txt
+        pip install -r requirements-dev.txt twine
         pip install -e .
     - name: Test with pytest
       run: |
@@ -77,6 +77,7 @@ jobs:
     - name: Build package
       run: |
         python setup.py sdist bdist_wheel
+        python -m twine check dist/*
         ls -la dist
     - name: Upload package
       if: github.event_name == 'push'
@@ -90,6 +91,14 @@ jobs:
     needs: test_package
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install twine
       - uses: actions/download-artifact@v2
         id: download
         with:
@@ -133,3 +142,11 @@ jobs:
           asset_path: ${{steps.download.outputs.download-path}}/${{steps.files.outputs.file2}}
           asset_name: ${{steps.files.outputs.file2}}
           asset_content_type: application/octet-stream
+      - name: bcbb-pypi upload
+        run: |
+          python -m twine check ${{steps.download.outputs.download-path}}/*
+          python -m twine upload ${{steps.download.outputs.download-path}}/*
+        env:
+          TWINE_REPOSITORY_URL: https://artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi
+          TWINE_PASSWORD: ${{secrets.BCBB_PYPI_PASSWORD}}
+          TWINE_USERNAME: ${{secrets.BCBB_PYPI_USERNAME}}
