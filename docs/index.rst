@@ -13,5 +13,6 @@ Welcome to pytools's documentation!
    :caption: Contents:
 
 
+   commandline
    development
    api
