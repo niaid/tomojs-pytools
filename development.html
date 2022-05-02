@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Development &#8212; tomojs-pytools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Welcome to pytools’s documentation!" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to pytools’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">tomojs-pytools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Development</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="development">
+<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<p>The docs related to development and testing are contained in this section.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>Please read before cloning.</p>
+<section id="github-com">
+<h3>Github.com<a class="headerlink" href="#github-com" title="Permalink to this headline">¶</a></h3>
+<p>The repository is located in the NIAID Github.com enterprise organization. Having a github.com account which is a member
+of the NIAID organization is required.</p>
+</section>
+<section id="git-lfs">
+<h3>Git LFS<a class="headerlink" href="#git-lfs" title="Permalink to this headline">¶</a></h3>
+<p>Git <a class="reference external" href="https://git-lfs.github.com">Large File Storage</a> (LFS) is used to store larger files in the repository such as
+test images, trained models, and other data ( i.e. not text based code ). Before the repository is cloned, git lfs must
+be installed on the system and set up on the users account. The <a class="reference external" href="https://git-lfs.github.com">tool’s documentation</a>
+provides details on installation, set up, and usage that is not duplicated here. Once set up the git usage is usually
+transparent with operation such as cloning, adding files, and changing branches.</p>
+<p>The “.gitattributes” configuration file automatically places files in the directories “test/data” and “my_pkg/data” to
+be stored in Git LFS.</p>
+</section>
+</section>
+<section id="development-setup">
+<h2>Development Setup<a class="headerlink" href="#development-setup" title="Permalink to this headline">¶</a></h2>
+<p>Create a Python virtual environment for this project and install the development requirements:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m venv venv-pkg
+<span class="nb">source</span> venv-pkg/bin/activate
+python -m pip install -r requirements-dev.txt
+</pre></div>
+</div>
+<p>Only when needed (when?) the current development package can be installed in edit mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -e .
+</pre></div>
+</div>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<p>Docs about unit and integration tests (running them, writing them) are contained here.</p>
+<p>The test driver and recommended testing framework is <a class="reference external" href="https://docs.pytest.org]">pytest</a>. The pytest driver
+automatically discovers procedures prefixed with <cite>test_</cite> to be run. The testing framework has many features including
+assertions and fixtures, along with numerous examples to assist with getting started.</p>
+<section id="running-unit-tests">
+<h3>Running Unit Tests<a class="headerlink" href="#running-unit-tests" title="Permalink to this headline">¶</a></h3>
+<p>Unit tests are for testing independent components and method separately. They can be run with the following command
+line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pytest test/unit
+</pre></div>
+</div>
+</section>
+<section id="running-integration-tests">
+<h3>Running Integration Tests<a class="headerlink" href="#running-integration-tests" title="Permalink to this headline">¶</a></h3>
+<p>The integration tests are for testing the package as a whole as intended to be used. They may require access to
+additional services, or data. These can be run as followed:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m pytest test/integration
+</pre></div>
+</div>
+</section>
+<section id="test-configuration">
+<h3>Test Configuration<a class="headerlink" href="#test-configuration" title="Permalink to this headline">¶</a></h3>
+<p>In the root directory of the project, the working directory when <cite>python -m pytest</cite> is run, a “pytest.ini” file can be
+created to set default options. For example to print all logging messages during test the following can be used:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">pytest</span><span class="p">]</span>
+<span class="n">log_cli</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">log_cli_level</span> <span class="o">=</span> <span class="n">DEBUG</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<p>The repository is configured to work with a branchy workflow, where PRs are made before merging into the master branch.
+Github Actions automatically run the linting and test suite, when a PR is made. The tests must pass before merging into
+master.</p>
+<section id="linting">
+<h3>Linting<a class="headerlink" href="#linting" title="Permalink to this headline">¶</a></h3>
+<p>The linting process uses both <a class="reference external" href="https://black.readthedocs.io/en/stable/">Black</a>  and
+<a class="reference external" href="https://flake8.pycqa.org/en/latest/">flake8</a> to ensure uncompromising code formatting and some programmatic problems.
+The Black must be used to auto format new code before committing. As the continuous integration enforces black style, it
+case safely be run on the whole repository without changing old code:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m black .
+</pre></div>
+</div>
+<p>Black is installed as part for the development requirements.</p>
+<p>As part of the linting process the secret scanner <a class="reference external" href="https://github.com/feeltheajf/truffleHog3">tufflehog3</a> is also
+used.</p>
+</section>
+</section>
+<section id="sphinx-documentation">
+<h2>Sphinx Documentation<a class="headerlink" href="#sphinx-documentation" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> documentation as automatically rendered and pushed the the gh-pages branch. The
+API is documented in Sphinx from the the Python docstring automatically for the public module methods and select private
+methods.</p>
+</section>
+<section id="releases">
+<h2>Releases<a class="headerlink" href="#releases" title="Permalink to this headline">¶</a></h2>
+<p>The release of packages are automatic and triggered by pushing a git tag to the repository. The tags must be prefixed
+with <cite>v</cite> followed by the version to trigger the release actions. Examples of tags are: “v0.1”, “v1.0a1”, “v1.0rc2”,
+“v1.0.1”. A git tag can be create and push as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git tag <span class="s2">&quot;v0.1&quot;</span> -m <span class="s2">&quot;my_pkg release 0.1&quot;</span>
+git push origin <span class="s2">&quot;v0.1&quot;</span>
+</pre></div>
+</div>
+<section id="versioning">
+<h3>Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://semver.org">Semantic Versions</a> practices should be used as guidelines for when major, minor, and patch
+version number should change. The <a class="reference external" href="https://www.python.org/dev/peps/pep-0440/">PEP 440 – Version Identification and Dependency Specification</a>
+should also be followed when cheating a tag, but without a “post” or “dev” suffix. The version of that package is
+automatically determined by with the use of <a class="reference external" href="https://github.com/pypa/setuptools_scm/">setuptools_scm</a> introspection
+of the git repositories tags. Only the git tags are used to determine the version, there is no need to hard code the
+version anywhere in the code!</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Development</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a><ul>
+<li><a class="reference internal" href="#github-com">Github.com</a></li>
+<li><a class="reference internal" href="#git-lfs">Git LFS</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#development-setup">Development Setup</a></li>
+<li><a class="reference internal" href="#testing">Testing</a><ul>
+<li><a class="reference internal" href="#running-unit-tests">Running Unit Tests</a></li>
+<li><a class="reference internal" href="#running-integration-tests">Running Integration Tests</a></li>
+<li><a class="reference internal" href="#test-configuration">Test Configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#contributing">Contributing</a><ul>
+<li><a class="reference internal" href="#linting">Linting</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sphinx-documentation">Sphinx Documentation</a></li>
+<li><a class="reference internal" href="#releases">Releases</a><ul>
+<li><a class="reference internal" href="#versioning">Versioning</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">Welcome to pytools’s documentation!</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="api.html"
+                          title="next chapter">API</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/development.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to pytools’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">tomojs-pytools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Development</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Bradley Lowekamp.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+  </body>
+</html>
