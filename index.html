@@ -43,16 +43,23 @@
             
   <section id="welcome-to-pytools-s-documentation">
 <h1>Welcome to pytools’s documentation!<a class="headerlink" href="#welcome-to-pytools-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>This package contains additional command line utilities for the tomoJS project.</p>
-<p>The <cite>mrc2ngpc</cite> is a command line utility to convert MRC files to
-Neuroglancer precompute pyramid formats.</p>
+<p>This package contains python based command line imaging utilities for the Hedwig project.</p>
+<p>The Sphinx documentation can be found here:
+<a class="reference external" href="https://niaid.github.io/tomojs-pytools">https://niaid.github.io/tomojs-pytools</a></p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>This pytools is a proper Python package, and can be installed from published wheels, tarballs or from the git repository.</p>
+<p>The wheels are packaged as part of the Github Actions and can be manually downloaded for the action interface. They are also published
+to the bcbb-pypi hosted by NIAID actifactory. This extra repository can be configured with the
+<a class="reference external" href="https://pip.pypa.io/en/stable/cli/pip_install/">–extra-index</a> option on the pip install command line. However, the argument needs
+to include the username and password. The specifics can be found the the NIAID artifactory.</p>
 <p>Use <cite>pip</cite> to install the tomojs_pytools package:</p>
-<p><cite>python3 -m pip install  tomojs_pytools</cite></p>
+<p><cite>python3 -m pip install -extra-index https://USERNAME:PASSWORD&#64;artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi/simple tomojs_pytools</cite></p>
 <p>The requirements are specified conventionally in requirements.txt and
 setup.py, so they will be enforced at installation time. Additionally,
 the installation process installs the scripts as executables.</p>
+<p>Alternatively, the package can be installed from the git repository:</p>
+<p><cite>python3 -m pip https://github.com/niaid/tomojs-pytools.git&#64;v0.6</cite></p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>

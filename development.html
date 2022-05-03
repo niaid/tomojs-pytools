@@ -63,7 +63,7 @@ test images, trained models, and other data ( i.e. not text based code ). Before
 be installed on the system and set up on the users account. The <a class="reference external" href="https://git-lfs.github.com">tool’s documentation</a>
 provides details on installation, set up, and usage that is not duplicated here. Once set up the git usage is usually
 transparent with operation such as cloning, adding files, and changing branches.</p>
-<p>The “.gitattributes” configuration file automatically places files in the directories “test/data” and “my_pkg/data” to
+<p>The “.gitattributes” configuration file automatically places files in the directories “test/data” and “pytools/data” to
 be stored in Git LFS.</p>
 </section>
 </section>
@@ -90,15 +90,7 @@ assertions and fixtures, along with numerous examples to assist with getting sta
 <h3>Running Unit Tests<a class="headerlink" href="#running-unit-tests" title="Permalink to this headline">¶</a></h3>
 <p>Unit tests are for testing independent components and method separately. They can be run with the following command
 line:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pytest test/unit
-</pre></div>
-</div>
-</section>
-<section id="running-integration-tests">
-<h3>Running Integration Tests<a class="headerlink" href="#running-integration-tests" title="Permalink to this headline">¶</a></h3>
-<p>The integration tests are for testing the package as a whole as intended to be used. They may require access to
-additional services, or data. These can be run as followed:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m pytest test/integration
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pytest tes
 </pre></div>
 </div>
 </section>
@@ -123,7 +115,7 @@ master.</p>
 <p>The linting process uses both <a class="reference external" href="https://black.readthedocs.io/en/stable/">Black</a>  and
 <a class="reference external" href="https://flake8.pycqa.org/en/latest/">flake8</a> to ensure uncompromising code formatting and some programmatic problems.
 The Black must be used to auto format new code before committing. As the continuous integration enforces black style, it
-case safely be run on the whole repository without changing old code:</p>
+can safely be run on the whole repository without changing old code:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m black .
 </pre></div>
 </div>
@@ -143,7 +135,7 @@ methods.</p>
 <p>The release of packages are automatic and triggered by pushing a git tag to the repository. The tags must be prefixed
 with <cite>v</cite> followed by the version to trigger the release actions. Examples of tags are: “v0.1”, “v1.0a1”, “v1.0rc2”,
 “v1.0.1”. A git tag can be create and push as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git tag <span class="s2">&quot;v0.1&quot;</span> -m <span class="s2">&quot;my_pkg release 0.1&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git tag <span class="s2">&quot;v0.1&quot;</span> -m <span class="s2">&quot;release 0.1&quot;</span>
 git push origin <span class="s2">&quot;v0.1&quot;</span>
 </pre></div>
 </div>
@@ -178,7 +170,6 @@ version anywhere in the code!</p>
 <li><a class="reference internal" href="#development-setup">Development Setup</a></li>
 <li><a class="reference internal" href="#testing">Testing</a><ul>
 <li><a class="reference internal" href="#running-unit-tests">Running Unit Tests</a></li>
-<li><a class="reference internal" href="#running-integration-tests">Running Integration Tests</a></li>
 <li><a class="reference internal" href="#test-configuration">Test Configuration</a></li>
 </ul>
 </li>
