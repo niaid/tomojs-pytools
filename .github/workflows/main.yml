@@ -87,7 +87,7 @@ jobs:
         path: dist
 
   docs:
-    needs: test_package
+    needs: linting_test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
