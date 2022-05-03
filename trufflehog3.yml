@@ -6,3 +6,7 @@ exclude: # exclude matching issues
      pattern: x-access-token:\$\{GITHUB_TOKEN\}@github.com/\$\{GITHUB_REPOSITORY\}.git
      paths:
        - .github/workflows/main.yml
+   - message: BCBB PyPi sample
+     pattern: USERNAME:PASSWORD@artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi/simple
+     paths:
+       - README.rst
