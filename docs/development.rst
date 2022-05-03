@@ -25,7 +25,7 @@ be installed on the system and set up on the users account. The `tool's document
 provides details on installation, set up, and usage that is not duplicated here. Once set up the git usage is usually
 transparent with operation such as cloning, adding files, and changing branches.
 
-The ".gitattributes" configuration file automatically places files in the directories "test/data" and "my_pkg/data" to
+The ".gitattributes" configuration file automatically places files in the directories "test/data" and "pytools/data" to
 be stored in Git LFS.
 
 *****************
@@ -68,20 +68,7 @@ line:
 
 .. code:: bash
 
-    python -m pytest test/unit
-
-
-Running Integration Tests
-=========================
-
-The integration tests are for testing the package as a whole as intended to be used. They may require access to
-additional services, or data. These can be run as followed:
-
-
-.. code:: bash
-
-    $ python -m pytest test/integration
-
+    python -m pytest tes
 
 
 Test Configuration
@@ -110,7 +97,7 @@ Linting
 The linting process uses both `Black <https://black.readthedocs.io/en/stable/>`_  and
 `flake8 <https://flake8.pycqa.org/en/latest/>`_ to ensure uncompromising code formatting and some programmatic problems.
 The Black must be used to auto format new code before committing. As the continuous integration enforces black style, it
-case safely be run on the whole repository without changing old code:
+can safely be run on the whole repository without changing old code:
 
 .. code:: bash
 
@@ -141,7 +128,7 @@ with `v` followed by the version to trigger the release actions. Examples of tag
 
 .. code:: bash
 
-    git tag "v0.1" -m "my_pkg release 0.1"
+    git tag "v0.1" -m "release 0.1"
     git push origin "v0.1"
 
 Versioning
