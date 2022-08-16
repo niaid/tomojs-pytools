@@ -169,17 +169,21 @@ def histogram_stats(hist, bin_edges):
 @click.option(
     "--output-json",
     type=click.Path(exists=False, dir_okay=False, resolve_path=True),
-    help='The output filename produced in JSON format with "min" and "max" data elements of a number '
-    "value (double).",
+    help='The output filename produced in JSON format with "neuroglancerPrecomputedMin", '
+    '"neuroglancerPrecomputedMax", "neuroglancerPrecomputedFloor" and "neuroglancerPrecomputedLimit" data '
+    "elements of a double numeric value.",
 )
 @click.version_option(__version__)
 def main(input_image, mad, sigma, percentile, output_json):
     """
-    Reads the INPUT_IMAGE to compute a estimated minimum and maximum range to be used for visualization of the
+    Reads the INPUT_IMAGE to compute am estimated minimum and maximum range to be used for visualization of the
     data set.
 
-    The optional OUTPUT_JSON filename will be created and contain "min" and "max" data elements with a number value
-     (double).
+    The optional OUTPUT_JSON filename will be created with the following data elements with a double numeric value:
+        "neuroglancerPrecomputedMin"
+        "neuroglancerPrecomputedMax"
+        "neuroglancerPrecomputedFloor"
+        "neuroglancerPrecomputedLimit"
     """
 
     logger = logging.getLogger()
@@ -213,6 +217,7 @@ def main(input_image, mad, sigma, percentile, output_json):
 
     logger.info(f'Building histogram for "{reader.GetFileName()}"...')
     h, bins = stream_build_histogram(input_image, list(bin_edges))
+    mids = 0.5 * (bins[1:] + bins[:-1])
 
     logger.info("Computing statistics...")
     if mad:
@@ -224,8 +229,6 @@ def main(input_image, mad, sigma, percentile, output_json):
         logger.debug(f"stats: {stats}")
         min_max = (stats["mean"] - stats["sigma"] * sigma, stats["mean"] + stats["sigma"] * sigma)
     elif percentile:
-
-        mids = 0.5 * (bins[1:] + bins[:-1])
 
         lower_quantile = (0.5 * (100 - percentile)) / 100.0
         upper_quantile = percentile / 100.0 + lower_quantile
@@ -241,8 +244,15 @@ def main(input_image, mad, sigma, percentile, output_json):
     else:
         raise RuntimeError("Missing expected argument")
 
-    output = {"min": float(min_max[0]), "max": float(min_max[1])}
+    floor_limit = weighted_quantile(mids, quantiles=[0.0, 1.0], sample_weight=h, values_sorted=True)
 
+    output = {
+        "neuroglancerPrecomputedMin": float(min_max[0]),
+        "neuroglancerPrecomputedMax": float(min_max[1]),
+        "neuroglancerPrecomputedFloor": float(floor_limit[0]),
+        "neuroglancerPrecomputedLimit": float(floor_limit[1]),
+    }
+    logger.debug(f"output: {output}")
     if output_json:
         import json
 
