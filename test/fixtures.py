@@ -13,18 +13,29 @@
 #
 import pytest
 import SimpleITK as sitk
+import numpy as np
 
 
 @pytest.fixture(
     scope="session",
-    params=[sitk.sitkUInt8, sitk.sitkInt16, sitk.sitkUInt16, sitk.sitkFloat32],
+    params=[sitk.sitkUInt8, sitk.sitkInt16, sitk.sitkUInt16, sitk.sitkFloat32, "uint16_uniform"],
 )
 def image_mrc(request, tmp_path_factory):
-    pixel_type = request.param
-    print(f"Calling image_mrc with {sitk.GetPixelIDValueAsString(pixel_type)}")
-    fn = f"image_mrc_{sitk.GetPixelIDValueAsString(pixel_type).replace(' ', '_')}.mrc"
-    img = sitk.Image([10, 9, 8], pixel_type)
-    img.SetSpacing([1.1, 1.2, 1.3])
+    if isinstance(request.param, str) and request.param == "uint16_uniform":
+
+        print(f"Calling image_mrc with {request.param}")
+        fn = f"image_mrc_{request.param.replace(' ', '_')}.mrc"
+
+        a = np.linspace(0, 2**16 - 1, num=2**16, dtype="uint16").reshape(16, 64, 64)
+        img = sitk.GetImageFromArray(a)
+        img.SetSpacing([1.23, 1.23, 4.96])
+    else:
+        pixel_type = request.param
+        print(f"Calling image_mrc with {sitk.GetPixelIDValueAsString(pixel_type)}")
+        fn = f"image_mrc_{sitk.GetPixelIDValueAsString(pixel_type).replace(' ', '_')}.mrc"
+        img = sitk.Image([10, 9, 8], pixel_type)
+        img.SetSpacing([1.1, 1.2, 1.3])
+
     fn = tmp_path_factory.mktemp("data").joinpath(fn)
     sitk.WriteImage(img, str(fn))
     return str(fn)
