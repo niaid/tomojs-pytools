@@ -47,5 +47,7 @@ def test_mrc2ngpc(image_mrc, expected_pixel_type):
 
         with open("mrc2ngpc-output.json") as fp:
             mm = json.load(fp)
-            assert "min" in mm
-            assert "max" in mm
+            assert "neuroglancerPrecomputedMin" in mm
+            assert "neuroglancerPrecomputedMin" in mm
+            assert "neuroglancerPrecomputedFloor" in mm
+            assert "neuroglancerPrecomputedLimit" in mm
