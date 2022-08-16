@@ -68,7 +68,7 @@ line:
 
 .. code:: bash
 
-    python -m pytest tes
+    python -m pytest test
 
 
 Test Configuration

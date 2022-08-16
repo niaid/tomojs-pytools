@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>API &#8212; tomojs-pytools  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -13,6 +13,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
@@ -42,20 +43,20 @@
           <div class="body" role="main">
             
   <section id="module-pytools.ng.mrc2nifti">
-<span id="api"></span><h1>API<a class="headerlink" href="#module-pytools.ng.mrc2nifti" title="Permalink to this headline">¶</a></h1>
+<span id="api"></span><h1>API<a class="headerlink" href="#module-pytools.ng.mrc2nifti" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="pytools.ng.mrc2nifti.sub_volume_execute">
 <span class="sig-prename descclassname"><span class="pre">pytools.ng.mrc2nifti.</span></span><span class="sig-name descname"><span class="pre">sub_volume_execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.ng.mrc2nifti.sub_volume_execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>A function decorator which executes func on each sub-volume and <em>in-place</em> pastes the output input the
 input image.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>inplace</strong> – </p></li>
 <li><p><strong>func</strong> – A function which take a SimpleITK Image as it’s first argument and returns the results.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A wrapped function.</p>
 </dd>
 </dl>
@@ -66,7 +67,7 @@ input image.</p>
 <span class="sig-prename descclassname"><span class="pre">pytools.ng.build_histogram.</span></span><span class="sig-name descname"><span class="pre">histogram_robust_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_edges</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.ng.build_histogram.histogram_robust_stats" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the “median” and “mad” (Median Absolute Deviation).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>hist</strong> – The histogram weights ( density or count ).</p></li>
 <li><p><strong>bin_edges</strong> – The edges of the bins. This array should be one greater than the hist.</p></li>
@@ -80,7 +81,7 @@ input image.</p>
 <span class="sig-prename descclassname"><span class="pre">pytools.ng.build_histogram.</span></span><span class="sig-name descname"><span class="pre">histogram_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_edges</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.ng.build_histogram.histogram_stats" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the “mean”, “var” (variance), and “sigma” (standard deviation) from the provided histogram.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>hist</strong> – The histogram weights ( density or count ).</p></li>
 <li><p><strong>bin_edges</strong> – The edges of the bins. This array should be one greater than the hist.</p></li>
@@ -97,7 +98,7 @@ The SimpleITK is expected to support streaming the file format.</p>
 <p>The np.histogram function is run on each image slice with the provided hitogram_bin_edges, and
 accumulated for the results.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filename</strong> – The path to the image file to read. MRC file type is recommend.</p></li>
 <li><p><strong>histogram_bin_edges</strong> – A monotonically increasing array of min edges. The resulting</p></li>
@@ -122,11 +123,11 @@ NOTE: quantiles should be in [0, 1]!
 <div><p>initial array</p>
 </div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>old_style</strong> – if True, will correct output to be consistent
 with numpy.percentile.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>numpy.array with computed quantiles.</p>
 </dd>
 </dl>
@@ -162,7 +163,7 @@ with numpy.percentile.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -185,7 +186,7 @@ with numpy.percentile.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Bradley Lowekamp.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
     </div>
   </body>
 </html>
