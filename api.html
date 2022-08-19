@@ -95,7 +95,7 @@ input image.</p>
 <span class="sig-prename descclassname"><span class="pre">pytools.ng.build_histogram.</span></span><span class="sig-name descname"><span class="pre">stream_build_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">histogram_bin_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extract_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.ng.build_histogram.stream_build_histogram" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read image slice by slice, and build a histogram. The image file must be readable by SimpleITK.
 The SimpleITK is expected to support streaming the file format.</p>
-<p>The np.histogram function is run on each image slice with the provided hitogram_bin_edges, and
+<p>The np.histogram function is run on each image slice with the provided histogram_bin_edges, and
 accumulated for the results.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

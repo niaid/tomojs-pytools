@@ -143,10 +143,10 @@ meta-data.</p>
 </section>
 <section id="mrc-visual-min-max">
 <h2>mrc_visual_min_max<a class="headerlink" href="#mrc-visual-min-max" title="Permalink to this heading">¶</a></h2>
-<p>Reads the INPUT_IMAGE to compute am estimated minimum and maximum range to be used for visualization of the
-data set.</p>
+<p>Reads the INPUT_IMAGE to compute an estimated minimum and maximum range to be used for visualization of the
+data set. The image is required to have an integer pixel type.</p>
 <dl class="simple">
-<dt>The optional OUTPUT_JSON filename will be created with the following data elements with a double numeric value:</dt><dd><p>“neuroglancerPrecomputedMin”
+<dt>The optional OUTPUT_JSON filename will be created with the following data elements with integer values as strings:</dt><dd><p>“neuroglancerPrecomputedMin”
 “neuroglancerPrecomputedMax”
 “neuroglancerPrecomputedFloor”
 “neuroglancerPrecomputedLimit”</p>
@@ -159,7 +159,7 @@ data set.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-mad">
 <span id="cmdoption-mrc-visual-min-max-mad"></span><span class="sig-name descname"><span class="pre">--mad</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;mad&gt;</span></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-mad" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use INPUT_IMAGE’s robust median absolute deviation (MAD) scale by option’s value about the median for minimum and maximum range.  NOTE: This argument is mutually exclusive with  arguments: [sigma, percentile-crop].</p>
+<dd><p>Use INPUT_IMAGE’s robust median absolute deviation (MAD) scale by option’s value about the median for minimum and maximum range.  NOTE: This argument is mutually exclusive with  arguments: [percentile-crop, sigma].</p>
 </dd></dl>
 
 <dl class="std option">
@@ -172,6 +172,12 @@ data set.</p>
 <dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-percentile">
 <span id="cmdoption-mrc-visual-min-max-percentile"></span><span class="sig-name descname"><span class="pre">--percentile</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;percentile&gt;</span></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-percentile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use INPUT_IMAGE’s middle percentile (option’s value) of data for minimum and maximum range. NOTE: This argument is mutually exclusive with  arguments: [sigma, mad].</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-clamp">
+<span id="cmdoption-mrc-visual-min-max-clamp"></span><span id="cmdoption-mrc_visual_min_max-no-clamp"></span><span id="cmdoption-mrc-visual-min-max-no-clamp"></span><span class="sig-name descname"><span class="pre">--clamp</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-clamp</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-clamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clamps minimum and maximum range to existing intensity values (floor and limit).</p>
 </dd></dl>
 
 <dl class="std option">
