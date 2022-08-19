@@ -51,3 +51,7 @@ def test_mrc2ngpc(image_mrc, expected_pixel_type):
             assert "neuroglancerPrecomputedMin" in mm
             assert "neuroglancerPrecomputedFloor" in mm
             assert "neuroglancerPrecomputedLimit" in mm
+            assert type(mm["neuroglancerPrecomputedMin"]) == str
+            assert type(mm["neuroglancerPrecomputedMax"]) == str
+            assert type(mm["neuroglancerPrecomputedFloor"]) == str
+            assert type(mm["neuroglancerPrecomputedLimit"]) == str

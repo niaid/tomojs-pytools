@@ -108,22 +108,27 @@ def test_histogram_mai_help(cli_args):
 
 
 @pytest.mark.parametrize(
-    "image_mrc,expected_min, expected_max, expected_floor, expected_limit",
+    "image_mrc,expected_min, expected_max, expected_floor, expected_limit, clamp",
     [
-        (sitk.sitkUInt8, 0, 0, 0, 0),
-        (sitk.sitkInt16, 0, 0, 0, 0),
-        (sitk.sitkUInt16, 0, 0, 0, 0),
-        ("uint16_uniform", 8191.5, 57343.5, 0, 65535),
+        (sitk.sitkUInt8, 0, 0, 0, 0, False),
+        (sitk.sitkInt16, 0, 0, 0, 0, True),
+        (sitk.sitkUInt16, 0, 0, 0, 0, False),
+        ("uint16_uniform", 8191, 57344, 0, 65535, True),
+        ("uint16_uniform", 8191, 57344, 0, 65535, False),
+        ("uint8_bimodal", 0, 255, 0, 255, True),
+        ("uint8_bimodal", -64, 319, 0, 255, False),
     ],
     indirect=["image_mrc"],
 )
-def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_floor, expected_limit):
+def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_floor, clamp, expected_limit):
     runner = CliRunner()
     output_filename = "out.json"
+    args = [image_mrc, "--mad", "1.5", "--output-json", output_filename]
+    if clamp:
+        args.append("--clamp")
+    print(args)
     with runner.isolated_filesystem():
-        result = runner.invoke(
-            pytools.ng.build_histogram.main, [image_mrc, "--mad", "1.5", "--output-json", output_filename]
-        )
+        result = runner.invoke(pytools.ng.build_histogram.main, args=args)
         assert not result.exception
         with open(output_filename) as fp:
             res = json.load(fp)
@@ -132,7 +137,11 @@ def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_fl
     assert "neuroglancerPrecomputedMax" in res
     assert "neuroglancerPrecomputedFloor" in res
     assert "neuroglancerPrecomputedLimit" in res
-    assert res["neuroglancerPrecomputedMin"] == expected_min
-    assert res["neuroglancerPrecomputedMax"] == expected_max
-    assert res["neuroglancerPrecomputedFloor"] == expected_floor
-    assert res["neuroglancerPrecomputedLimit"] == expected_limit
+    assert float(res["neuroglancerPrecomputedMin"]) == expected_min
+    assert float(res["neuroglancerPrecomputedMax"]) == expected_max
+    assert float(res["neuroglancerPrecomputedFloor"]) == expected_floor
+    assert float(res["neuroglancerPrecomputedLimit"]) == expected_limit
+    assert type(res["neuroglancerPrecomputedMin"]) == str
+    assert type(res["neuroglancerPrecomputedMax"]) == str
+    assert type(res["neuroglancerPrecomputedFloor"]) == str
+    assert type(res["neuroglancerPrecomputedLimit"]) == str

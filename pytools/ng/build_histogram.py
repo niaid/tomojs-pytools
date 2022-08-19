@@ -18,6 +18,7 @@ import logging
 import SimpleITK as sitk
 from pytools.utils import MutuallyExclusiveOption
 from pytools import __version__
+from math import floor, ceil
 
 
 def weighted_quantile(values, quantiles, sample_weight=None, values_sorted=False, old_style=False):
@@ -66,7 +67,7 @@ def stream_build_histogram(filename: str, histogram_bin_edges, extract_axis=1, d
     Read image slice by slice, and build a histogram. The image file must be readable by SimpleITK.
     The SimpleITK is expected to support streaming the file format.
 
-    The np.histogram function is run on each image slice with the provided hitogram_bin_edges, and
+    The np.histogram function is run on each image slice with the provided histogram_bin_edges, and
     accumulated for the results.
 
     :param  filename: The path to the image file to read. MRC file type is recommend.
@@ -167,6 +168,11 @@ def histogram_stats(hist, bin_edges):
     help="Use INPUT_IMAGE's middle percentile (option's value) of data for minimum and maximum range.",
 )
 @click.option(
+    "--clamp/--no-clamp",
+    default=False,
+    help="Clamps minimum and maximum range to existing intensity values (floor and limit).",
+)
+@click.option(
     "--output-json",
     type=click.Path(exists=False, dir_okay=False, resolve_path=True),
     help='The output filename produced in JSON format with "neuroglancerPrecomputedMin", '
@@ -174,12 +180,12 @@ def histogram_stats(hist, bin_edges):
     "elements of a double numeric value.",
 )
 @click.version_option(__version__)
-def main(input_image, mad, sigma, percentile, output_json):
+def main(input_image, mad, sigma, percentile, clamp, output_json):
     """
-    Reads the INPUT_IMAGE to compute am estimated minimum and maximum range to be used for visualization of the
-    data set.
+    Reads the INPUT_IMAGE to compute an estimated minimum and maximum range to be used for visualization of the
+    data set. The image is required to have an integer pixel type.
 
-    The optional OUTPUT_JSON filename will be created with the following data elements with a double numeric value:
+    The optional OUTPUT_JSON filename will be created with the following data elements with integer values as strings:
         "neuroglancerPrecomputedMin"
         "neuroglancerPrecomputedMax"
         "neuroglancerPrecomputedFloor"
@@ -246,12 +252,16 @@ def main(input_image, mad, sigma, percentile, output_json):
 
     floor_limit = weighted_quantile(mids, quantiles=[0.0, 1.0], sample_weight=h, values_sorted=True)
 
+    if clamp:
+        min_max = (max(min_max[0], floor_limit[0]), min(min_max[1], floor_limit[1]))
+
     output = {
-        "neuroglancerPrecomputedMin": float(min_max[0]),
-        "neuroglancerPrecomputedMax": float(min_max[1]),
-        "neuroglancerPrecomputedFloor": float(floor_limit[0]),
-        "neuroglancerPrecomputedLimit": float(floor_limit[1]),
+        "neuroglancerPrecomputedMin": str(floor(min_max[0])),
+        "neuroglancerPrecomputedMax": str(ceil(min_max[1])),
+        "neuroglancerPrecomputedFloor": str(floor(floor_limit[0])),
+        "neuroglancerPrecomputedLimit": str(ceil(floor_limit[1])),
     }
+
     logger.debug(f"output: {output}")
     if output_json:
         import json
