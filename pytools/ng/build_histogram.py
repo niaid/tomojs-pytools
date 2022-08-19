@@ -168,6 +168,11 @@ def histogram_stats(hist, bin_edges):
     help="Use INPUT_IMAGE's middle percentile (option's value) of data for minimum and maximum range.",
 )
 @click.option(
+    "--clamp/--no-clamp",
+    default=False,
+    help="Clamps minimum and maximum range to existing intensity values (floor and limit).",
+)
+@click.option(
     "--output-json",
     type=click.Path(exists=False, dir_okay=False, resolve_path=True),
     help='The output filename produced in JSON format with "neuroglancerPrecomputedMin", '
@@ -175,7 +180,7 @@ def histogram_stats(hist, bin_edges):
     "elements of a double numeric value.",
 )
 @click.version_option(__version__)
-def main(input_image, mad, sigma, percentile, output_json):
+def main(input_image, mad, sigma, percentile, clamp, output_json):
     """
     Reads the INPUT_IMAGE to compute an estimated minimum and maximum range to be used for visualization of the
     data set. The image is required to have an integer pixel type.
@@ -246,6 +251,9 @@ def main(input_image, mad, sigma, percentile, output_json):
         raise RuntimeError("Missing expected argument")
 
     floor_limit = weighted_quantile(mids, quantiles=[0.0, 1.0], sample_weight=h, values_sorted=True)
+
+    if clamp:
+        min_max = (max(min_max[0], floor_limit[0]), min(min_max[1], floor_limit[1]))
 
     output = {
         "neuroglancerPrecomputedMin": str(floor(min_max[0])),
