@@ -113,7 +113,7 @@ def test_histogram_mai_help(cli_args):
         (sitk.sitkUInt8, 0, 0, 0, 0),
         (sitk.sitkInt16, 0, 0, 0, 0),
         (sitk.sitkUInt16, 0, 0, 0, 0),
-        ("uint16_uniform", 8191.5, 57343.5, 0, 65535),
+        ("uint16_uniform", 8191, 57344, 0, 65535),
     ],
     indirect=["image_mrc"],
 )
@@ -132,7 +132,11 @@ def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_fl
     assert "neuroglancerPrecomputedMax" in res
     assert "neuroglancerPrecomputedFloor" in res
     assert "neuroglancerPrecomputedLimit" in res
-    assert res["neuroglancerPrecomputedMin"] == expected_min
-    assert res["neuroglancerPrecomputedMax"] == expected_max
-    assert res["neuroglancerPrecomputedFloor"] == expected_floor
-    assert res["neuroglancerPrecomputedLimit"] == expected_limit
+    assert float(res["neuroglancerPrecomputedMin"]) == expected_min
+    assert float(res["neuroglancerPrecomputedMax"]) == expected_max
+    assert float(res["neuroglancerPrecomputedFloor"]) == expected_floor
+    assert float(res["neuroglancerPrecomputedLimit"]) == expected_limit
+    assert type(res["neuroglancerPrecomputedMin"]) == str
+    assert type(res["neuroglancerPrecomputedMax"]) == str
+    assert type(res["neuroglancerPrecomputedFloor"]) == str
+    assert type(res["neuroglancerPrecomputedLimit"]) == str
