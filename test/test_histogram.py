@@ -16,7 +16,6 @@ from pytest import approx
 import pytools.ng.build_histogram
 import SimpleITK as sitk
 import numpy as np
-from fixtures import image_mrc
 from click.testing import CliRunner
 import json
 
