@@ -159,19 +159,19 @@ data set. The image is required to have an integer pixel type.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-mad">
 <span id="cmdoption-mrc-visual-min-max-mad"></span><span class="sig-name descname"><span class="pre">--mad</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;mad&gt;</span></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-mad" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use INPUT_IMAGE’s robust median absolute deviation (MAD) scale by option’s value about the median for minimum and maximum range.  NOTE: This argument is mutually exclusive with  arguments: [sigma, percentile-crop].</p>
+<dd><p>Use INPUT_IMAGE’s robust median absolute deviation (MAD) scale by option’s value about the median for minimum and maximum range.  NOTE: This argument is mutually exclusive with  arguments: [percentile-crop, sigma].</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-sigma">
 <span id="cmdoption-mrc-visual-min-max-sigma"></span><span class="sig-name descname"><span class="pre">--sigma</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;sigma&gt;</span></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-sigma" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use INPUT_IMAGE’s standard deviation (sigma) scale by option’s value about the mean for minimum and maximum range.  NOTE: This argument is mutually exclusive with  arguments: [percentile-crop, mad].</p>
+<dd><p>Use INPUT_IMAGE’s standard deviation (sigma) scale by option’s value about the mean for minimum and maximum range.  NOTE: This argument is mutually exclusive with  arguments: [mad, percentile-crop].</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-percentile">
 <span id="cmdoption-mrc-visual-min-max-percentile"></span><span class="sig-name descname"><span class="pre">--percentile</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;percentile&gt;</span></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-percentile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use INPUT_IMAGE’s middle percentile (option’s value) of data for minimum and maximum range. NOTE: This argument is mutually exclusive with  arguments: [sigma, mad].</p>
+<dd><p>Use INPUT_IMAGE’s middle percentile (option’s value) of data for minimum and maximum range. NOTE: This argument is mutually exclusive with  arguments: [mad, sigma].</p>
 </dd></dl>
 
 <dl class="std option">

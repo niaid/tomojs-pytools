@@ -101,13 +101,13 @@ accumulated for the results.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filename</strong> – The path to the image file to read. MRC file type is recommend.</p></li>
-<li><p><strong>histogram_bin_edges</strong> – A monotonically increasing array of min edges. The resulting</p></li>
+<li><p><strong>histogram_bin_edges</strong> – A monotonically increasing array of min edges. The resulting
+histogram or weights will have n-1 elements.</p></li>
+<li><p><strong>extract_axis</strong> – The image dimension which is sliced during image reading.</p></li>
+<li><p><strong>density</strong> – If true the sum of the results is 1.0, otherwise it is the count of values in each bin.</p></li>
 </ul>
 </dd>
 </dl>
-<p>histogram or weights will have n-1 elements.
-:param extract_axis: The image dimension which is sliced during image reading.
-:param density: If true the sum of the results is 1.0, otherwise it is the count of values in each bin.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -118,19 +118,11 @@ NOTE: quantiles should be in [0, 1]!
 :param values: numpy.array with data
 :param quantiles: array-like with many quantiles needed
 :param sample_weight: array-like of the same length as <cite>array</cite>
-:param values_sorted: bool, if True, then will avoid sorting of</p>
-<blockquote>
-<div><p>initial array</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>old_style</strong> – if True, will correct output to be consistent
-with numpy.percentile.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>numpy.array with computed quantiles.</p>
-</dd>
-</dl>
+:param values_sorted: bool, if True, then will avoid sorting of
+initial array
+:param old_style: if True, will correct output to be consistent
+with numpy.percentile.
+:return: numpy.array with computed quantiles.</p>
 </dd></dl>
 
 </section>
