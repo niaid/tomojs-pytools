@@ -49,3 +49,19 @@ def image_mrc(request, tmp_path_factory):
     fn = tmp_path_factory.mktemp("data").joinpath(fn)
     sitk.WriteImage(img, str(fn))
     return str(fn)
+
+
+@pytest.fixture(
+    scope="session",
+    params=[sitk.sitkInt8, sitk.sitkUInt8, sitk.sitkInt16, sitk.sitkUInt16, sitk.sitkFloat32],
+)
+def image_tiff(request, tmp_path_factory):
+
+    pixel_type = request.param
+    print(f"Calling image_tiff with {sitk.GetPixelIDValueAsString(pixel_type)}")
+    fn = f"image_tiff_{sitk.GetPixelIDValueAsString(pixel_type).replace(' ', '_')}.tiff"
+    img = sitk.Image([10, 9, 8], pixel_type)
+
+    fn = tmp_path_factory.mktemp("data").joinpath(fn)
+    sitk.WriteImage(img, str(fn))
+    return str(fn)
