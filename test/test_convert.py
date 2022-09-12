@@ -28,7 +28,7 @@ import SimpleITK as sitk
     ],
     indirect=["image_tiff"],
 )
-def test_is_int16_tif(image_tiff, tmp_path):
+def test_file_to_uint8_tif(image_tiff, tmp_path):
     out_file = tmp_path / "out.tiff"
 
     file_to_uint8(image_tiff, out_file_path=out_file)
@@ -36,3 +36,66 @@ def test_is_int16_tif(image_tiff, tmp_path):
     reader = make_reader(out_file)
 
     assert reader.GetPixelID() == sitk.sitkUInt8
+
+
+@pytest.mark.parametrize(
+    "min_value,max_value",
+    [
+        (0, 0),
+        (-1, 1),
+        (0, 255),
+        (-32768, 0),
+        (0, 32767),
+        (-32768, 32767),
+        # these cases cause overflow issue due to rounding
+        # (-32768, -32767)
+        # (32766, 32767),
+    ],
+)
+def test_file_to_uint8_values(min_value, max_value, tmp_path):
+    """
+    Test extra ranges of min, max values.
+    """
+    in_file = tmp_path / "in.tiff"
+    out_file = tmp_path / "out.tiff"
+
+    img = sitk.Image([3, 1], sitk.sitkInt16)
+
+    img[0, 0] = min_value
+    img[1, 0] = max_value
+    print(img[0, 0], img[1, 0])
+
+    sitk.WriteImage(img, in_file)
+
+    file_to_uint8(in_file, out_file)
+
+    rimg = sitk.ReadImage(out_file)
+
+    print(
+        rimg[0, 0],
+        rimg[1, 0],
+    )
+    assert rimg[0, 0] == 0
+    if min_value != max_value:
+        assert rimg[1, 0] == 255
+    assert rimg.GetPixelID() == sitk.sitkUInt8
+
+
+def test_file_to_uint8_round(tmp_path):
+    in_file = tmp_path / "in.tiff"
+    out_file = tmp_path / "out.tiff"
+
+    img = sitk.Image([257, 1], sitk.sitkInt16)
+
+    for i in range(257):
+        img[i, 0] = i
+
+    sitk.WriteImage(img, in_file)
+
+    file_to_uint8(in_file, out_file)
+
+    rimg = sitk.ReadImage(out_file)
+
+    for i in range(257):
+        print(i * 255 / 256)
+        assert rimg[i, 0] == i - (i > 0)
