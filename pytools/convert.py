@@ -33,8 +33,14 @@ def file_to_uint8(in_file_path: PathType, out_file_path: PathType) -> None:
 
     ss = sitk.ShiftScaleImageFilter()
     ss.SetOutputPixelType(sitk.sitkUInt8)
-    ss.SetShift(-input_minimum)
-    ss.SetScale((output_maximum + 1) / (input_maximum - input_minimum + 1))
+    if input_maximum != input_minimum:
+        scale = output_maximum / (input_maximum - input_minimum)
+        shift = -input_minimum  # adding 0.5/scale would cause something closer to rounding, still not accurate
+
+        ss.SetShift(shift)
+        ss.SetScale(scale)
+    else:
+        ss.SetShift(-input_minimum)
 
     out = ss.Execute(img)
 
