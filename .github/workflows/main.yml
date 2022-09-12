@@ -21,6 +21,12 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
+    - name: set PY
+      run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
+    - uses: actions/cache@v1
+      with:
+        path: ~/.cache/pre-commit
+        key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
     - name: Linting
       run: |
         pip install pre-commit trufflehog3>=3.0
