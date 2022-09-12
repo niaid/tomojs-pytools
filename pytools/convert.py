@@ -21,7 +21,7 @@ def file_to_uint8(in_file_path: PathType, out_file_path: PathType) -> None:
 
     assert in_file_path != out_file_path
 
-    img = sitk.ReadImage(in_file_path)
+    img = sitk.ReadImage(str(in_file_path))
 
     mm = sitk.MinimumMaximumImageFilter()
     mm.Execute(img)
@@ -38,7 +38,7 @@ def file_to_uint8(in_file_path: PathType, out_file_path: PathType) -> None:
 
     out = ss.Execute(img)
 
-    sitk.WriteImage(out, out_file_path, useCompression=False)
+    sitk.WriteImage(out, str(out_file_path), useCompression=False)
 
 
 __all__ = ["file_to_uint8"]
