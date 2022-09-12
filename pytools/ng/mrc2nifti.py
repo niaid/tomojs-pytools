@@ -101,18 +101,11 @@ def _img_convert_type(img: sitk.Image, output_type) -> sitk.Image:
     # the sub_volume_execute
 
     if img.GetPixelID() == sitk.sitkInt8 and output_type == sitk.sitkUInt8:
-        img = sitk.Cast(img, sitk.sitkInt16)
-        img += 128
-        return sitk.Cast(img, output_type)
+        return sitk.ShiftScale(img, shift=128.0, scale=1.0, outputPixelType=output_type)
     elif img.GetPixelID() == sitk.sitkInt16 and output_type == sitk.sitkUInt8:
-        img = sitk.Cast(img, sitk.sitkInt32)
-        img += 32768
-        img /= 256
-        return sitk.Cast(img, output_type)
+        return sitk.ShiftScale(img, shift=32768, scale=1 / 256, outputPixelType=output_type)
     elif img.GetPixelID() == sitk.sitkInt16 and output_type == sitk.sitkUInt16:
-        img = sitk.Cast(img, sitk.sitkInt32)
-        img += 32768
-        return sitk.Cast(img, output_type)
+        return sitk.ShiftScale(img, shift=32768, scale=1.0, outputPixelType=output_type)
     else:
         raise Exception(
             f"Converting from {img.GetPixelIDTypeAsString()} to "
