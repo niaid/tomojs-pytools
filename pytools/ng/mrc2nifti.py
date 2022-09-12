@@ -92,7 +92,8 @@ def sub_volume_execute(inplace=True):
 @sub_volume_execute(inplace=False)
 def _img_convert_type(img: sitk.Image, output_type) -> sitk.Image:
     """
-    Convert the img into the desired pixel type. The method safely ( without overflow/underflow ) converts from one pixel range to another.
+    Convert the img into the desired pixel type. The method safely ( without overflow/underflow ) converts from one
+     pixel range to another.
 
     :param img: a SimpleITK Image object
     :param output_type: a SimpleITK PixelID such as sitkUInt8, sitkFloat32 for the pixel type of the returned image

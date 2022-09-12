@@ -18,7 +18,6 @@ import tempfile
 import os.path
 import sys
 import logging
-from pathlib import Path
 
 
 @click.command()

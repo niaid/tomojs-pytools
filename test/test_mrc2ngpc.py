@@ -15,7 +15,6 @@ from click.testing import CliRunner
 import pytools.ng.mrc2ngpc
 import pytest
 import SimpleITK as sitk
-import numpy as np
 import json
 
 args = ["--help", "--version"]

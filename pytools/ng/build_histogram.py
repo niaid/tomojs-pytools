@@ -28,9 +28,9 @@ def weighted_quantile(values, quantiles, sample_weight=None, values_sorted=False
     :param quantiles: array-like with many quantiles needed
     :param sample_weight: array-like of the same length as `array`
     :param values_sorted: bool, if True, then will avoid sorting of
-        initial array
+    initial array
     :param old_style: if True, will correct output to be consistent
-        with numpy.percentile.
+    with numpy.percentile.
     :return: numpy.array with computed quantiles.
     """
     values = np.array(values)
@@ -72,10 +72,9 @@ def stream_build_histogram(filename: str, histogram_bin_edges, extract_axis=1, d
 
     :param  filename: The path to the image file to read. MRC file type is recommend.
     :param histogram_bin_edges: A monotonically increasing array of min edges. The resulting
-    histogram or weights will have n-1 elements.
+      histogram or weights will have n-1 elements.
     :param extract_axis: The image dimension which is sliced during image reading.
     :param density: If true the sum of the results is 1.0, otherwise it is the count of values in each bin.
-
     """
     reader = sitk.ImageFileReader()
     reader.SetFileName(filename)
