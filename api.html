@@ -42,9 +42,41 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-pytools.ng.mrc2nifti">
-<span id="api"></span><h1>API<a class="headerlink" href="#module-pytools.ng.mrc2nifti" title="Permalink to this heading">¶</a></h1>
+  <section id="module-pytools.meta">
+<span id="api"></span><h1>API<a class="headerlink" href="#module-pytools.meta" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
+<dt class="sig sig-object py" id="pytools.meta.is_int16">
+<span class="sig-prename descclassname"><span class="pre">pytools.meta.</span></span><span class="sig-name descname"><span class="pre">is_int16</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pytools.meta.is_int16" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read an image file header to inspect meta-data.</p>
+<p>Supported file formats include TIFF, and others supported by SimpleITK and the Insight toolkit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> – The path to an image file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the pixel type is a signed 16-bit integer, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-pytools.convert"></span><dl class="py function">
+<dt class="sig sig-object py" id="pytools.convert.file_to_uint8">
+<span class="sig-prename descclassname"><span class="pre">pytools.convert.</span></span><span class="sig-name descname"><span class="pre">file_to_uint8</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pytools.convert.file_to_uint8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read an image file, scale the input pixel intensity range to 0-255, and write an image as an unsigned 8-bit integer.</p>
+<p>Supported file formats include TIFF, and others supported by SimpleITK and the Insight toolkit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_file_path</strong> – The file path for the source image.</p></li>
+<li><p><strong>out_file_path</strong> – The file path to the output, the extension will be used to automatically determine the Image</p></li>
+</ul>
+</dd>
+</dl>
+<p>format used. The out_file_path must be different that the input_file_path.
+returns: None</p>
+</dd></dl>
+
+<span class="target" id="module-pytools.ng.mrc2nifti"></span><dl class="py function">
 <dt class="sig sig-object py" id="pytools.ng.mrc2nifti.sub_volume_execute">
 <span class="sig-prename descclassname"><span class="pre">pytools.ng.mrc2nifti.</span></span><span class="sig-name descname"><span class="pre">sub_volume_execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.ng.mrc2nifti.sub_volume_execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>A function decorator which executes func on each sub-volume and <em>in-place</em> pastes the output input the
