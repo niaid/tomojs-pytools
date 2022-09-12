@@ -1,0 +1,17 @@
+# .pre-commit-config.yaml
+# for details see https://pre-commit.com
+# for list of available hooks see https://pre-commit.com/hooks.html
+
+fail_fast: true
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.3.0
+  hooks:
+   -   id: check-added-large-files
+       args: ['--maxkb=200']
+- repo: https://github.com/psf/black
+  rev: 22.8.0
+  hooks:
+   - id: black
+
