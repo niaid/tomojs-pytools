@@ -16,7 +16,6 @@ import pytools.ng.mrc2ngpc
 import pytest
 import SimpleITK as sitk
 import numpy as np
-from fixtures import image_mrc
 import json
 
 args = ["--help", "--version"]
