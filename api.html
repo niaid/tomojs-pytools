@@ -68,12 +68,19 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>in_file_path</strong> – The file path for the source image.</p></li>
-<li><p><strong>out_file_path</strong> – The file path to the output, the extension will be used to automatically determine the Image</p></li>
+<li><p><strong>out_file_path</strong> – The file path to the output, the extension will be used to automatically determine the Image
+format used. The out_file_path must be different that the input_file_path.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
 </dl>
-<p>format used. The out_file_path must be different that the input_file_path.
-returns: None</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The conversion from to uint16 is done with floating point operations with truncation rounding. This is
+considered an implementation detail that may change.</p>
+</div>
 </dd></dl>
 
 <span class="target" id="module-pytools.ng.mrc2nifti"></span><dl class="py function">
