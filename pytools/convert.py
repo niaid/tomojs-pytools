@@ -12,11 +12,13 @@ def file_to_uint8(in_file_path: PathType, out_file_path: PathType) -> None:
 
     Supported file formats include TIFF, and others supported by SimpleITK and the Insight toolkit.
 
-
     :param in_file_path: The file path for the source image.
     :param out_file_path: The file path to the output, the extension will be used to automatically determine the Image
-    format used. The out_file_path must be different that the input_file_path.
-    returns: None
+      format used. The out_file_path must be different that the input_file_path.
+    :returns: None
+
+    .. note:: The conversion from to uint16 is done with floating point operations with truncation rounding. This is
+       considered an implementation detail that may change.
     """
 
     assert in_file_path != out_file_path
