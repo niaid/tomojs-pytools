@@ -62,7 +62,7 @@ def weighted_quantile(values, quantiles, sample_weight=None, values_sorted=False
     return np.interp(quantiles, weighted_quantiles, values)
 
 
-def stream_build_histogram(filename: str, histogram_bin_edges, extract_axis=1, density=False):
+def stream_build_histogram(filename: str, histogram_bin_edges=None, extract_axis=2, density=False, extract_step=1):
     """
     Read image slice by slice, and build a histogram. The image file must be readable by SimpleITK.
     The SimpleITK is expected to support streaming the file format.
@@ -72,9 +72,11 @@ def stream_build_histogram(filename: str, histogram_bin_edges, extract_axis=1, d
 
     :param  filename: The path to the image file to read. MRC file type is recommend.
     :param histogram_bin_edges: A monotonically increasing array of min edges. The resulting
-      histogram or weights will have n-1 elements.
+      histogram or weights will have n-1 elements. If None, then it will be automatically computed for integers, and
+      an np.bincount may be used as an optimization.
     :param extract_axis: The image dimension which is sliced during image reading.
     :param density: If true the sum of the results is 1.0, otherwise it is the count of values in each bin.
+    :param extract_step: The number of slices to read at one time.
     """
     reader = sitk.ImageFileReader()
     reader.SetFileName(filename)
@@ -82,19 +84,36 @@ def stream_build_histogram(filename: str, histogram_bin_edges, extract_axis=1, d
 
     extract_index = [0] * reader.GetDimension()
 
-    extract_size = list(reader.GetSize())
+    size = reader.GetSize()
+    extract_size = list(size)
     extract_size[extract_axis] = 0
     reader.SetExtractSize(extract_size)
 
-    h = np.zeros(len(histogram_bin_edges) - 1, dtype=np.int64)
+    use_bincount = False
+    if histogram_bin_edges is not None:
+        h = np.zeros(len(histogram_bin_edges) - 1, dtype=np.int64)
 
-    for i in range(reader.GetSize()[extract_axis]):
+    for i in range(0, reader.GetSize()[extract_axis], extract_step):
         extract_index[extract_axis] = i
         reader.SetExtractIndex(extract_index)
+
+        extract_size[extract_axis] = min(i + extract_step, size[extract_axis]) - i
+        reader.SetExtractSize(extract_size)
         img = reader.Execute()
 
+        if histogram_bin_edges is None:
+            img_dtype = sitk.GetArrayViewFromImage(img).dtype
+            if img_dtype in (np.uint8, np.uint16):
+                use_bincount = True
+
+            histogram_bin_edges = np.arange(np.iinfo(img_dtype).min - 0.5, np.iinfo(img_dtype).max + 1.5)
+            h = np.zeros(len(histogram_bin_edges) - 1, dtype=np.int64)
+
         # accumulate histogram counts
-        h += np.histogram(sitk.GetArrayViewFromImage(img).flatten(), bins=histogram_bin_edges, density=False)[0]
+        if use_bincount:
+            h += np.bincount(sitk.GetArrayViewFromImage(img).ravel(), minlength=len(h))
+        else:
+            h += np.histogram(sitk.GetArrayViewFromImage(img).ravel(), bins=histogram_bin_edges, density=False)[0]
 
     if density:
         h /= np.sum(h)
@@ -205,23 +224,8 @@ def main(input_image, mad, sigma, percentile, clamp, output_json):
     logger.info(f"\tSpacing: {reader.GetSpacing()}")
     logger.info(f"\tOrigin:  {reader.GetOrigin()}")
 
-    pixel_type = reader.GetPixelID()
-
-    sitk_to_np = {
-        sitk.sitkUInt8: np.uint8,
-        sitk.sitkUInt16: np.uint16,
-        sitk.sitkUInt32: np.uint32,
-        sitk.sitkUInt64: np.uint64,
-        sitk.sitkInt8: np.int8,
-        sitk.sitkInt16: np.int16,
-    }
-
-    img_dtype = sitk_to_np[pixel_type]
-
-    bin_edges = np.arange(np.iinfo(img_dtype).min - 0.5, np.iinfo(img_dtype).max + 1.5)
-
     logger.info(f'Building histogram for "{reader.GetFileName()}"...')
-    h, bins = stream_build_histogram(input_image, list(bin_edges))
+    h, bins = stream_build_histogram(input_image, histogram_bin_edges=None)
     mids = 0.5 * (bins[1:] + bins[:-1])
 
     logger.info("Computing statistics...")
