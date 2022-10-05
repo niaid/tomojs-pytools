@@ -62,7 +62,7 @@ def weighted_quantile(values, quantiles, sample_weight=None, values_sorted=False
     return np.interp(quantiles, weighted_quantiles, values)
 
 
-def stream_build_histogram(filename: str, histogram_bin_edges, extract_axis=1, density=False):
+def stream_build_histogram(filename: str, histogram_bin_edges, extract_axis=1, density=False, extract_step=1):
     """
     Read image slice by slice, and build a histogram. The image file must be readable by SimpleITK.
     The SimpleITK is expected to support streaming the file format.
@@ -75,6 +75,7 @@ def stream_build_histogram(filename: str, histogram_bin_edges, extract_axis=1, d
       histogram or weights will have n-1 elements.
     :param extract_axis: The image dimension which is sliced during image reading.
     :param density: If true the sum of the results is 1.0, otherwise it is the count of values in each bin.
+    :param extract_step: The number of slices to read at one time.
     """
     reader = sitk.ImageFileReader()
     reader.SetFileName(filename)
@@ -82,15 +83,19 @@ def stream_build_histogram(filename: str, histogram_bin_edges, extract_axis=1, d
 
     extract_index = [0] * reader.GetDimension()
 
-    extract_size = list(reader.GetSize())
+    size = reader.GetSize()
+    extract_size = list(size)
     extract_size[extract_axis] = 0
     reader.SetExtractSize(extract_size)
 
     h = np.zeros(len(histogram_bin_edges) - 1, dtype=np.int64)
 
-    for i in range(reader.GetSize()[extract_axis]):
+    for i in range(0, reader.GetSize()[extract_axis], extract_step):
         extract_index[extract_axis] = i
         reader.SetExtractIndex(extract_index)
+
+        extract_size[extract_axis] = min(i + extract_step, size[extract_axis]) - i
+        reader.SetExtractSize(extract_size)
         img = reader.Execute()
 
         # accumulate histogram counts
