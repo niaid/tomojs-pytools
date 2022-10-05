@@ -87,13 +87,29 @@ def test_histogram_robust_stats():
 )
 def test_stream_build_histogram(image_mrc):
 
-    bin_edges = np.arange(np.iinfo(np.int16).min - 0.5, np.iinfo(np.uint16).max + 1.5)
-
-    h, b = pytools_hist.stream_build_histogram(image_mrc, bin_edges)
+    bin_edges1 = np.arange(np.iinfo(np.int16).min - 0.5, np.iinfo(np.uint16).max + 1.5)
 
     img = sitk.ReadImage(image_mrc)
-    assert np.sum(h) == img.GetNumberOfPixels()
-    assert np.sum(h * (b[1:] + b[:-1])) == np.sum(sitk.GetArrayViewFromImage(img))
+
+    test_args = [
+        {},
+        {"extract_axis": 0},
+        {"histogram_bin_edges": bin_edges1},
+        {"histogram_bin_edges": bin_edges1, "extract_axis": 0},
+        {"histogram_bin_edges": bin_edges1, "extract_axis": 1},
+        {"histogram_bin_edges": bin_edges1, "extract_axis": 2},
+        {"extract_axis": 0, "extract_step": 2},
+        {"extract_axis": 1, "extract_step": 3},
+        {"extract_axis": 2, "extract_step": 5},
+        {"histogram_bin_edges": bin_edges1, "extract_axis": 0, "extract_step": 99},
+        {"histogram_bin_edges": bin_edges1, "extract_axis": 1, "extract_step": 45},
+        {"histogram_bin_edges": bin_edges1, "extract_axis": 2, "extract_step": 32},
+    ]
+    for args in test_args:
+        h, b = pytools_hist.stream_build_histogram(image_mrc, **args)
+
+        assert np.sum(h) == img.GetNumberOfPixels(), f"with args '{args}'"
+        assert np.sum(h * (b[1:] + b[:-1])) == np.sum(sitk.GetArrayViewFromImage(img)), f"with args '{args}'"
 
 
 args = ["--help", "--version"]
