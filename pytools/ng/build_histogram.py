@@ -62,7 +62,7 @@ def weighted_quantile(values, quantiles, sample_weight=None, values_sorted=False
     return np.interp(quantiles, weighted_quantiles, values)
 
 
-def stream_build_histogram(filename: str, histogram_bin_edges=None, extract_axis=1, density=False, extract_step=1):
+def stream_build_histogram(filename: str, histogram_bin_edges=None, extract_axis=2, density=False, extract_step=1):
     """
     Read image slice by slice, and build a histogram. The image file must be readable by SimpleITK.
     The SimpleITK is expected to support streaming the file format.
