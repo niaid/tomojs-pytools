@@ -18,6 +18,7 @@ import tempfile
 import os.path
 import sys
 import logging
+from pathlib import Path
 
 
 @click.command()
@@ -77,7 +78,7 @@ def main(input_image, output_precompute, flat, gzip):
         if not gzip:
             cmd_opts.append("--no-gzip")
 
-        cmd = ["volume-to-precomputed-pyramid"] + cmd_opts + [nifti_filename, output_precompute]
+        cmd = ["volume-to-precomputed-pyramid"] + cmd_opts + [nifti_filename, Path(output_precompute).as_uri()]
 
         logger.info("Executing conversion of NIFTI to Neruoglancer precompute pyramid...")
         logger.debug(f"Executing: {cmd}")
