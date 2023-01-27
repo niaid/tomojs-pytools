@@ -11,9 +11,6 @@
     <link rel="stylesheet" type="text/css" href="_static/classic.css" />
     
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     
@@ -50,11 +47,11 @@
   <section id="command-line-interface">
 <h1>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading">¶</a></h1>
 <p>The Pytools packages contain a command line executables for various tasks. They can be invoke directly as an executable:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mrc_visual_min_max --help
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mrc_visual_min_max<span class="w"> </span>--help
 </pre></div>
 </div>
 <p>Or the preferred way using the <cite>python</cite> executable to execute the module entry point:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m mrc_visual_min_max --help
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>mrc_visual_min_max<span class="w"> </span>--help
 </pre></div>
 </div>
 <p>With either method of invoking the command line interface, the following sections describes the sub-commands available
@@ -63,7 +60,7 @@ and the command line options available.</p>
 <h2>mrc2nifti<a class="headerlink" href="#mrc2nifti" title="Permalink to this heading">¶</a></h2>
 <p>Reads the INPUT_IMAGE as an MRC formatted file to OUTPUT_IMAGE as a NIFTI formatted file.</p>
 <p>The OUTPUT_IMAGE file name must not already exist.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mrc2nifti <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT_IMAGE OUTPUT_IMAGE
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mrc2nifti<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>INPUT_IMAGE<span class="w"> </span>OUTPUT_IMAGE
 </pre></div>
 </div>
 <p class="rubric">Options</p>
@@ -96,7 +93,7 @@ OUTPUT_PRECOMPUTE.</p>
 next to the OUTPUT_PRECOMPUTE path is used.</p>
 <p>Additionally, in the same directory as OUTPUT_PRECOMPUTE, a mrc2ngpc-output.json file is created with additional
 meta-data.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mrc2npgc <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT_IMAGE OUTPUT_PRECOMPUTE
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mrc2npgc<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>INPUT_IMAGE<span class="w"> </span>OUTPUT_PRECOMPUTE
 </pre></div>
 </div>
 <p class="rubric">Options</p>
@@ -106,7 +103,7 @@ meta-data.</p>
 <dd><p>Produce all chunks for a resolution in the same directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -117,7 +114,7 @@ meta-data.</p>
 <dd><p>Compress each chunk.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>False</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -153,26 +150,26 @@ data set. The image is required to have an integer pixel type.</p>
 “neuroglancerPrecomputedLimit”</p>
 </dd>
 </dl>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mrc_visual_min_max <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT_IMAGE
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mrc_visual_min_max<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>INPUT_IMAGE
 </pre></div>
 </div>
 <p class="rubric">Options</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-mad">
 <span id="cmdoption-mrc-visual-min-max-mad"></span><span class="sig-name descname"><span class="pre">--mad</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;mad&gt;</span></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-mad" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use INPUT_IMAGE’s robust median absolute deviation (MAD) scale by option’s value about the median for minimum and maximum range.  NOTE: This argument is mutually exclusive with  arguments: [sigma, percentile-crop].</p>
+<dd><p>Use INPUT_IMAGE’s robust median absolute deviation (MAD) scale by option’s value about the median for minimum and maximum range.  NOTE: This argument is mutually exclusive with  arguments: [percentile-crop, sigma].</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-sigma">
 <span id="cmdoption-mrc-visual-min-max-sigma"></span><span class="sig-name descname"><span class="pre">--sigma</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;sigma&gt;</span></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-sigma" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use INPUT_IMAGE’s standard deviation (sigma) scale by option’s value about the mean for minimum and maximum range.  NOTE: This argument is mutually exclusive with  arguments: [mad, percentile-crop].</p>
+<dd><p>Use INPUT_IMAGE’s standard deviation (sigma) scale by option’s value about the mean for minimum and maximum range.  NOTE: This argument is mutually exclusive with  arguments: [percentile-crop, mad].</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-percentile">
 <span id="cmdoption-mrc-visual-min-max-percentile"></span><span class="sig-name descname"><span class="pre">--percentile</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;percentile&gt;</span></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-percentile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use INPUT_IMAGE’s middle percentile (option’s value) of data for minimum and maximum range. NOTE: This argument is mutually exclusive with  arguments: [sigma, mad].</p>
+<dd><p>Use INPUT_IMAGE’s middle percentile (option’s value) of data for minimum and maximum range. NOTE: This argument is mutually exclusive with  arguments: [mad, sigma].</p>
 </dd></dl>
 
 <dl class="std option">
@@ -274,7 +271,7 @@ data set. The image is required to have an integer pixel type.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Bradley Lowekamp.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.2.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
     </div>
   </body>
 </html>
