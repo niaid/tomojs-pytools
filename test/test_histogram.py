@@ -78,11 +78,7 @@ def test_histogram_robust_stats():
 
 @pytest.mark.parametrize(
     "image_mrc",
-    [
-        sitk.sitkUInt8,
-        sitk.sitkInt16,
-        sitk.sitkUInt16,
-    ],
+    [sitk.sitkUInt8, sitk.sitkInt16, sitk.sitkUInt16, sitk.sitkFloat32],
     indirect=["image_mrc"],
 )
 def test_stream_build_histogram(image_mrc):
@@ -107,9 +103,8 @@ def test_stream_build_histogram(image_mrc):
     ]
     for args in test_args:
         h, b = pytools_hist.stream_build_histogram(image_mrc, **args)
-
         assert np.sum(h) == img.GetNumberOfPixels(), f"with args '{args}'"
-        assert np.sum(h * (b[1:] + b[:-1])) == np.sum(sitk.GetArrayViewFromImage(img)), f"with args '{args}'"
+        assert np.sum(h * 0.5 * (b[1:] + b[:-1])) == np.sum(sitk.GetArrayViewFromImage(img)), f"with args '{args}'"
 
 
 args = ["--help", "--version"]
@@ -130,6 +125,7 @@ def test_histogram_mai_help(cli_args):
         (sitk.sitkUInt16, 0, 0, 0, 0, False),
         ("uint16_uniform", 8191, 57344, 0, 65535, True),
         ("uint16_uniform", 8191, 57344, 0, 65535, False),
+        ("float32_uniform", 0, 1, 0, 1, False),
         ("uint8_bimodal", 0, 255, 0, 255, True),
         ("uint8_bimodal", -64, 319, 0, 255, False),
         (sitk.sitkFloat32, 0, 1, 0, 1, True),
