@@ -82,6 +82,29 @@ def stream_build_histogram(filename: str, histogram_bin_edges=None, extract_axis
     reader.SetFileName(filename)
     reader.ReadImageInformation()
 
+    if histogram_bin_edges is None and reader.GetPixelID() in (sitk.sitkFloat32, sitk.sitkFloat64):
+        print("Computing minimum and maximum for histogram...")
+        img = reader.Execute()
+
+        min_max_filter = sitk.MinimumMaximumImageFilter()
+        min_max_filter.Execute(img)
+        imin, imax = min_max_filter.GetMinimum(), min_max_filter.GetMaximum()
+        del img
+
+        number_of_bins = 1024
+        if imax - imin < np.finfo(imin).eps * number_of_bins:
+            print("Warning: Computed difference between minimum and maximum is below tolerances.")
+            imax = imin + np.finfo(imin).eps * number_of_bins / 2
+            imin = imin - np.finfo(imin).eps * number_of_bins / 2
+
+        step = (imax - imin) / number_of_bins
+
+        print(f"Computed minimum: {imin} maximum: {imax} step: {step}")
+        histogram_bin_edges = np.arange(imin, imax + step, step)
+
+    if histogram_bin_edges is not None:
+        h = np.zeros(len(histogram_bin_edges) - 1, dtype=np.int64)
+
     extract_index = [0] * reader.GetDimension()
 
     size = reader.GetSize()
@@ -90,12 +113,12 @@ def stream_build_histogram(filename: str, histogram_bin_edges=None, extract_axis
     reader.SetExtractSize(extract_size)
 
     use_bincount = False
-    if histogram_bin_edges is not None:
-        h = np.zeros(len(histogram_bin_edges) - 1, dtype=np.int64)
 
     for i in range(0, reader.GetSize()[extract_axis], extract_step):
+
         extract_index[extract_axis] = i
         reader.SetExtractIndex(extract_index)
+        print(f"extract_index: {extract_index}")
 
         extract_size[extract_axis] = min(i + extract_step, size[extract_axis]) - i
         reader.SetExtractSize(extract_size)
@@ -106,6 +129,7 @@ def stream_build_histogram(filename: str, histogram_bin_edges=None, extract_axis
             if img_dtype in (np.uint8, np.uint16):
                 use_bincount = True
 
+            print(f"img_dtype: {img_dtype}")
             histogram_bin_edges = np.arange(np.iinfo(img_dtype).min - 0.5, np.iinfo(img_dtype).max + 1.5)
             h = np.zeros(len(histogram_bin_edges) - 1, dtype=np.int64)
 
@@ -226,6 +250,7 @@ def main(input_image, mad, sigma, percentile, clamp, output_json):
 
     logger.info(f'Building histogram for "{reader.GetFileName()}"...')
     h, bins = stream_build_histogram(input_image, histogram_bin_edges=None)
+
     mids = 0.5 * (bins[1:] + bins[:-1])
 
     logger.info("Computing statistics...")

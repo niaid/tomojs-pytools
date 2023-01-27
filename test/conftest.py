@@ -18,7 +18,15 @@ import numpy as np
 
 @pytest.fixture(
     scope="session",
-    params=[sitk.sitkUInt8, sitk.sitkInt16, sitk.sitkUInt16, sitk.sitkFloat32, "uint16_uniform", "uint8_bimodal"],
+    params=[
+        sitk.sitkUInt8,
+        sitk.sitkInt16,
+        sitk.sitkUInt16,
+        sitk.sitkFloat32,
+        "uint16_uniform",
+        "uint8_bimodal",
+        "float32_uniform",
+    ],
 )
 def image_mrc(request, tmp_path_factory):
     if isinstance(request.param, str) and request.param == "uint16_uniform":
@@ -39,11 +47,28 @@ def image_mrc(request, tmp_path_factory):
         a[len(a) // 2 :] = 255
         img = sitk.GetImageFromArray(a)
         img.SetSpacing([12.3, 12.3, 56.7])
+    elif isinstance(request.param, str) and request.param == "float32_uniform":
+
+        print(f"Calling image_mrc with {request.param}")
+        fn = f"image_mrc_{request.param.replace(' ', '_')}.mrc"
+
+        a = np.linspace(0.0, 1.0, num=16 * 64 * 64, dtype=np.float32).reshape(16, 64, 64)
+        print(a)
+        img = sitk.GetImageFromArray(a)
+        img.SetSpacing([1.23, 1.23, 4.96])
     else:
         pixel_type = request.param
         print(f"Calling image_mrc with {sitk.GetPixelIDValueAsString(pixel_type)}")
         fn = f"image_mrc_{sitk.GetPixelIDValueAsString(pixel_type).replace(' ', '_')}.mrc"
-        img = sitk.Image([10, 9, 8], pixel_type)
+
+        size = [10, 9, 8]
+        if pixel_type == sitk.sitkFloat32:
+
+            a = np.linspace(0.0, 1.0, num=np.prod(size), dtype=np.float32).reshape(*size[::-1])
+            img = sitk.GetImageFromArray(a)
+        else:
+            # image of just zeros
+            img = sitk.Image([10, 9, 8], pixel_type)
         img.SetSpacing([1.1, 1.2, 1.3])
 
     fn = tmp_path_factory.mktemp("data").joinpath(fn)
