@@ -43,7 +43,15 @@ def image_mrc(request, tmp_path_factory):
         pixel_type = request.param
         print(f"Calling image_mrc with {sitk.GetPixelIDValueAsString(pixel_type)}")
         fn = f"image_mrc_{sitk.GetPixelIDValueAsString(pixel_type).replace(' ', '_')}.mrc"
-        img = sitk.Image([10, 9, 8], pixel_type)
+
+        size = [10, 9, 8]
+        if pixel_type == sitk.sitkFloat32:
+
+            a = np.linspace(0.0, 1.0, num=np.prod(size), dtype=np.float32).reshape(*size[::-1])
+            img = sitk.GetImageFromArray(a)
+        else:
+            # image of just zeros
+            img = sitk.Image([10, 9, 8], pixel_type)
         img.SetSpacing([1.1, 1.2, 1.3])
 
     fn = tmp_path_factory.mktemp("data").joinpath(fn)

@@ -132,10 +132,11 @@ def test_histogram_mai_help(cli_args):
         ("uint16_uniform", 8191, 57344, 0, 65535, False),
         ("uint8_bimodal", 0, 255, 0, 255, True),
         ("uint8_bimodal", -64, 319, 0, 255, False),
+        (sitk.sitkFloat32, 0, 1, 0, 1, True),
     ],
     indirect=["image_mrc"],
 )
-def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_floor, clamp, expected_limit):
+def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_floor, expected_limit, clamp):
     runner = CliRunner()
     output_filename = "out.json"
     args = [image_mrc, "--mad", "1.5", "--output-json", output_filename]
