@@ -24,4 +24,6 @@ the installation process installs the scripts as executables.
 
 Alternatively, the package can be installed from the git repository:
 
-`python3 -m pip https://github.com/niaid/tomojs-pytools.git@v0.6`
+`python3 -m pip install git+https://github.com/niaid/tomojs-pytools.git@v1.3.2`
+
+**Note for Mac M1 development**: The imagecodec package does not provide a Mac OSX ARM binary at this time. The current workaround is to use an x86_64 python version on the M1 Mac in order to use the exiting binaries on PyPi.
