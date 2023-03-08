@@ -188,6 +188,7 @@ def histogram_stats(hist, bin_edges):
 @click.argument("input_image", type=click.Path(exists=True, dir_okay=False, resolve_path=True))
 @click.option(
     "--mad",
+    "mad_scale",
     type=float,
     cls=MutuallyExclusiveOption,
     mutually_exclusive=["sigma", "percentile-crop"],
@@ -196,6 +197,7 @@ def histogram_stats(hist, bin_edges):
 )
 @click.option(
     "--sigma",
+    "sigma_scale",
     type=float,
     cls=MutuallyExclusiveOption,
     mutually_exclusive=["mad", "percentile-crop"],
@@ -222,7 +224,7 @@ def histogram_stats(hist, bin_edges):
     "elements of a double numeric value.",
 )
 @click.version_option(__version__)
-def main(input_image, mad, sigma, percentile, clamp, output_json):
+def main(input_image, mad_scale, sigma_scale, percentile, clamp, output_json):
     """
     Reads the INPUT_IMAGE to compute an estimated minimum and maximum range to be used for visualization of the
     data set. The image is required to have an integer pixel type.
@@ -254,14 +256,14 @@ def main(input_image, mad, sigma, percentile, clamp, output_json):
     mids = 0.5 * (bins[1:] + bins[:-1])
 
     logger.info("Computing statistics...")
-    if mad:
+    if mad_scale:
         stats = histogram_robust_stats(h, bins)
         logger.debug(f"stats: {stats}")
-        min_max = (stats["median"] - stats["mad"] * mad, stats["median"] + stats["mad"] * mad)
-    elif sigma:
+        min_max = (stats["median"] - stats["mad"] * mad_scale, stats["median"] + stats["mad"] * mad_scale)
+    elif sigma_scale:
         stats = histogram_stats(h, bins)
         logger.debug(f"stats: {stats}")
-        min_max = (stats["mean"] - stats["sigma"] * sigma, stats["mean"] + stats["sigma"] * sigma)
+        min_max = (stats["mean"] - stats["sigma"] * sigma_scale, stats["mean"] + stats["sigma"] * sigma_scale)
     elif percentile:
 
         lower_quantile = (0.5 * (100 - percentile)) / 100.0
