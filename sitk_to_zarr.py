@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
-
 import numpy as np
 
 import dask.array as da
@@ -9,6 +7,7 @@ from dask.distributed import Client, LocalCluster
 from ome_zarr.writer import write_multiscales_metadata
 import zarr
 import SimpleITK as sitk
+import click
 
 
 def from_sitk(filename, chunks=None):
@@ -87,22 +86,23 @@ def bin_shrink(img, shrink_dim=None):
     return img.astype(np.uint8)
 
 
-if __name__ == "__main__":
+@click.command()
+@click.argument("input_image", type=click.Path(exists=True, dir_okay=False, readable=True, resolve_path=True))
+@click.argument("output_image", type=click.Path(exists=False, dir_okay=True, writable=True, resolve_path=True))
+@click.option(
+    "--alpha/--no-alpha", "alpha", default=True, show_default=True, help="When disabled removes the 4th channel."
+)
+def main(input_image, output_image, alpha):
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("input_filename", help="Input file stream readable by SimpleITK")
-    parser.add_argument("output_filename", help="Output directory with .zarr extension")
-    ns = parser.parse_args()
-
-    output_filename = ns.output_filename
-    input_filename = ns.input_filename  # "/Users/blowekamp/scratch/dask/GZH-002-uint8.nii"
+    chunk_size = 512
+    overwrite = True
 
     compressor = zarr.Zlib(level=9)
 
-    zarr_kwargs = {"compressor": compressor, "overwrite": False, "dimension_separator": "/"}
+    zarr_kwargs = {"compressor": compressor, "overwrite": overwrite, "dimension_separator": "/"}
 
     reader = sitk.ImageFileReader()
-    reader.SetFileName(input_filename)
+    reader.SetFileName(input_image)
     reader.ReadImageInformation()
 
     # OME NGFF 3.1 "axes"
@@ -124,41 +124,56 @@ if __name__ == "__main__":
 
     # TODO: These parameters should not be hard coded values
     with LocalCluster(n_workers=8, memory_limit="8GiB", processes=True, threads_per_worker=1) as cluster:
-        with Client(address=cluster) as client:
+        with Client(address=cluster) as client:  # noqa: F841
 
-            a = from_sitk(input_filename)
+            a = from_sitk(input_image)
+            # make 3d
             if reader.GetDimension() == 2:
                 a = a[None, ...]
+
             if reader.GetNumberOfComponents() > 1:
+                if not alpha and a.shape[-1] == 4:
+                    a = a[..., 0:3]
+                # make order zyxc->czyx
                 a = da.moveaxis(a, -1, 0)
 
-            chunk_size = list(a.shape)
-            chunk_size[-1] = 128
-            chunk_size[-2] = 128
-            if chunk_size[-3] > 128:
-                chunk_size[-3] = 128
-            print(f"chunk size: {chunk_size}")
+            _chunk_size = list(a.shape)
+            shrink_dims = []
+            for idx, ax in enumerate(axes):
+                if ax["type"].lower() == "space":
+                    if a.shape[idx] != 1:
+                        _chunk_size[idx] = chunk_size
+                        shrink_dims.insert(0, idx)
 
-            # Only shrink in ZYX
-            shrink_dims = range(a.ndim - 1, a.ndim - 4, -1)
+            print(f"chunk size: {_chunk_size}")
+            print(f"shrink_dims: {shrink_dims}")
 
             print(f"Writing level {data_item['path']} at {a.shape} {data_item}...")
-            da.to_zarr(a.rechunk(chunks=chunk_size), output_filename, component=data_item["path"], **zarr_kwargs)
-            a_b = da.from_zarr(output_filename, component=data_item["path"])
+            da.to_zarr(a.rechunk(chunks=chunk_size), output_image, component=data_item["path"], **zarr_kwargs)
+            a_b = da.from_zarr(output_image, component=data_item["path"])
 
             level = 1
-            while all([d > 1 for d in a_b.shape[-2:]]):
-                a_b = bin_shrink(a_b, shrink_dims).rechunk(chunk_size)
+            while any([a_b.shape[d] > _chunk_size[d] for d in range(a_b.ndim)]):
+                a_b = bin_shrink(a_b, shrink_dims).rechunk(_chunk_size)
                 data_item = {
                     "path": f"{level}",
-                    "coordinateTransformations": [{"type": "scale", "scale": (1.0, 1.0, 2**level, 2**level)}],
+                    "coordinateTransformations": [
+                        {
+                            "type": "scale",
+                            "scale": [2 ** level if ax["type"].lower() == "space" else 1.0 for ax in axes],
+                        }
+                    ],
                 }
                 multiscales.append(data_item)
                 print(f"Writing level {data_item['path']}  at {a_b.shape} {data_item}...")
 
-                da.to_zarr(a_b, output_filename, component=data_item["path"], **zarr_kwargs)
-                a_b = da.from_zarr(output_filename, component=data_item["path"])
+                da.to_zarr(a_b, output_image, component=data_item["path"], **zarr_kwargs)
+                a_b = da.from_zarr(output_image, component=data_item["path"])
                 level += 1
 
-            g = zarr.group(output_filename)
+            g = zarr.group(output_image)
             write_multiscales_metadata(g, datasets=multiscales, axes=axes)
+
+
+if __name__ == "__main__":
+    main()
