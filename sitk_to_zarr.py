@@ -3,7 +3,6 @@
 import numpy as np
 
 import dask.array as da
-from dask.distributed import Client, LocalCluster
 from ome_zarr.writer import write_multiscales_metadata
 import zarr
 import SimpleITK as sitk
@@ -96,8 +95,9 @@ def main(input_image, output_image, alpha):
 
     chunk_size = 512
     overwrite = True
+    compression_level = 9
 
-    compressor = zarr.Zlib(level=9)
+    compressor = zarr.Zlib(level=compression_level)
 
     zarr_kwargs = {"compressor": compressor, "overwrite": overwrite, "dimension_separator": "/"}
 
@@ -122,57 +122,53 @@ def main(input_image, output_image, alpha):
     # OME NGFF 3.3 "coordiateTransformations"
     multiscales.append(data_item)
 
-    # TODO: These parameters should not be hard coded values
-    with LocalCluster(n_workers=8, memory_limit="8GiB", processes=True, threads_per_worker=1) as cluster:
-        with Client(address=cluster) as client:  # noqa: F841
+    a = from_sitk(input_image)
+    # make 3d
+    if reader.GetDimension() == 2:
+        a = a[None, ...]
 
-            a = from_sitk(input_image)
-            # make 3d
-            if reader.GetDimension() == 2:
-                a = a[None, ...]
+    if reader.GetNumberOfComponents() > 1:
+        if not alpha and a.shape[-1] == 4:
+            a = a[..., 0:3]
+        # make order zyxc->czyx
+        a = da.moveaxis(a, -1, 0)
 
-            if reader.GetNumberOfComponents() > 1:
-                if not alpha and a.shape[-1] == 4:
-                    a = a[..., 0:3]
-                # make order zyxc->czyx
-                a = da.moveaxis(a, -1, 0)
+    _chunk_size = list(a.shape)
+    shrink_dims = []
+    for idx, ax in enumerate(axes):
+        if ax["type"].lower() == "space":
+            if a.shape[idx] != 1:
+                _chunk_size[idx] = chunk_size
+                shrink_dims.insert(0, idx)
 
-            _chunk_size = list(a.shape)
-            shrink_dims = []
-            for idx, ax in enumerate(axes):
-                if ax["type"].lower() == "space":
-                    if a.shape[idx] != 1:
-                        _chunk_size[idx] = chunk_size
-                        shrink_dims.insert(0, idx)
+    print(f"chunk size: {_chunk_size}")
+    print(f"shrink_dims: {shrink_dims}")
 
-            print(f"chunk size: {_chunk_size}")
-            print(f"shrink_dims: {shrink_dims}")
+    print(f"Writing level {data_item['path']} at {a.shape} {data_item}...")
+    da.to_zarr(a.rechunk(chunks=_chunk_size), output_image, component=data_item["path"], **zarr_kwargs)
+    a_b = da.from_zarr(output_image, component=data_item["path"])
 
-            print(f"Writing level {data_item['path']} at {a.shape} {data_item}...")
-            da.to_zarr(a.rechunk(chunks=chunk_size), output_image, component=data_item["path"], **zarr_kwargs)
-            a_b = da.from_zarr(output_image, component=data_item["path"])
-
-            level = 1
-            while any([a_b.shape[d] > _chunk_size[d] for d in range(a_b.ndim)]):
-                a_b = bin_shrink(a_b, shrink_dims).rechunk(_chunk_size)
-                data_item = {
-                    "path": f"{level}",
-                    "coordinateTransformations": [
-                        {
-                            "type": "scale",
-                            "scale": [2 ** level if ax["type"].lower() == "space" else 1.0 for ax in axes],
-                        }
-                    ],
+    level = 1
+    while any([a_b.shape[d] > _chunk_size[d] for d in range(a_b.ndim)]):
+        a_b = bin_shrink(a_b, shrink_dims).rechunk(_chunk_size)
+        data_item = {
+            "path": f"{level}",
+            "coordinateTransformations": [
+                {
+                    "type": "scale",
+                    "scale": [2 ** level if ax["type"].lower() == "space" else 1.0 for ax in axes],
                 }
-                multiscales.append(data_item)
-                print(f"Writing level {data_item['path']}  at {a_b.shape} {data_item}...")
+            ],
+        }
+        multiscales.append(data_item)
+        print(f"Writing level {data_item['path']}  at {a_b.shape} {data_item}...")
 
-                da.to_zarr(a_b, output_image, component=data_item["path"], **zarr_kwargs)
-                a_b = da.from_zarr(output_image, component=data_item["path"])
-                level += 1
+        da.to_zarr(a_b, output_image, component=data_item["path"], **zarr_kwargs)
+        a_b = da.from_zarr(output_image, component=data_item["path"])
+        level += 1
 
-            g = zarr.group(output_image)
-            write_multiscales_metadata(g, datasets=multiscales, axes=axes)
+    g = zarr.group(output_image)
+    write_multiscales_metadata(g, datasets=multiscales, axes=axes)
 
 
 if __name__ == "__main__":
