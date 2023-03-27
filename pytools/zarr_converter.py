@@ -9,6 +9,7 @@ import SimpleITK as sitk
 import click
 import logging
 from pathlib import Path
+from pytools import __version__
 
 
 logger = logging.getLogger(__name__)
@@ -103,9 +104,15 @@ def bin_shrink(img, shrink_dim=None):
 @click.option(
     "--log-level", default="INFO", type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR"], case_sensitive=False)
 )
-@click.option("--chunk-size", default=64, type=click.IntRange(min=1))
+@click.option(
+    "--chunk-size",
+    default=64,
+    show_default=True,
+    type=click.IntRange(min=1),
+    help="The size of zarr chunks stored in spatial dimensions.",
+)
+@click.version_option(__version__)
 def main(input_image, output_image, alpha, overwrite, chunk_size, log_level):
-
     logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.getLevelName(log_level))
 
     compression_level = 9
