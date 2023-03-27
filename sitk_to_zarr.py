@@ -137,10 +137,12 @@ def main(input_image, output_image, alpha, overwrite, chunk_size, log_level):
     # OME NGFF 3.1 "axes"
     # https://ngff.openmicroscopy.org/latest/#axes-md
     axes = [
-        {"name": "z", "type": "space", "unit": "nanometer"},
         {"name": "y", "type": "space", "unit": "nanometer"},
         {"name": "x", "type": "space", "unit": "nanometer"},
     ]
+
+    if a.ndim > 2 + int(has_channels):
+        axes.insert(0, {"name": "z", "type": "space", "unit": "nanometer"})
 
     if has_channels:
         axes.insert(0, {"name": "c", "type": "channel"})
@@ -156,10 +158,9 @@ def main(input_image, output_image, alpha, overwrite, chunk_size, log_level):
     chunk_dims = list(a.shape)
     shrink_dims = []
     for idx, ax in enumerate(axes):
-        if ax["type"].lower() == "space":
-            if a.shape[idx] != 1:
-                chunk_dims[idx] = chunk_size
-                shrink_dims.insert(0, idx)
+        if ax["type"].lower() == "space" and a.shape[idx] != 1:
+            chunk_dims[idx] = chunk_size
+            shrink_dims.insert(0, idx)
     logger.debug(f"chunk size: {chunk_dims}")
     logger.debug(f"shrink_dims: {shrink_dims}")
 
