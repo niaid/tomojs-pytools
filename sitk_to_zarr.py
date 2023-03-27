@@ -8,6 +8,7 @@ import zarr
 import SimpleITK as sitk
 import click
 import logging
+from pathlib import Path
 
 
 logger = logging.getLogger(__name__)
@@ -91,17 +92,22 @@ def bin_shrink(img, shrink_dim=None):
 
 
 @click.command()
-@click.argument("input_image", type=click.Path(exists=True, dir_okay=False, readable=True, resolve_path=True))
-@click.argument("output_image", type=click.Path(exists=False, dir_okay=True, writable=True, resolve_path=True))
+@click.argument("input_image", type=click.Path(exists=True, dir_okay=False, readable=True, path_type=Path))
+@click.argument("output_image", type=click.Path(exists=False, dir_okay=True, writable=True, path_type=Path))
 @click.option(
     "--alpha/--no-alpha", "alpha", default=True, show_default=True, help="When disabled removes the 4th channel."
 )
-def main(input_image, output_image, alpha):
+@click.option(
+    "--overwrite/--no-overwrite", default=False, show_default=True, help="Overwrite output file if it exists."
+)
+@click.option(
+    "--log-level", default="INFO", type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR"], case_sensitive=False)
+)
+@click.option("--chunk-size", default=64, type=click.IntRange(min=1))
+def main(input_image, output_image, alpha, overwrite, chunk_size, log_level):
 
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.DEBUG)
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.getLevelName(log_level))
 
-    chunk_size = 512
-    overwrite = True
     compression_level = 9
 
     compressor = zarr.Zlib(level=compression_level)
@@ -112,7 +118,7 @@ def main(input_image, output_image, alpha):
     reader_type = input_image.suffix.lstrip(".")
     if reader_type in ["png", "mrc"]:
         reader = sitk.ImageFileReader()
-        reader.SetFileName(input_image)
+        reader.SetFileName(str(input_image))
         reader.ReadImageInformation()
 
         has_channels = reader.GetNumberOfComponents() > 1
