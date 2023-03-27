@@ -67,6 +67,7 @@ def bin_shrink(img, shrink_dim=None):
     :param shrink_dim: an iterable for dimensions to perform operation on. Recommended to order from the fastest axis to
      slowest for performance.
     """
+    input_type = img.dtype
     img = img.astype(np.float32)
     # When odd, set end index to -1 to drop odd entry
     stop_index = [-1 if s % 2 and s != 1 else None for s in img.shape]
@@ -82,7 +83,7 @@ def bin_shrink(img, shrink_dim=None):
 
         img = (img[idx1] + img[idx2]) / 2
 
-    return img.astype(np.uint8)
+    return img.astype(input_type)
 
 
 @click.command()
