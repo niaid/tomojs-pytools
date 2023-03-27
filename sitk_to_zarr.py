@@ -7,6 +7,10 @@ from ome_zarr.writer import write_multiscales_metadata
 import zarr
 import SimpleITK as sitk
 import click
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def from_sitk(filename, chunks=None):
@@ -35,13 +39,13 @@ def from_sitk(filename, chunks=None):
         if len(chunks) < len(img_shape):
             chunks = chunks + (-1,)
 
-    print(f"chunks: {chunks} {reader.GetDimension()} {reader.GetNumberOfComponents()}")
+    logger.debug(f"chunks: {chunks} {reader.GetDimension()} {reader.GetNumberOfComponents()}")
     z = da.zeros(shape=img_shape, dtype=sitk.extra._get_numpy_dtype(reader), chunks=chunks)
 
     def func(z, block_info=None):
         _reader = sitk.ImageFileReader()
         _reader.SetFileName(str(filename))
-        print(f"block_info: {block_info}")
+        logger.debug(f"block_info: {block_info}")
         if block_info is not None:
             if is_multi_component:
                 size = block_info[None]["chunk-shape"][-2::-1]
@@ -49,7 +53,7 @@ def from_sitk(filename, chunks=None):
             else:
                 size = block_info[None]["chunk-shape"][::-1]
                 index = [al[0] for al in block_info[None]["array-location"][::-1]]
-            print(f"index: {index} size: {size}")
+
             _reader.SetExtractIndex(index)
             _reader.SetExtractSize(size)
             sitk_img = _reader.Execute()
@@ -94,6 +98,8 @@ def bin_shrink(img, shrink_dim=None):
 )
 def main(input_image, output_image, alpha):
 
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.DEBUG)
+
     chunk_size = 512
     overwrite = True
     compression_level = 9
@@ -102,9 +108,25 @@ def main(input_image, output_image, alpha):
 
     zarr_kwargs = {"compressor": compressor, "overwrite": overwrite, "dimension_separator": "/"}
 
-    reader = sitk.ImageFileReader()
-    reader.SetFileName(input_image)
-    reader.ReadImageInformation()
+    has_channels = False
+    reader_type = input_image.suffix.lstrip(".")
+    if reader_type in ["png", "mrc"]:
+        reader = sitk.ImageFileReader()
+        reader.SetFileName(input_image)
+        reader.ReadImageInformation()
+
+        has_channels = reader.GetNumberOfComponents() > 1
+        base_spacing = list(reader.GetSpacing())
+
+        a = from_sitk(input_image)
+
+        if reader.GetNumberOfComponents() > 1:
+            # make order zyxc->czyx
+            a = da.moveaxis(a, -1, 0)
+            base_spacing.insert(0, 1.0)
+
+    if not alpha and a.shape[0] == 4:
+        a = a[0:3, ...]
 
     # OME NGFF 3.1 "axes"
     # https://ngff.openmicroscopy.org/latest/#axes-md
@@ -113,56 +135,48 @@ def main(input_image, output_image, alpha):
         {"name": "y", "type": "space", "unit": "nanometer"},
         {"name": "x", "type": "space", "unit": "nanometer"},
     ]
-    if reader.GetNumberOfComponents() > 1:
-        axes.insert(0, {"name": "c^", "type": "channel"})
+
+    if has_channels:
+        axes.insert(0, {"name": "c", "type": "channel"})
 
     # OME NGFF 3.4 "multiscales"
     # https://ngff.openmicroscopy.org/latest/#multiscale-md
     multiscales = []
-    data_item = {"path": "base", "coordinateTransformations": [{"type": "scale", "scale": (1.0, 1.0, 1.0, 1.0)}]}
+
+    data_item = {"path": "base", "coordinateTransformations": [{"type": "scale", "scale": base_spacing}]}
     # OME NGFF 3.3 "coordiateTransformations"
     multiscales.append(data_item)
 
-    a = from_sitk(input_image)
-    # make 3d
-    if reader.GetDimension() == 2:
-        a = a[None, ...]
-
-    if reader.GetNumberOfComponents() > 1:
-        if not alpha and a.shape[-1] == 4:
-            a = a[..., 0:3]
-        # make order zyxc->czyx
-        a = da.moveaxis(a, -1, 0)
-
-    _chunk_size = list(a.shape)
+    chunk_dims = list(a.shape)
     shrink_dims = []
     for idx, ax in enumerate(axes):
         if ax["type"].lower() == "space":
             if a.shape[idx] != 1:
-                _chunk_size[idx] = chunk_size
+                chunk_dims[idx] = chunk_size
                 shrink_dims.insert(0, idx)
+    logger.debug(f"chunk size: {chunk_dims}")
+    logger.debug(f"shrink_dims: {shrink_dims}")
 
-    print(f"chunk size: {_chunk_size}")
-    print(f"shrink_dims: {shrink_dims}")
-
-    print(f"Writing level {data_item['path']} at {a.shape} {data_item}...")
-    da.to_zarr(a.rechunk(chunks=_chunk_size), output_image, component=data_item["path"], **zarr_kwargs)
+    logger.info(f"Writing level {data_item['path']} at {a.shape} {data_item}...")
+    da.to_zarr(a.rechunk(chunks=chunk_dims), output_image, component=data_item["path"], **zarr_kwargs)
     a_b = da.from_zarr(output_image, component=data_item["path"])
 
     level = 1
-    while any([a_b.shape[d] > _chunk_size[d] for d in range(a_b.ndim)]):
-        a_b = bin_shrink(a_b, shrink_dims).rechunk(_chunk_size)
+    while any([a_b.shape[d] > chunk_dims[d] for d in range(a_b.ndim)]):
+        a_b = bin_shrink(a_b, shrink_dims).rechunk(chunk_dims)
         data_item = {
             "path": f"{level}",
             "coordinateTransformations": [
                 {
                     "type": "scale",
-                    "scale": [2 ** level if ax["type"].lower() == "space" else 1.0 for ax in axes],
+                    "scale": [
+                        2**level * s if ax["type"].lower() == "space" else s for ax, s in zip(axes, base_spacing)
+                    ],
                 }
             ],
         }
         multiscales.append(data_item)
-        print(f"Writing level {data_item['path']}  at {a_b.shape} {data_item}...")
+        logger.info(f"Writing level {data_item['path']}  at {a_b.shape} {data_item}...")
 
         da.to_zarr(a_b, output_image, component=data_item["path"], **zarr_kwargs)
         a_b = da.from_zarr(output_image, component=data_item["path"])
