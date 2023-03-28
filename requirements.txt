@@ -1,4 +1,3 @@
 SimpleITK ~=2.2.0
-neuroglancer-scripts ~=1.1.0
 click >=7.1
 numpy >=1.21
