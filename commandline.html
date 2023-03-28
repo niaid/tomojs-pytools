@@ -84,61 +84,6 @@ and the command line options available.</p>
 </dd></dl>
 
 </section>
-<section id="mrc2npgc">
-<h2>mrc2npgc<a class="headerlink" href="#mrc2npgc" title="Permalink to this heading">¶</a></h2>
-<p>Reads the INPUT_IMAGE as an MRC formatted file and creates a Neuroglancer precompute pyramid in
-OUTPUT_PRECOMPUTE.</p>
-<p>The OUTPUT_PRECOMPUTE path must not exist.</p>
-<p>The conversion is done in two steps first to a NIFTI file, then to precompute format. A temporary directory and file
-next to the OUTPUT_PRECOMPUTE path is used.</p>
-<p>Additionally, in the same directory as OUTPUT_PRECOMPUTE, a mrc2ngpc-output.json file is created with additional
-meta-data.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mrc2npgc<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>INPUT_IMAGE<span class="w"> </span>OUTPUT_PRECOMPUTE
-</pre></div>
-</div>
-<p class="rubric">Options</p>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-mrc2npgc-flat">
-<span id="cmdoption-mrc2npgc-no-flat"></span><span class="sig-name descname"><span class="pre">--flat</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-flat</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mrc2npgc-flat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Produce all chunks for a resolution in the same directory.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-mrc2npgc-gzip">
-<span id="cmdoption-mrc2npgc-no-gzip"></span><span class="sig-name descname"><span class="pre">--gzip</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-gzip</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mrc2npgc-gzip" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compress each chunk.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-mrc2npgc-version">
-<span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mrc2npgc-version" title="Permalink to this definition">¶</a></dt>
-<dd><p>Show the version and exit.</p>
-</dd></dl>
-
-<p class="rubric">Arguments</p>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-mrc2npgc-arg-INPUT_IMAGE">
-<span id="cmdoption-mrc2npgc-arg-input-image"></span><span class="sig-name descname"><span class="pre">INPUT_IMAGE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mrc2npgc-arg-INPUT_IMAGE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Required argument</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-mrc2npgc-arg-OUTPUT_PRECOMPUTE">
-<span id="cmdoption-mrc2npgc-arg-output-precompute"></span><span class="sig-name descname"><span class="pre">OUTPUT_PRECOMPUTE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mrc2npgc-arg-OUTPUT_PRECOMPUTE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Required argument</p>
-</dd></dl>
-
-</section>
 <section id="mrc-visual-min-max">
 <h2>mrc_visual_min_max<a class="headerlink" href="#mrc-visual-min-max" title="Permalink to this heading">¶</a></h2>
 <p>Reads the INPUT_IMAGE to compute an estimated minimum and maximum range to be used for visualization of the
@@ -169,7 +114,7 @@ data set. The image is required to have an integer pixel type.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-percentile">
 <span id="cmdoption-mrc-visual-min-max-percentile"></span><span class="sig-name descname"><span class="pre">--percentile</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;percentile&gt;</span></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-percentile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use INPUT_IMAGE’s middle percentile (option’s value) of data for minimum and maximum range. NOTE: This argument is mutually exclusive with  arguments: [sigma, mad].</p>
+<dd><p>Use INPUT_IMAGE’s middle percentile (option’s value) of data for minimum and maximum range. NOTE: This argument is mutually exclusive with  arguments: [mad, sigma].</p>
 </dd></dl>
 
 <dl class="std option">
@@ -212,7 +157,6 @@ data set. The image is required to have an integer pixel type.</p>
     <ul>
 <li><a class="reference internal" href="#">Command Line Interface</a><ul>
 <li><a class="reference internal" href="#mrc2nifti">mrc2nifti</a></li>
-<li><a class="reference internal" href="#mrc2npgc">mrc2npgc</a></li>
 <li><a class="reference internal" href="#mrc-visual-min-max">mrc_visual_min_max</a></li>
 </ul>
 </li>
