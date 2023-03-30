@@ -29,6 +29,7 @@ def rechunk_group(group: zarr.Group, chunk_size: int):
 
             for dataset in image["datasets"]:
                 arr = group[dataset["path"]]
+                arr_name = group[dataset["path"]].name
                 logger.info(f'Processing array: "{arr.name}"...')
                 logger.debug(arr.info)
 
@@ -37,8 +38,22 @@ def rechunk_group(group: zarr.Group, chunk_size: int):
                     logger.info("Chunks already requested size")
                     continue
 
-                group[dataset["path"]] = zarr.array(arr, chunks=chunks)
-                logger.debug(group[dataset["path"]].info)
+                # copy array to a temp zarr array on file
+                zarr.copy(
+                    arr,
+                    group,
+                    name=arr_name + ".temp",
+                    chunks=chunks,
+                    compressor=arr.compressor,
+                    dimension_separator=arr._dimension_separator,
+                    filters=arr.filters,
+                    overwrite=False,
+                )
+
+                logger.debug(group[dataset["path"] + ".temp"].info)
+                logger.debug(f"replace: {group[dataset['path']+'.temp'].name} -> {arr_name}")
+                del group[dataset["path"]]
+                group.store.rename(group[dataset["path"] + ".temp"].name, arr_name)
 
 
 @click.command()
