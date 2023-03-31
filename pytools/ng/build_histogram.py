@@ -21,6 +21,9 @@ from pytools import __version__
 from math import floor, ceil
 
 
+logger = logging.getLogger(__name__)
+
+
 def weighted_quantile(values, quantiles, sample_weight=None, values_sorted=False, old_style=False):
     """Very close to numpy.percentile, but supports weights.
     NOTE: quantiles should be in [0, 1]!
@@ -83,7 +86,7 @@ def stream_build_histogram(filename: str, histogram_bin_edges=None, extract_axis
     reader.ReadImageInformation()
 
     if histogram_bin_edges is None and reader.GetPixelID() in (sitk.sitkFloat32, sitk.sitkFloat64):
-        print("Computing minimum and maximum for histogram...")
+        logger.info("Computing minimum and maximum for histogram...")
         img = reader.Execute()
 
         min_max_filter = sitk.MinimumMaximumImageFilter()
@@ -93,13 +96,13 @@ def stream_build_histogram(filename: str, histogram_bin_edges=None, extract_axis
 
         number_of_bins = 1024
         if imax - imin < np.finfo(imin).eps * number_of_bins:
-            print("Warning: Computed difference between minimum and maximum is below tolerances.")
+            logger.warning("Computed difference between minimum and maximum is below tolerances.")
             imax = imin + np.finfo(imin).eps * number_of_bins / 2
             imin = imin - np.finfo(imin).eps * number_of_bins / 2
 
         step = (imax - imin) / number_of_bins
 
-        print(f"Computed minimum: {imin} maximum: {imax} step: {step}")
+        logger.info(f"Computed minimum: {imin} maximum: {imax} step: {step}")
         histogram_bin_edges = np.arange(imin, imax + step, step)
 
     if histogram_bin_edges is not None:
@@ -115,10 +118,9 @@ def stream_build_histogram(filename: str, histogram_bin_edges=None, extract_axis
     use_bincount = False
 
     for i in range(0, reader.GetSize()[extract_axis], extract_step):
-
         extract_index[extract_axis] = i
         reader.SetExtractIndex(extract_index)
-        print(f"extract_index: {extract_index}")
+        logger.debug(f"extract_index: {extract_index}")
 
         extract_size[extract_axis] = min(i + extract_step, size[extract_axis]) - i
         reader.SetExtractSize(extract_size)
@@ -129,7 +131,7 @@ def stream_build_histogram(filename: str, histogram_bin_edges=None, extract_axis
             if img_dtype in (np.uint8, np.uint16):
                 use_bincount = True
 
-            print(f"img_dtype: {img_dtype}")
+            logger.debug(f"img_dtype: {img_dtype}")
             histogram_bin_edges = np.arange(np.iinfo(img_dtype).min - 0.5, np.iinfo(img_dtype).max + 1.5)
             h = np.zeros(len(histogram_bin_edges) - 1, dtype=np.int64)
 
@@ -223,8 +225,11 @@ def histogram_stats(hist, bin_edges):
     '"neuroglancerPrecomputedMax", "neuroglancerPrecomputedFloor" and "neuroglancerPrecomputedLimit" data '
     "elements of a double numeric value.",
 )
+@click.option(
+    "--log-level", default="INFO", type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR"], case_sensitive=False)
+)
 @click.version_option(__version__)
-def main(input_image, mad_scale, sigma_scale, percentile, clamp, output_json):
+def main(input_image, mad_scale, sigma_scale, percentile, clamp, output_json, log_level):
     """
     Reads the INPUT_IMAGE to compute an estimated minimum and maximum range to be used for visualization of the
     data set. The image is required to have an integer pixel type.
@@ -236,8 +241,7 @@ def main(input_image, mad_scale, sigma_scale, percentile, clamp, output_json):
         "neuroglancerPrecomputedLimit"
     """
 
-    logger = logging.getLogger()
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.DEBUG)
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.getLevelName(log_level))
 
     reader = sitk.ImageFileReader()
     reader.SetFileName(input_image)
@@ -265,7 +269,6 @@ def main(input_image, mad_scale, sigma_scale, percentile, clamp, output_json):
         logger.debug(f"stats: {stats}")
         min_max = (stats["mean"] - stats["sigma"] * sigma_scale, stats["mean"] + stats["sigma"] * sigma_scale)
     elif percentile:
-
         lower_quantile = (0.5 * (100 - percentile)) / 100.0
         upper_quantile = percentile / 100.0 + lower_quantile
         logger.debug(f"quantiles: {lower_quantile} {upper_quantile}")
