@@ -114,7 +114,7 @@ data set. The image is required to have an integer pixel type.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-percentile">
 <span id="cmdoption-mrc-visual-min-max-percentile"></span><span class="sig-name descname"><span class="pre">--percentile</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;percentile&gt;</span></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-percentile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use INPUT_IMAGE’s middle percentile (option’s value) of data for minimum and maximum range. NOTE: This argument is mutually exclusive with  arguments: [mad, sigma].</p>
+<dd><p>Use INPUT_IMAGE’s middle percentile (option’s value) of data for minimum and maximum range. NOTE: This argument is mutually exclusive with  arguments: [sigma, mad].</p>
 </dd></dl>
 
 <dl class="std option">
@@ -127,6 +127,16 @@ data set. The image is required to have an integer pixel type.</p>
 <dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-output-json">
 <span id="cmdoption-mrc-visual-min-max-output-json"></span><span class="sig-name descname"><span class="pre">--output-json</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output_json&gt;</span></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-output-json" title="Permalink to this definition">¶</a></dt>
 <dd><p>The output filename produced in JSON format with “neuroglancerPrecomputedMin”, “neuroglancerPrecomputedMax”, “neuroglancerPrecomputedFloor” and “neuroglancerPrecomputedLimit” data elements of a double numeric value.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mrc_visual_min_max-log-level">
+<span id="cmdoption-mrc-visual-min-max-log-level"></span><span class="sig-name descname"><span class="pre">--log-level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-mrc_visual_min_max-log-level" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Options<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DEBUG | INFO | WARNING | ERROR</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="std option">
