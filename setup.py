@@ -35,6 +35,7 @@ setup(
             "mrc2nifti = pytools.ng.mrc2nifti:main",
             "mrc_visual_min_max = pytools.ng.build_histogram:main",
             "zarr_rechunk = pytools.zarr_rechunk:main",
+            "zarr_build_multiscales = pytools.zarr_build_multiscales:main",
         ]
     },
     classifiers=[
