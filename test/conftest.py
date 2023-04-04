@@ -30,7 +30,6 @@ import numpy as np
 )
 def image_mrc(request, tmp_path_factory):
     if isinstance(request.param, str) and request.param == "uint16_uniform":
-
         print(f"Calling image_mrc with {request.param}")
         fn = f"image_mrc_{request.param.replace(' ', '_')}.mrc"
 
@@ -39,7 +38,6 @@ def image_mrc(request, tmp_path_factory):
         img.SetSpacing([1.23, 1.23, 4.96])
 
     elif isinstance(request.param, str) and request.param == "uint8_bimodal":
-
         print(f"Calling image_mrc with {request.param}")
         fn = f"image_mrc_{request.param.replace(' ', '_')}.mrc"
 
@@ -48,7 +46,6 @@ def image_mrc(request, tmp_path_factory):
         img = sitk.GetImageFromArray(a)
         img.SetSpacing([12.3, 12.3, 56.7])
     elif isinstance(request.param, str) and request.param == "float32_uniform":
-
         print(f"Calling image_mrc with {request.param}")
         fn = f"image_mrc_{request.param.replace(' ', '_')}.mrc"
 
@@ -63,7 +60,6 @@ def image_mrc(request, tmp_path_factory):
 
         size = [10, 9, 8]
         if pixel_type == sitk.sitkFloat32:
-
             a = np.linspace(0.0, 1.0, num=np.prod(size), dtype=np.float32).reshape(*size[::-1])
             img = sitk.GetImageFromArray(a)
         else:
@@ -81,7 +77,6 @@ def image_mrc(request, tmp_path_factory):
     params=[sitk.sitkInt8, sitk.sitkUInt8, sitk.sitkInt16, sitk.sitkUInt16, sitk.sitkFloat32],
 )
 def image_tiff(request, tmp_path_factory):
-
     pixel_type = request.param
     print(f"Calling image_tiff with {sitk.GetPixelIDValueAsString(pixel_type)}")
     fn = f"image_tiff_{sitk.GetPixelIDValueAsString(pixel_type).replace(' ', '_')}.tiff"
@@ -90,3 +85,30 @@ def image_tiff(request, tmp_path_factory):
     fn = tmp_path_factory.mktemp("data").joinpath(fn)
     sitk.WriteImage(img, str(fn))
     return str(fn)
+
+
+@pytest.fixture(scope="session", params=[(16, 16, 16), (1, 64, 64), (1, 1024, 1024)])
+def image_ome_ngff(request, tmp_path_factory):
+    from ome_zarr.io import parse_url
+    from ome_zarr.writer import write_image
+    from ome_zarr.scale import Scaler
+    import zarr
+
+    path = tmp_path_factory.mktemp("zarr").joinpath("test_ngff_image.zarr")
+    print(f"path: {path}")
+
+    chunks = request.param if request.param is not None else (4, 128, 128)
+
+    mean_val = 10
+    size_xy = 1024
+    size_z = 10
+    rng = np.random.default_rng(0)
+    data = rng.poisson(mean_val, size=(size_z, size_xy, size_xy)).astype(np.uint8)
+
+    # write the image data
+    store = parse_url(path, mode="w").store
+    root = zarr.group(store=store)
+    scaler = Scaler(max_layer=0, method="nearest")
+    write_image(image=data, group=root, axes="zyx", storage_options=dict(chunks=chunks), scaler=scaler)
+
+    return path
