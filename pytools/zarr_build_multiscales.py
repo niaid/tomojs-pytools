@@ -5,9 +5,43 @@ from pathlib import Path
 from pytools import __version__
 from pytools.utils.zarr import build_pyramid
 from math import log2, ceil
+from typing import Dict, List
 import sys
 
 logger = logging.getLogger(__name__)
+
+
+def _build_multiscale_datasets(max_resolution: int, axes: Dict, base_spacing: List[float], base_path: str):
+    """
+    Generates meta-data as a dictionary for the multi-scales datasets which describe the arrays storing the resolution
+    image pyramid.
+
+    OME NGFF 3.4 "multiscales"
+    https://ngff.openmicroscopy.org/latest/#multiscale-md
+    """
+    multiscales = []
+
+    data_item = {
+        "path": base_path,
+        "coordinateTransformations": [{"type": "scale", "scale": base_spacing}],
+    }
+    multiscales.append(data_item)
+
+    for level in range(1, max_resolution):
+        data_item = {
+            "path": f"{level}",
+            "coordinateTransformations": [
+                {
+                    "type": "scale",
+                    "scale": [
+                        2**level * s if ax["type"].lower() == "space" else s for ax, s in zip(axes, base_spacing)
+                    ],
+                }
+            ],
+        }
+        multiscales.append(data_item)
+
+    return multiscales
 
 
 @click.command()
@@ -71,13 +105,6 @@ def main(input_zarr, overwrite, chunk_size, max_resolution, log_level):
         else:
             chunk_dim = [chunk_size if ax["type"].lower() == "space" else 1 for ax in axes]
 
-        multiscale_components = [
-            "0",
-        ]
-
-        if base_path != multiscale_components[0]:
-            group.store.rename(base_path, multiscale_components[0])
-
         if max_resolution is None:
             shape = group[base_path].shape
             _chunks = group[base_path].chunks if chunk_size is None else chunk_dim
@@ -85,33 +112,20 @@ def main(input_zarr, overwrite, chunk_size, max_resolution, log_level):
             # the number of time the image can be reduces by 2 in shrink_dim until smaller than chunks
             max_resolution = 1
             for d, (s, c) in enumerate(zip(shape, _chunks)):
-                if d in shrink_dim:
+                if d in shrink_dim and c > 1:
                     max_resolution = max(max_resolution, ceil(log2(s) - log2(c - 1)))
 
-        multiscales = []
-        data_item = {
-            "path": multiscale_components[0],
-            "coordinateTransformations": [{"type": "scale", "scale": base_spacing}],
-        }
-        # OME NGFF 3.3 "coordinateTransformations"
-        multiscales.append(data_item)
+        multiscales = _build_multiscale_datasets(max_resolution, axes, base_spacing, base_path)
 
-        for level in range(1, max_resolution):
-            multiscale_components.append(f"{level}")
-            data_item = {
-                "path": f"{level}",
-                "coordinateTransformations": [
-                    {
-                        "type": "scale",
-                        "scale": [
-                            2**level * s if ax["type"].lower() == "space" else s for ax, s in zip(axes, base_spacing)
-                        ],
-                    }
-                ],
-            }
-            multiscales.append(data_item)
+        logger.debug(multiscales)
 
-        build_pyramid(input_zarr, multiscale_components, shrink=shrink_dim, chunks=chunk_dim, overwrite=overwrite)
+        build_pyramid(
+            input_zarr,
+            components=[ms["path"] for ms in multiscales],
+            shrink=shrink_dim,
+            chunks=chunk_dim,
+            overwrite=overwrite,
+        )
 
         # Note: this does not save to the zarr attributes.
         image_meta["datasets"] = multiscales
