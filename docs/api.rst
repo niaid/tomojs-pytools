@@ -4,6 +4,9 @@ API
 .. automodule:: pytools.meta
     :members:
 
+.. automodule:: pytools.utils.zarr
+    :members:
+
 .. automodule:: pytools.convert
     :members:
 
@@ -11,4 +14,10 @@ API
     :members:
 
 .. automodule:: pytools.ng.build_histogram
+    :members:
+
+.. automodule:: pytools.zarr_rechunk
+    :members:
+
+.. automodule:: pytools.zarr_build_multiscales
     :members:
