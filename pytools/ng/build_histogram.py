@@ -81,7 +81,7 @@ class HistogramBase(ABC):
     def compute_min_max(self) -> Tuple[Any, Any]:
         pass
 
-    def compute_histogram_bin_edges(self, number_of_bins=1024):
+    def compute_histogram_bin_edges(self, number_of_bins=1024) -> np.ndarray:
         if np.issubdtype(self.dtype, np.integer) and 2 ** np.iinfo(self.dtype).bits < number_of_bins:
             return np.arange(np.iinfo(self.dtype).min - 0.5, np.iinfo(self.dtype).max + 1.5)
 
@@ -213,13 +213,15 @@ class zarrHisogramHelper(HistogramBase):
 
                 if np.dtype(self.dtype) in (np.uint8, np.uint16):
                     return (
-                        dask.array.bincount(self._arr.ravel(), minlength=len(histogram_bin_edges) - 1),
+                        dask.array.bincount(self._arr.ravel(), minlength=len(histogram_bin_edges) - 1).compute(),
                         histogram_bin_edges,
                     )
+
             else:
                 histogram_bin_edges = self.compute_histogram_bin_edges()
 
-        return dask.array.histogram(self._arr.ravel(), bins=histogram_bin_edges, density=density)
+        h, bins = dask.array.histogram(self._arr.ravel(), bins=histogram_bin_edges, density=density)
+        return h.compute(), bins
 
 
 def stream_build_histogram(
