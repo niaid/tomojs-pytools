@@ -359,9 +359,16 @@ def main(input_image: Path, mad_scale, sigma_scale, percentile, clamp, output_js
 
     if input_image.is_dir() and (input_image / ".zarray").exists():
         histo = zarrHisogramHelper(input_image)
+    elif input_image.suffix in (".nii", ".mha", ".mrc", ".rec"):
+        from SimpleITK.utilities.dask import from_sitk
 
+        logger.debug("Loading chunk with SimpleITK and dask...")
+        sitk_da = from_sitk(input_image, chunks=(1, -1, -1))
+        histo = daskHisogramHelper(sitk_da)
     else:
-        histo = sitkHistogramHelper(input_image, extract_axis=2, extract_step=1)
+        logger.debug("Loading whole image with SimpleITK...")
+        img = sitk.ReadImage(input_image)
+        histo = daskHisogramHelper(dask.array.from_array(sitk.GetArrayViewFromImage(img), chunks=(1, -1, -1)))
 
     logger.info(f'Building histogram for "{input_image}"...')
     h, bins = histo.compute_histogram(histogram_bin_edges=None, density=False)
