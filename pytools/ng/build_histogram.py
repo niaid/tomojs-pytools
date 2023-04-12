@@ -81,7 +81,7 @@ class HistogramBase(ABC):
     def compute_min_max(self) -> Tuple[Any, Any]:
         pass
 
-    def compute_histogram_bin_edges(self, number_of_bins=1024) -> np.ndarray:
+    def compute_histogram_bin_edges(self, number_of_bins=1024) -> np.array:
         if np.issubdtype(self.dtype, np.integer) and 2 ** np.iinfo(self.dtype).bits < number_of_bins:
             return np.arange(np.iinfo(self.dtype).min - 0.5, np.iinfo(self.dtype).max + 1.5)
 
@@ -100,6 +100,10 @@ class HistogramBase(ABC):
         logger.debug(f"Computed minimum: {imin} maximum: {imax} step: {step}")
         histogram_bin_edges = np.arange(imin, imax + step, step)
         return histogram_bin_edges
+
+    @abstractmethod
+    def compute_histogram(self, histogram_bin_edges=None, density=False) -> Tuple[np.array, np.array]:
+        pass
 
 
 class sitkHistogramHelper(HistogramBase):
@@ -146,7 +150,7 @@ class sitkHistogramHelper(HistogramBase):
     def dtype(self):
         return sitk.extra._get_numpy_dtype(self.reader)
 
-    def compute_histogram(self, histogram_bin_edges=None, density=False):
+    def compute_histogram(self, histogram_bin_edges=None, density=False) -> Tuple[np.array, np.array]:
         use_bincount = False
         if histogram_bin_edges is None:
             if np.issubdtype(self.dtype, np.integer) and np.iinfo(self.dtype).bits <= 16:
@@ -188,11 +192,9 @@ class sitkHistogramHelper(HistogramBase):
         return h, histogram_bin_edges
 
 
-class zarrHisogramHelper(HistogramBase):
-    def __init__(self, filename):
-        za = zarr.open_array(filename, mode="r")
-        self._arr = dask.array.from_zarr(za)
-        logging.debug(za.info)
+class daskHisogramHelper(HistogramBase):
+    def __init__(self, arr: dask.array):
+        self._arr = arr
         if not self._arr.dtype.isnative:
             logging.info("ZARR array needs converting to native byteorder.")
             self._arr = self._arr.astype(self._arr.dtype.newbyteorder("="))
@@ -204,7 +206,7 @@ class zarrHisogramHelper(HistogramBase):
     def dtype(self):
         return self._arr.dtype
 
-    def compute_histogram(self, histogram_bin_edges=None, density=False):
+    def compute_histogram(self, histogram_bin_edges=None, density=False) -> Tuple[np.array, np.array]:
         if histogram_bin_edges is None:
             if np.issubdtype(self.dtype, np.integer) and np.iinfo(self.dtype).bits <= 16:
                 histogram_bin_edges = self.compute_histogram_bin_edges(
@@ -222,6 +224,13 @@ class zarrHisogramHelper(HistogramBase):
 
         h, bins = dask.array.histogram(self._arr.ravel(), bins=histogram_bin_edges, density=density)
         return h.compute(), bins
+
+
+class zarrHisogramHelper(daskHisogramHelper):
+    def __init__(self, filename):
+        za = zarr.open_array(filename, mode="r")
+        super().__init__(dask.array.from_zarr(za))
+        logging.debug(za.info)
 
 
 def stream_build_histogram(
@@ -350,9 +359,16 @@ def main(input_image: Path, mad_scale, sigma_scale, percentile, clamp, output_js
 
     if input_image.is_dir() and (input_image / ".zarray").exists():
         histo = zarrHisogramHelper(input_image)
+    elif input_image.suffix in (".nii", ".mha", ".mrc", ".rec"):
+        from SimpleITK.utilities.dask import from_sitk
 
+        logger.debug("Loading chunk with SimpleITK and dask...")
+        sitk_da = from_sitk(input_image, chunks=(1, -1, -1))
+        histo = daskHisogramHelper(sitk_da)
     else:
-        histo = sitkHistogramHelper(input_image, extract_axis=2, extract_step=1)
+        logger.debug("Loading whole image with SimpleITK...")
+        img = sitk.ReadImage(input_image)
+        histo = daskHisogramHelper(dask.array.from_array(sitk.GetArrayViewFromImage(img), chunks=(1, -1, -1)))
 
     logger.info(f'Building histogram for "{input_image}"...')
     h, bins = histo.compute_histogram(histogram_bin_edges=None, density=False)

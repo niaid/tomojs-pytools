@@ -1,5 +1,6 @@
-SimpleITK ~=2.2.0
+SimpleITK ~= 2.2.0
 click >=7.1
 numpy >=1.21
 zarr
 dask
+SimpleITKUtilities@git+https://github.com/SimpleITK/SimpleITKUtilities@main
