@@ -21,7 +21,6 @@ import json
 
 
 def test_weighted_quantile():
-
     data = [2]
 
     h, b = np.histogram(data, bins=np.arange(-0.5, 10.5))
@@ -82,7 +81,6 @@ def test_histogram_robust_stats():
     indirect=["image_mrc"],
 )
 def test_stream_build_histogram(image_mrc):
-
     bin_edges1 = np.arange(np.iinfo(np.int16).min - 0.5, np.iinfo(np.uint16).max + 1.5)
 
     img = sitk.ReadImage(image_mrc)
@@ -138,7 +136,7 @@ def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_fl
     args = [image_mrc, "--mad", "1.5", "--output-json", output_filename]
     if clamp:
         args.append("--clamp")
-    print(args)
+
     with runner.isolated_filesystem():
         result = runner.invoke(pytools.ng.build_histogram.main, args=args)
         assert not result.exception
@@ -153,6 +151,27 @@ def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_fl
     assert float(res["neuroglancerPrecomputedMax"]) == expected_max
     assert float(res["neuroglancerPrecomputedFloor"]) == expected_floor
     assert float(res["neuroglancerPrecomputedLimit"]) == expected_limit
+    assert type(res["neuroglancerPrecomputedMin"]) == str
+    assert type(res["neuroglancerPrecomputedMax"]) == str
+    assert type(res["neuroglancerPrecomputedFloor"]) == str
+    assert type(res["neuroglancerPrecomputedLimit"]) == str
+
+
+def test_build_histogram_zarr_main(image_ome_ngff):
+    runner = CliRunner()
+    output_filename = "out.json"
+    args = [str(image_ome_ngff / "0"), "--mad", "1.5", "--output-json", output_filename]
+
+    with runner.isolated_filesystem():
+        result = runner.invoke(pytools.ng.build_histogram.main, args=args)
+        assert not result.exception
+        with open(output_filename) as fp:
+            res = json.load(fp)
+
+    assert "neuroglancerPrecomputedMin" in res
+    assert "neuroglancerPrecomputedMax" in res
+    assert "neuroglancerPrecomputedFloor" in res
+    assert "neuroglancerPrecomputedLimit" in res
     assert type(res["neuroglancerPrecomputedMin"]) == str
     assert type(res["neuroglancerPrecomputedMax"]) == str
     assert type(res["neuroglancerPrecomputedFloor"]) == str
