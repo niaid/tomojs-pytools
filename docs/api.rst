@@ -1,6 +1,10 @@
 API
 ===
 
+
+.. automodule:: pytools
+    :members:
+
 .. automodule:: pytools.meta
     :members:
 

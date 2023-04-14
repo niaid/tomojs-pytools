@@ -10,14 +10,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import pytools.ng.build_histogram as pytools_hist
+import pytools.utils.histogram as pytools_hist
 import pytest
 from pytest import approx
-import pytools.ng.build_histogram
 import SimpleITK as sitk
 import numpy as np
-from click.testing import CliRunner
-import json
+from pathlib import Path
+
+import pytools.workflow_functions
 
 
 def test_weighted_quantile():
@@ -76,72 +76,18 @@ def test_histogram_robust_stats():
 
 
 @pytest.mark.parametrize(
-    "image_mrc",
-    [sitk.sitkUInt8, sitk.sitkInt16, sitk.sitkUInt16, sitk.sitkFloat32],
-    indirect=["image_mrc"],
-)
-def test_stream_build_histogram(image_mrc):
-    bin_edges1 = np.arange(np.iinfo(np.int16).min - 0.5, np.iinfo(np.uint16).max + 1.5)
-
-    img = sitk.ReadImage(image_mrc)
-
-    test_args = [
-        {},
-        {"extract_axis": 0},
-        {"histogram_bin_edges": bin_edges1},
-        {"histogram_bin_edges": bin_edges1, "extract_axis": 0},
-        {"histogram_bin_edges": bin_edges1, "extract_axis": 1},
-        {"histogram_bin_edges": bin_edges1, "extract_axis": 2},
-        {"extract_axis": 0, "extract_step": 2},
-        {"extract_axis": 1, "extract_step": 3},
-        {"extract_axis": 2, "extract_step": 5},
-        {"histogram_bin_edges": bin_edges1, "extract_axis": 0, "extract_step": 99},
-        {"histogram_bin_edges": bin_edges1, "extract_axis": 1, "extract_step": 45},
-        {"histogram_bin_edges": bin_edges1, "extract_axis": 2, "extract_step": 32},
-    ]
-    for args in test_args:
-        h, b = pytools_hist.stream_build_histogram(image_mrc, **args)
-        assert np.sum(h) == img.GetNumberOfPixels(), f"with args '{args}'"
-        assert np.sum(h * 0.5 * (b[1:] + b[:-1])) == np.sum(sitk.GetArrayViewFromImage(img)), f"with args '{args}'"
-
-
-args = ["--help", "--version"]
-
-
-@pytest.mark.parametrize("cli_args", args)
-def test_histogram_mai_help(cli_args):
-    runner = CliRunner()
-    result = runner.invoke(pytools.ng.build_histogram.main, cli_args.split())
-    assert not result.exception
-
-
-@pytest.mark.parametrize(
-    "image_mrc,expected_min, expected_max, expected_floor, expected_limit, clamp",
+    "image_mrc,expected_min, expected_max, expected_floor, expected_limit",
     [
-        (sitk.sitkUInt8, 0, 0, 0, 0, False),
-        (sitk.sitkInt16, 0, 0, 0, 0, True),
-        (sitk.sitkUInt16, 0, 0, 0, 0, False),
-        ("uint16_uniform", 8191, 57344, 0, 65535, True),
-        ("uint16_uniform", 8191, 57344, 0, 65535, False),
-        ("float32_uniform", 0, 1, 0, 1, False),
-        ("uint8_bimodal", 0, 255, 0, 255, True),
-        ("uint8_bimodal", -64, 319, 0, 255, False),
-        (sitk.sitkFloat32, 0, 1, 0, 1, True),
+        (sitk.sitkUInt8, 0, 0, 0, 0),
+        (sitk.sitkUInt16, 0, 0, 0, 0),
+        ("uint16_uniform", 8191, 57344, 0, 65535),
+        ("float32_uniform", 0, 1, 0, 1),
+        ("uint8_bimodal", -64, 319, 0, 255),
     ],
     indirect=["image_mrc"],
 )
-def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_floor, expected_limit, clamp):
-    runner = CliRunner()
-    output_filename = "out.json"
-    args = [image_mrc, "--mad", "1.5", "--output-json", output_filename]
-    if clamp:
-        args.append("--clamp")
-
-    with runner.isolated_filesystem():
-        result = runner.invoke(pytools.ng.build_histogram.main, args=args)
-        assert not result.exception
-        with open(output_filename) as fp:
-            res = json.load(fp)
+def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_floor, expected_limit):
+    res = pytools.visual_min_max(Path(image_mrc), mad_scale=1.5)
 
     assert "neuroglancerPrecomputedMin" in res
     assert "neuroglancerPrecomputedMax" in res
@@ -158,15 +104,7 @@ def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_fl
 
 
 def test_build_histogram_zarr_main(image_ome_ngff):
-    runner = CliRunner()
-    output_filename = "out.json"
-    args = [str(image_ome_ngff / "0"), "--mad", "1.5", "--output-json", output_filename]
-
-    with runner.isolated_filesystem():
-        result = runner.invoke(pytools.ng.build_histogram.main, args=args)
-        assert not result.exception
-        with open(output_filename) as fp:
-            res = json.load(fp)
+    res = pytools.visual_min_max(Path(image_ome_ngff) / "0", mad_scale=1.5)
 
     assert "neuroglancerPrecomputedMin" in res
     assert "neuroglancerPrecomputedMax" in res

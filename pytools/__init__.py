@@ -12,10 +12,13 @@
 #  limitations under the License.
 #
 
+from .workflow_functions import visual_min_max
+
+_installed_package = "tomojs_pytools"
 
 try:
     from ._version import version as __version__
 except ImportError:
     pass
 
-__all__ = ["__version__"]
+__all__ = ["__version__", "visual_min_max"]
