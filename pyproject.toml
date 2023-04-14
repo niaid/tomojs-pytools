@@ -41,7 +41,6 @@ write_to = "pytools/_version.py"
 local_scheme = "dirty-tag"
 
 [project.scripts]
-mrc2nifti = "pytools.ng.mrc2nifti:main"
 zarr_rechunk = "pytools.zarr_rechunk:main"
 zarr_build_multiscales = "pytools.zarr_build_multiscales:main"
 
