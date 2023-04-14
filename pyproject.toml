@@ -1,11 +1,48 @@
 [build-system]
-requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4"]
+requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
 
+[project]
+name = "pytools"
+authors = [
+  { name="Bradley Lowekamp", email="bioinformatics@niaid.nih.gov" },
+]
+description = "Tools for generating and working with Neuroglancer precompute format."
+readme = "README.rst"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies", "version"]
+
+[tool.setuptools]
+packages = ["pytools"]
+
+[project.urls]
+homepage = "https://www.niaid.nih.gov/research/bioinformatics-computational-biosciences-branch"
+source = "https://github.com/niaid/tomojs-pytools"
+documentation = "https://niaid.github.io/tomojs-pytools/"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
 junit_family="xunit2"
 
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
 [tool.black]
 line-length =  120
 exclude = '(docs/conf\.py)|venv*'
+
+[tool.setuptools_scm]
+write_to = "pytools/_version.py"
+local_scheme = "dirty-tag"
+
+[project.scripts]
+mrc2nifti = "pytools.ng.mrc2nifti:main"
+mrc_visual_min_max = "pytools.ng.build_histogram:main"
+zarr_rechunk = "pytools.zarr_rechunk:main"
+zarr_build_multiscales = "pytools.zarr_build_multiscales:main"
+

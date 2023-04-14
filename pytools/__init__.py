@@ -12,27 +12,10 @@
 #  limitations under the License.
 #
 
-_installed_package = "tomojs_pytools"
 
 try:
-    from importlib.metadata import version, PackageNotFoundError
-
-    __version__ = version(_installed_package)
+    from ._version import version as __version__
 except ImportError:
-    from pkg_resources import get_distribution, DistributionNotFound
-
-    try:
-        __version__ = get_distribution(_installed_package).version
-    except DistributionNotFound:
-        import logging
-
-        _logger = logging.getLogger(__name__)
-        _logger.warning(f'Package "{_installed_package }" is not installed. Unable to determine version!')
-        __version__ = "dev"
-        # package is not installed
-        pass
-except PackageNotFoundError:
-    # package is not installed
     pass
 
 __all__ = ["__version__"]
