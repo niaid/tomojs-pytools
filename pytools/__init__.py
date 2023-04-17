@@ -14,6 +14,11 @@
 
 from .workflow_functions import visual_min_max
 
+import logging
+
+logger = logging.getLogger(__name__)
+del logging
+
 _installed_package = "tomojs_pytools"
 
 try:
@@ -21,4 +26,5 @@ try:
 except ImportError:
     pass
 
-__all__ = ["__version__", "visual_min_max"]
+
+__all__ = ["__version__", "visual_min_max", "logger"]
