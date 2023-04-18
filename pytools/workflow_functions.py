@@ -13,7 +13,7 @@
 #
 
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Union
 import logging
 import math
 from SimpleITK.utilities.dask import from_sitk
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 def visual_min_max(
-    input_image: Path,
+    input_image: Union[Path, str],
     mad_scale: float,
 ) -> Dict[str, int]:
     """Reads a path to an input_image file or a directory of zarr array to estimate minimum and maximum ranges to be
@@ -49,6 +49,8 @@ def visual_min_max(
        - "neuroglancerPrecomputedFloor"
        - "neuroglancerPrecomputedLimit"
     """
+
+    input_image = Path(input_image)
 
     if input_image.is_dir() and (input_image / ".zarray").exists():
         histo = ZARRHistogramHelper(input_image)
