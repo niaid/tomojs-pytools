@@ -32,6 +32,9 @@ def visual_min_max(
     """Reads a path to an input_image file or a directory of zarr array to estimate minimum and maximum ranges to be
     used for visualization of the data set in Neuroglancer.
 
+    Dask is used for parallel reading and statistics computation. The global scheduler is used for all operations which
+    can be changed with standard Dask configurations.
+
     :param input_image: If an image file then SimpleITK is used to perform the IO. SimpleITK support formats such as
         mrc, mii, png, tiff etc.A zarr array is detected by a directory containing a ".zarray" file. For an OME-NGFF
         structured  ZARR a subdirectory such as "0" commonly contains the full resolution ZARR array. Such a case would
@@ -50,13 +53,15 @@ def visual_min_max(
     if input_image.is_dir() and (input_image / ".zarray").exists():
         histo = ZARRHistogramHelper(input_image)
     elif input_image.suffix in (".nii", ".mha", ".mrc", ".rec"):
-        logger.debug("Loading chunk with SimpleITK and dask...")
+        logger.info("Loading chunk with SimpleITK and dask...")
         sitk_da = from_sitk(input_image, chunks=(1, -1, -1))
         histo = DaskHistogramHelper(sitk_da)
     else:
-        logger.debug("Loading whole image with SimpleITK...")
+        logger.info("Loading whole image with SimpleITK...")
         img = sitk.ReadImage(input_image)
         histo = DaskHistogramHelper(dask.array.from_array(sitk.GetArrayViewFromImage(img), chunks=(1, -1, -1)))
+
+    logger.debug(f"dask.config.global_config: {dask.config.global_config}")
 
     logger.info(f'Building histogram for "{input_image}"...')
     h, bins = histo.compute_histogram(histogram_bin_edges=None, density=False)
