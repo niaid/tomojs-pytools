@@ -36,7 +36,6 @@ def sub_volume_execute(inplace=True):
     def wrapper(func):
         @wraps(func)
         def slice_by_slice(image: sitk.Image, *args, **kwargs):
-
             dim = image.GetDimension()
             iter_dim = 2
 
