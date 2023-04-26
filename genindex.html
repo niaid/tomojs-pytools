@@ -49,6 +49,7 @@
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#S"><strong>S</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  | <a href="#Z"><strong>Z</strong></a>
  
@@ -57,63 +58,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    --clamp
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-clamp">mrc_visual_min_max command line option</a>
-</li>
-      </ul></li>
-      <li>
-    --log-level
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-log-level">mrc_visual_min_max command line option</a>
-</li>
-      </ul></li>
-      <li>
-    --mad
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-mad">mrc_visual_min_max command line option</a>
-</li>
-      </ul></li>
-      <li>
-    --no-clamp
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-clamp">mrc_visual_min_max command line option</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    --output-json
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-output-json">mrc_visual_min_max command line option</a>
-</li>
-      </ul></li>
-      <li>
-    --percentile
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-percentile">mrc_visual_min_max command line option</a>
-</li>
-      </ul></li>
-      <li>
-    --sigma
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-sigma">mrc_visual_min_max command line option</a>
-</li>
-      </ul></li>
-      <li>
     --version
 
       <ul>
         <li><a href="commandline.html#cmdoption-mrc2nifti-version">mrc2nifti command line option</a>
-</li>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-version">mrc_visual_min_max command line option</a>
 </li>
       </ul></li>
   </ul></td>
@@ -134,7 +82,7 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#pytools.ng.build_histogram.daskHisogramHelper">daskHisogramHelper (class in pytools.ng.build_histogram)</a>
+      <li><a href="api.html#pytools.utils.histogram.DaskHistogramHelper">DaskHistogramHelper (class in pytools.utils.histogram)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -150,13 +98,13 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#pytools.ng.build_histogram.histogram_robust_stats">histogram_robust_stats() (in module pytools.ng.build_histogram)</a>
+      <li><a href="api.html#pytools.utils.histogram.histogram_robust_stats">histogram_robust_stats() (in module pytools.utils.histogram)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#pytools.ng.build_histogram.histogram_stats">histogram_stats() (in module pytools.ng.build_histogram)</a>
+      <li><a href="api.html#pytools.utils.histogram.histogram_stats">histogram_stats() (in module pytools.utils.histogram)</a>
 </li>
-      <li><a href="api.html#pytools.ng.build_histogram.HistogramBase">HistogramBase (class in pytools.ng.build_histogram)</a>
+      <li><a href="api.html#pytools.utils.histogram.HistogramBase">HistogramBase (class in pytools.utils.histogram)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -169,8 +117,6 @@
 
       <ul>
         <li><a href="commandline.html#cmdoption-mrc2nifti-arg-INPUT_IMAGE">mrc2nifti command line option</a>
-</li>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-arg-INPUT_IMAGE">mrc_visual_min_max command line option</a>
 </li>
       </ul></li>
   </ul></td>
@@ -187,13 +133,15 @@
     module
 
       <ul>
+        <li><a href="api.html#module-pytools">pytools</a>
+</li>
         <li><a href="api.html#module-pytools.convert">pytools.convert</a>
 </li>
         <li><a href="api.html#module-pytools.meta">pytools.meta</a>
 </li>
-        <li><a href="api.html#module-pytools.ng.build_histogram">pytools.ng.build_histogram</a>
-</li>
         <li><a href="api.html#module-pytools.ng.mrc2nifti">pytools.ng.mrc2nifti</a>
+</li>
+        <li><a href="api.html#module-pytools.utils.histogram">pytools.utils.histogram</a>
 </li>
         <li><a href="api.html#module-pytools.utils.zarr">pytools.utils.zarr</a>
 </li>
@@ -202,6 +150,8 @@
         <li><a href="api.html#module-pytools.zarr_rechunk">pytools.zarr_rechunk</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     mrc2nifti command line option
 
@@ -211,31 +161,6 @@
         <li><a href="commandline.html#cmdoption-mrc2nifti-arg-INPUT_IMAGE">INPUT_IMAGE</a>
 </li>
         <li><a href="commandline.html#cmdoption-mrc2nifti-arg-OUTPUT_IMAGE">OUTPUT_IMAGE</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    mrc_visual_min_max command line option
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-clamp">--clamp</a>
-</li>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-log-level">--log-level</a>
-</li>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-mad">--mad</a>
-</li>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-clamp">--no-clamp</a>
-</li>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-output-json">--output-json</a>
-</li>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-percentile">--percentile</a>
-</li>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-sigma">--sigma</a>
-</li>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-version">--version</a>
-</li>
-        <li><a href="commandline.html#cmdoption-mrc_visual_min_max-arg-INPUT_IMAGE">INPUT_IMAGE</a>
 </li>
       </ul></li>
   </ul></td>
@@ -258,6 +183,13 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
+    pytools
+
+      <ul>
+        <li><a href="api.html#module-pytools">module</a>
+</li>
+      </ul></li>
+      <li>
     pytools.convert
 
       <ul>
@@ -272,13 +204,6 @@
 </li>
       </ul></li>
       <li>
-    pytools.ng.build_histogram
-
-      <ul>
-        <li><a href="api.html#module-pytools.ng.build_histogram">module</a>
-</li>
-      </ul></li>
-      <li>
     pytools.ng.mrc2nifti
 
       <ul>
@@ -287,6 +212,13 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    pytools.utils.histogram
+
+      <ul>
+        <li><a href="api.html#module-pytools.utils.histogram">module</a>
+</li>
+      </ul></li>
       <li>
     pytools.utils.zarr
 
@@ -314,13 +246,15 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#pytools.ng.build_histogram.sitkHistogramHelper">sitkHistogramHelper (class in pytools.ng.build_histogram)</a>
+      <li><a href="api.html#pytools.ng.mrc2nifti.sub_volume_execute">sub_volume_execute() (in module pytools.ng.mrc2nifti)</a>
 </li>
   </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#pytools.ng.build_histogram.stream_build_histogram">stream_build_histogram() (in module pytools.ng.build_histogram)</a>
-</li>
-      <li><a href="api.html#pytools.ng.mrc2nifti.sub_volume_execute">sub_volume_execute() (in module pytools.ng.mrc2nifti)</a>
+      <li><a href="api.html#pytools.visual_min_max">visual_min_max() (in module pytools)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -328,7 +262,7 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#pytools.ng.build_histogram.weighted_quantile">weighted_quantile() (in module pytools.ng.build_histogram)</a>
+      <li><a href="api.html#pytools.utils.histogram.weighted_quantile">weighted_quantile() (in module pytools.utils.histogram)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -336,7 +270,7 @@
 <h2 id="Z">Z</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#pytools.ng.build_histogram.zarrHisogramHelper">zarrHisogramHelper (class in pytools.ng.build_histogram)</a>
+      <li><a href="api.html#pytools.utils.histogram.ZARRHistogramHelper">ZARRHistogramHelper (class in pytools.utils.histogram)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -378,7 +312,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Bradley Lowekamp.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
     </div>
   </body>
 </html>
