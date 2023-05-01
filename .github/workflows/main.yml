@@ -156,12 +156,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create ${{ github.ref_name }} --repo  ${{ github.repository }} --verify-tag --generate-notes --title "Release ${{ github.ref_name }}"
-          gh release upload ${{ github.ref_name }} --repo  ${{ github.repository }} ${{ steps.download.outputs.download-path }}/tomojs_pytools*
+          gh release upload ${{ github.ref_name }} --repo  ${{ github.repository }} ${{ steps.download.outputs.download-path }}/pytools*
 
       - name: bcbb-pypi upload
         run: |
-          python -m twine check ${{steps.download.outputs.download-path}}/*
-          python -m twine upload ${{steps.download.outputs.download-path}}/*
+          python -m twine check ${{steps.download.outputs.download-path}}/pytools*
+          python -m twine upload ${{steps.download.outputs.download-path}}/pytools*
         env:
           TWINE_REPOSITORY_URL: https://artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi
           TWINE_PASSWORD: ${{secrets.BCBB_PYPI_PASSWORD}}
