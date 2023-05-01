@@ -17,9 +17,6 @@ API
 .. automodule:: pytools.convert
     :members:
 
-.. automodule:: pytools.ng.mrc2nifti
-    :members:
-
 .. automodule:: pytools.zarr_rechunk
     :members:
 
