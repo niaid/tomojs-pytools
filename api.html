@@ -189,24 +189,6 @@ considered an implementation detail that may change.</p>
 </div>
 </dd></dl>
 
-<span class="target" id="module-pytools.ng.mrc2nifti"></span><dl class="py function">
-<dt class="sig sig-object py" id="pytools.ng.mrc2nifti.sub_volume_execute">
-<span class="sig-prename descclassname"><span class="pre">pytools.ng.mrc2nifti.</span></span><span class="sig-name descname"><span class="pre">sub_volume_execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.ng.mrc2nifti.sub_volume_execute" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function decorator which executes func on each sub-volume and <em>in-place</em> pastes the output input the
-input image.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>inplace</strong> – </p></li>
-<li><p><strong>func</strong> – A function which take a SimpleITK Image as it’s first argument and returns the results.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A wrapped function.</p>
-</dd>
-</dl>
-</dd></dl>
-
 <span class="target" id="module-pytools.zarr_rechunk"></span><span class="target" id="module-pytools.zarr_build_multiscales"></span></section>
 
 
@@ -231,7 +213,6 @@ input image.</p>
 <li><a class="reference internal" href="#pytools.utils.histogram.histogram_stats"><code class="docutils literal notranslate"><span class="pre">histogram_stats()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.utils.histogram.weighted_quantile"><code class="docutils literal notranslate"><span class="pre">weighted_quantile()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.convert.file_to_uint8"><code class="docutils literal notranslate"><span class="pre">file_to_uint8()</span></code></a></li>
-<li><a class="reference internal" href="#pytools.ng.mrc2nifti.sub_volume_execute"><code class="docutils literal notranslate"><span class="pre">sub_volume_execute()</span></code></a></li>
 </ul>
 </li>
 </ul>
