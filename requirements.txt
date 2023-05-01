@@ -3,4 +3,4 @@ click >=7.1
 numpy >=1.21
 zarr
 dask
-SimpleITKUtilities@git+https://github.com/SimpleITK/SimpleITKUtilities@main
+SimpleITKUtilities ~= 0.1.0
