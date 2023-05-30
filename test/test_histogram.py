@@ -76,18 +76,20 @@ def test_histogram_robust_stats():
 
 
 @pytest.mark.parametrize(
-    "image_mrc,expected_min, expected_max, expected_floor, expected_limit",
+    "image_mrc,expected_min, expected_max, expected_floor, expected_limit, clamp",
     [
-        (sitk.sitkUInt8, 0, 0, 0, 0),
-        (sitk.sitkUInt16, 0, 0, 0, 0),
-        ("uint16_uniform", 8191, 57344, 0, 65535),
-        ("float32_uniform", 0, 1, 0, 1),
-        ("uint8_bimodal", -64, 319, 0, 255),
+        (sitk.sitkUInt8, 0, 0, 0, 0, False),
+        (sitk.sitkUInt16, 0, 0, 0, 0, False),
+        ("uint16_uniform", 8191, 57344, 0, 65535, False),
+        ("uint16_uniform", 8191, 57344, 0, 65535, True),
+        ("float32_uniform", 0, 1, 0, 1, False),
+        ("uint8_bimodal", -64, 319, 0, 255, False),
+        ("uint8_bimodal", 0, 255, 0, 255, True),
     ],
     indirect=["image_mrc"],
 )
-def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_floor, expected_limit):
-    res = pytools.visual_min_max(Path(image_mrc), mad_scale=1.5)
+def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_floor, expected_limit, clamp):
+    res = pytools.visual_min_max(Path(image_mrc), mad_scale=1.5, clamp=clamp)
 
     assert "neuroglancerPrecomputedMin" in res
     assert "neuroglancerPrecomputedMax" in res
