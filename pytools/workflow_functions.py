@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 def visual_min_max(
     input_image: Union[Path, str],
     mad_scale: float,
+    clamp: bool = True,
 ) -> Dict[str, int]:
     """Reads a path to an input_image file or a directory of zarr array to estimate minimum and maximum ranges to be
     used for visualization of the data set in Neuroglancer.
@@ -42,6 +43,9 @@ def visual_min_max(
 
     :param mad_scale: The scale factor for the robust median absolute deviation (MAD) about the median to produce the
         "minimum and maximum range."
+
+    :param clamp: If True then the minimum and maximum range will be clamped to the computed floor and limit values.
+
 
     :returns: The resulting dictionary will contain the following data elements with integer values as strings:
        - "neuroglancerPrecomputedMin"
@@ -76,6 +80,10 @@ def visual_min_max(
     min_max = (stats["median"] - stats["mad"] * mad_scale, stats["median"] + stats["mad"] * mad_scale)
 
     floor_limit = weighted_quantile(mids, quantiles=[0.0, 1.0], sample_weight=h, values_sorted=True)
+
+    if clamp:
+        logger.debug(f"clamping min_max: {min_max} to floor_limit: {floor_limit}")
+        min_max = (max(min_max[0], floor_limit[0]), min(min_max[1], floor_limit[1]))
 
     output = {
         "neuroglancerPrecomputedMin": str(math.floor(min_max[0])),
