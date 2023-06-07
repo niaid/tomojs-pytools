@@ -112,3 +112,39 @@ def image_ome_ngff(request, tmp_path_factory):
     write_image(image=data, group=root, axes="zyx", storage_options=dict(chunks=chunks), scaler=scaler)
 
     return path
+
+
+@pytest.fixture(
+    scope="session",
+    params=[
+        {
+            "x": 16,
+            "y": 16,
+        },
+        {"x": 64, "y": 64, "z": 1},
+        {
+            "c": 1,
+            "x": 4,
+            "y": 64,
+        },
+        {"c": 1, "y": 64, "x": 4},
+        {"t": 1, "c": 3, "x": 64, "z": 1, "y": 64},
+    ],
+)
+def image_ome_ngff_2d(request, tmp_path_factory):
+    from ome_zarr.io import parse_url
+    from ome_zarr.writer import write_image
+    import zarr
+
+    path = tmp_path_factory.mktemp("zarr").joinpath("test_ngff_image.zarr")
+
+    mean_val = 10
+    rng = np.random.default_rng(0)
+    data = rng.poisson(mean_val, size=[s for s in request.param.values()]).astype(np.uint8)
+
+    # write the image data
+    store = parse_url(path, mode="w").store
+    root = zarr.group(store=store)
+    write_image(image=data, group=root, axes=[a for a in request.param.keys()], scaler=None)
+
+    return path

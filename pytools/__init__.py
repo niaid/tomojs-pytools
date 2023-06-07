@@ -13,6 +13,7 @@
 #
 
 from .workflow_functions import visual_min_max
+from .zarr_extract_2d import zarr_extract_2d
 
 import logging
 
@@ -27,4 +28,4 @@ except ImportError:
     pass
 
 
-__all__ = ["__version__", "visual_min_max", "logger"]
+__all__ = ["__version__", "visual_min_max", "zarr_extract_2d", "logger"]
