@@ -18,6 +18,8 @@ import logging
 import SimpleITK as sitk
 import zarr
 import dask.array as da
+import click
+from pytools import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -210,3 +212,34 @@ def zarr_extract_2d(
         sitk.WriteImage(img, str(output_filename))
 
     return img
+
+
+@click.command()
+@click.argument("input_zarr", type=click.Path(exists=True, dir_okay=True, readable=True, path_type=Path))
+@click.option(
+    "--log-level", default="INFO", type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR"], case_sensitive=False)
+)
+@click.option(
+    "--size",
+    default=300,
+    show_default=True,
+    type=click.IntRange(min=1),
+    help="The maximum size of an axis for the output image",
+)
+@click.option("--auto-uint8", is_flag=True, help="Automatically scale the input image's to fill 0-255 output range ")
+@click.argument("output_filename", type=click.Path(exists=False, dir_okay=False, path_type=Path))
+@click.version_option(__version__)
+def main(input_zarr, log_level, size, output_filename, auto_uint8):
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.getLevelName(log_level))
+
+    zarr_extract_2d(
+        input_zarr=input_zarr,
+        target_size_x=size,
+        target_size_y=size,
+        output_filename=output_filename,
+        auto_uint8=auto_uint8,
+    )
+
+
+if __name__ == "__main__":
+    main()
