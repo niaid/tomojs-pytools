@@ -101,6 +101,7 @@ def zarr_extract_2d(
     *,
     size_factor: float = 1.5,
     output_filename: Union[Path, str, None] = None,
+    auto_uint8: bool = False,
 ) -> Union[sitk.Image, None]:
     """Extracts a 2D image from an OME-NGFF pyramid structured with ZARR array that is 2D-like.
 
@@ -124,6 +125,8 @@ def zarr_extract_2d(
     :param size_factor: The size of the subvolume to extract will be increased by this factor so that the
         extracted subvolume can have antialiasing applied to it.
     :param output_filename: If not None then the extracted subvolume will be written to this file.
+    :param auto_uint8: If True the output image will be automatically linearly shifted and scaled to fit into uint8
+     component pixel types.
     :return: The extracted subvolume as a SimpleITK image.
 
     """
@@ -187,6 +190,19 @@ def zarr_extract_2d(
 
     logger.debug(f"resizing image of: {img.GetSize() } -> {(target_size_x, target_size_y)}")
     img = sitk.utilities.resize(img, (target_size_x, target_size_y), interpolator=sitk.sitkLinear, fill=False)
+
+    if auto_uint8:
+        if "c" in target_axes_name:
+            img.ToScalarImage(True)
+
+        min_max = sitk.MinimumMaximum(img)
+
+        logger.debug(f"Adjusting output pixel intensity range from {min_max} -> {(0,255)}.")
+
+        img = sitk.ShiftScale(img, -min_max[0], 255.0 / (min_max[1] - min_max[0]), sitk.sitkUInt8)
+
+        if "c" in target_axes_name:
+            img.ToVectorImage(True)
 
     if output_filename is not None:
         output_filename = Path(output_filename)
