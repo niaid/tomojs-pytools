@@ -103,7 +103,7 @@ class DaskHistogramHelper(HistogramBase):
     def __init__(self, arr: dask.array):
         self._arr = arr
         if not self._arr.dtype.isnative:
-            logging.info("ZARR array needs converting to native byteorder.")
+            logger.info("ZARR array needs converting to native byteorder.")
             self._arr = self._arr.astype(self._arr.dtype.newbyteorder("="))
 
     def compute_min_max(self):
@@ -121,15 +121,18 @@ class DaskHistogramHelper(HistogramBase):
                 )
 
                 if np.dtype(self.dtype) in (np.uint8, np.uint16):
+                    # optimize chunks for ravel operations.
+                    new_chunk = (None,) * (self._arr.ndim - 1) + (-1,)
+                    arr = self._arr.rechunk(new_chunk).ravel()
                     return (
-                        dask.array.bincount(self._arr.ravel(), minlength=len(histogram_bin_edges) - 1).compute(),
+                        dask.array.bincount(arr, minlength=len(histogram_bin_edges) - 1).compute(),
                         histogram_bin_edges,
                     )
 
             else:
                 histogram_bin_edges = self.compute_histogram_bin_edges()
 
-        h, bins = dask.array.histogram(self._arr.ravel(), bins=histogram_bin_edges, density=density)
+        h, bins = dask.array.histogram(self._arr, bins=histogram_bin_edges, density=density)
         return h.compute(), bins
 
 

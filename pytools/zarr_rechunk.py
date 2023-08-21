@@ -1,59 +1,8 @@
-import zarr
 import click
 import logging
 from pathlib import Path
 from pytools import __version__
-
-logger = logging.getLogger(__name__)
-
-
-def _chunk_logic_dim(drequest: int, dshape: int) -> int:
-    if dshape > drequest > 0:
-        return drequest
-    return dshape
-
-
-def rechunk_group(group: zarr.Group, chunk_size: int):
-    logger.info(f'Processing group: "{group.name}"...')
-    logger.debug(group)
-
-    for group_name, child_group in group.groups():
-        if group_name != "OME":
-            rechunk_group(child_group, chunk_size)
-
-    # grok through the OME-NGFF meta-dat, for each image scale (dataset/array) with axes information
-    # https://ngff.openmicroscopy.org/latest/#multiscale-md
-    if "multiscales" in group.attrs:
-        for image in group.attrs["multiscales"]:
-            chunk_request = tuple(chunk_size if a["type"] == "space" else -1 for a in image["axes"])
-
-            for dataset in image["datasets"]:
-                arr = group[dataset["path"]]
-                arr_name = group[dataset["path"]].name
-                logger.info(f'Processing array: "{arr.name}"...')
-                logger.debug(arr.info)
-
-                chunks = tuple(_chunk_logic_dim(r, s) for r, s in zip(chunk_request, arr.shape))
-                if arr.chunks == chunks:
-                    logger.info("Chunks already requested size")
-                    continue
-
-                # copy array to a temp zarr array on file
-                zarr.copy(
-                    arr,
-                    group,
-                    name=arr_name + ".temp",
-                    chunks=chunks,
-                    compressor=arr.compressor,
-                    dimension_separator=arr._dimension_separator,
-                    filters=arr.filters,
-                    overwrite=False,
-                )
-
-                logger.debug(group[dataset["path"] + ".temp"].info)
-                logger.debug(f"replace: {group[dataset['path']+'.temp'].name} -> {arr_name}")
-                del group[dataset["path"]]
-                group.store.rename(group[dataset["path"] + ".temp"].name, arr_name)
+from pytools.HedwigZarrImages import HedwigZarrImages
 
 
 @click.command()
@@ -72,10 +21,10 @@ def rechunk_group(group: zarr.Group, chunk_size: int):
 def main(input_zarr, log_level, chunk_size):
     logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.getLevelName(log_level))
 
-    store = zarr.DirectoryStore(input_zarr)
-    root = zarr.group(store=store)
+    z = HedwigZarrImages(input_zarr, read_only=False)
 
-    rechunk_group(root, chunk_size)
+    for k in z.get_series_keys():
+        z[k].rechunk(chunk_size)
 
 
 if __name__ == "__main__":
