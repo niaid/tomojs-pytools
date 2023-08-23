@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Development &#8212; tomojs-pytools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=514cf933" />
     
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -44,18 +44,18 @@
           <div class="body" role="main">
             
   <section id="development">
-<h1>Development<a class="headerlink" href="#development" title="Permalink to this heading">¶</a></h1>
+<h1>Development<a class="headerlink" href="#development" title="Link to this heading">¶</a></h1>
 <p>The docs related to development and testing are contained in this section.</p>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">¶</a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
 <p>Please read before cloning.</p>
 <section id="github-com">
-<h3>Github.com<a class="headerlink" href="#github-com" title="Permalink to this heading">¶</a></h3>
+<h3>Github.com<a class="headerlink" href="#github-com" title="Link to this heading">¶</a></h3>
 <p>The repository is located in the NIAID Github.com enterprise organization. Having a github.com account which is a member
 of the NIAID organization is required.</p>
 </section>
 <section id="git-lfs">
-<h3>Git LFS<a class="headerlink" href="#git-lfs" title="Permalink to this heading">¶</a></h3>
+<h3>Git LFS<a class="headerlink" href="#git-lfs" title="Link to this heading">¶</a></h3>
 <p>Git <a class="reference external" href="https://git-lfs.github.com">Large File Storage</a> (LFS) is used to store larger files in the repository such as
 test images, trained models, and other data ( i.e. not text based code ). Before the repository is cloned, git lfs must
 be installed on the system and set up on the users account. The <a class="reference external" href="https://git-lfs.github.com">tool’s documentation</a>
@@ -66,7 +66,7 @@ be stored in Git LFS.</p>
 </section>
 </section>
 <section id="development-setup">
-<h2>Development Setup<a class="headerlink" href="#development-setup" title="Permalink to this heading">¶</a></h2>
+<h2>Development Setup<a class="headerlink" href="#development-setup" title="Link to this heading">¶</a></h2>
 <p>Create a Python virtual environment for this project and install the development requirements:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv-pkg
 <span class="nb">source</span><span class="w"> </span>venv-pkg/bin/activate
@@ -79,13 +79,13 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 </div>
 </section>
 <section id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">¶</a></h2>
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h2>
 <p>Docs about unit and integration tests (running them, writing them) are contained here.</p>
 <p>The test driver and recommended testing framework is <a class="reference external" href="https://docs.pytest.org]">pytest</a>. The pytest driver
 automatically discovers procedures prefixed with <cite>test_</cite> to be run. The testing framework has many features including
 assertions and fixtures, along with numerous examples to assist with getting started.</p>
 <section id="running-unit-tests">
-<h3>Running Unit Tests<a class="headerlink" href="#running-unit-tests" title="Permalink to this heading">¶</a></h3>
+<h3>Running Unit Tests<a class="headerlink" href="#running-unit-tests" title="Link to this heading">¶</a></h3>
 <p>Unit tests are for testing independent components and method separately. They can be run with the following command
 line:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span><span class="nb">test</span>
@@ -93,7 +93,7 @@ line:</p>
 </div>
 </section>
 <section id="test-configuration">
-<h3>Test Configuration<a class="headerlink" href="#test-configuration" title="Permalink to this heading">¶</a></h3>
+<h3>Test Configuration<a class="headerlink" href="#test-configuration" title="Link to this heading">¶</a></h3>
 <p>In the root directory of the project, the working directory when <cite>python -m pytest</cite> is run, a “pytest.ini” file can be
 created to set default options. For example to print all logging messages during test the following can be used:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">pytest</span><span class="p">]</span>
@@ -104,12 +104,12 @@ created to set default options. For example to print all logging messages during
 </section>
 </section>
 <section id="contributing">
-<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this heading">¶</a></h2>
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h2>
 <p>The repository is configured to work with a branchy workflow, where PRs are made before merging into the master branch.
 Github Actions automatically run the linting and test suite, when a PR is made. The tests must pass before merging into
 master.</p>
 <section id="linting">
-<h3>Linting<a class="headerlink" href="#linting" title="Permalink to this heading">¶</a></h3>
+<h3>Linting<a class="headerlink" href="#linting" title="Link to this heading">¶</a></h3>
 <p>The linting process uses both <a class="reference external" href="https://black.readthedocs.io/en/stable/">Black</a>  and
 <a class="reference external" href="https://flake8.pycqa.org/en/latest/">flake8</a> to ensure uncompromising code formatting and some programmatic problems.
 The Black must be used to auto format new code before committing. As the continuous integration enforces black style, it
@@ -123,13 +123,13 @@ used.</p>
 </section>
 </section>
 <section id="sphinx-documentation">
-<h2>Sphinx Documentation<a class="headerlink" href="#sphinx-documentation" title="Permalink to this heading">¶</a></h2>
+<h2>Sphinx Documentation<a class="headerlink" href="#sphinx-documentation" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> documentation as automatically rendered and pushed the the gh-pages branch. The
 API is documented in Sphinx from the the Python docstring automatically for the public module methods and select private
 methods.</p>
 </section>
 <section id="releases">
-<h2>Releases<a class="headerlink" href="#releases" title="Permalink to this heading">¶</a></h2>
+<h2>Releases<a class="headerlink" href="#releases" title="Link to this heading">¶</a></h2>
 <p>The release of packages are automatic and triggered by pushing a git tag to the repository. The tags must be prefixed
 with <cite>v</cite> followed by the version to trigger the release actions. Examples of tags are: “v0.1”, “v1.0a1”, “v1.0rc2”,
 “v1.0.1”. A git tag can be create and push as follows:</p>
@@ -138,7 +138,7 @@ git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </
 </pre></div>
 </div>
 <section id="versioning">
-<h3>Versioning<a class="headerlink" href="#versioning" title="Permalink to this heading">¶</a></h3>
+<h3>Versioning<a class="headerlink" href="#versioning" title="Link to this heading">¶</a></h3>
 <p><a class="reference external" href="https://semver.org">Semantic Versions</a> practices should be used as guidelines for when major, minor, and patch
 version number should change. The <a class="reference external" href="https://www.python.org/dev/peps/pep-0440/">PEP 440 – Version Identification and Dependency Specification</a>
 should also be followed when cheating a tag, but without a “post” or “dev” suffix. The version of that package is
@@ -236,8 +236,8 @@ version anywhere in the code!</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Bradley Lowekamp.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    &#169; Copyright 2022, Bradley Lowekamp.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
     </div>
   </body>
 </html>

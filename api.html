@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>API &#8212; tomojs-pytools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=514cf933" />
     
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -39,11 +39,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-pytools">
-<span id="api"></span><h1>API<a class="headerlink" href="#module-pytools" title="Permalink to this heading">¶</a></h1>
-<dl class="py function">
+  <section id="api">
+<h1>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h1>
+<dl class="py function" id="module-pytools">
 <dt class="sig sig-object py" id="pytools.visual_min_max">
-<span class="sig-prename descclassname"><span class="pre">pytools.</span></span><span class="sig-name descname"><span class="pre">visual_min_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mad_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pytools.visual_min_max" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pytools.</span></span><span class="sig-name descname"><span class="pre">visual_min_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mad_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pytools.visual_min_max" title="Link to this definition">¶</a></dt>
 <dd><p>Reads a path to an input_image file or a directory of zarr array to estimate minimum and maximum ranges to be
 used for visualization of the data set in Neuroglancer.</p>
 <p>Dask is used for parallel reading and statistics computation. The global scheduler is used for all operations which
@@ -72,7 +72,7 @@ be specified by “dirname.zarr/0”.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pytools.zarr_extract_2d">
-<span class="sig-prename descclassname"><span class="pre">pytools.</span></span><span class="sig-name descname"><span class="pre">zarr_extract_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_zarr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_size_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_size_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Image</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#pytools.zarr_extract_2d" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pytools.</span></span><span class="sig-name descname"><span class="pre">zarr_extract_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_zarr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_size_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_size_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Image</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#pytools.zarr_extract_2d" title="Link to this definition">¶</a></dt>
 <dd><p>Extracts a 2D image from an OME-NGFF pyramid structured with ZARR array that is 2D-like.</p>
 <dl class="simple">
 <dt>The OME-NGFF pyramid structured ZARR array is assumed to have the following structure:</dt><dd><ul class="simple">
@@ -105,9 +105,9 @@ extracted subvolume can have antialiasing applied to it.</p></li>
 </dl>
 </dd></dl>
 
-<span class="target" id="module-pytools.meta"></span><dl class="py function">
+<dl class="py function" id="module-pytools.meta">
 <dt class="sig sig-object py" id="pytools.meta.is_int16">
-<span class="sig-prename descclassname"><span class="pre">pytools.meta.</span></span><span class="sig-name descname"><span class="pre">is_int16</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pytools.meta.is_int16" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pytools.meta.</span></span><span class="sig-name descname"><span class="pre">is_int16</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pytools.meta.is_int16" title="Link to this definition">¶</a></dt>
 <dd><p>Read an image file header to inspect meta-data.</p>
 <p>Supported file formats include TIFF, and others supported by SimpleITK and the Insight toolkit.</p>
 <dl class="field-list simple">
@@ -120,9 +120,9 @@ extracted subvolume can have antialiasing applied to it.</p></li>
 </dl>
 </dd></dl>
 
-<span class="target" id="module-pytools.utils.zarr"></span><dl class="py function">
+<dl class="py function" id="module-pytools.utils.zarr">
 <dt class="sig sig-object py" id="pytools.utils.zarr.bin_shrink">
-<span class="sig-prename descclassname"><span class="pre">pytools.utils.zarr.</span></span><span class="sig-name descname"><span class="pre">bin_shrink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shrink_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.zarr.bin_shrink" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pytools.utils.zarr.</span></span><span class="sig-name descname"><span class="pre">bin_shrink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shrink_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.zarr.bin_shrink" title="Link to this definition">¶</a></dt>
 <dd><p>Reduces image by a factor of 2 in xyz and performs averaging.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -137,30 +137,30 @@ slowest for performance.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pytools.utils.zarr.build_pyramid">
-<span class="sig-prename descclassname"><span class="pre">pytools.utils.zarr.</span></span><span class="sig-name descname"><span class="pre">build_pyramid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zarr_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shrink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[-1,</span> <span class="pre">-2]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.zarr.build_pyramid" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pytools.utils.zarr.</span></span><span class="sig-name descname"><span class="pre">build_pyramid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zarr_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shrink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[-1,</span> <span class="pre">-2]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.zarr.build_pyramid" title="Link to this definition">¶</a></dt>
 <dd><p>Iteratively generate multiple resolutions of zarr arrays.</p>
 <p>The input array is named by the first items in the components. The remaining components are iteratively generated by
 reducing the resolution in the “shrink” dimensions, by a factor of 2.</p>
 </dd></dl>
 
-<span class="target" id="module-pytools.utils.histogram"></span><dl class="py class">
+<dl class="py class" id="module-pytools.utils.histogram">
 <dt class="sig sig-object py" id="pytools.utils.histogram.DaskHistogramHelper">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">DaskHistogramHelper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr:</span> <span class="pre">&lt;module</span> <span class="pre">'dask.array'</span> <span class="pre">from</span> <span class="pre">'/opt/hostedtoolcache/Python/3.9.16/x64/lib/python3.9/site-packages/dask/array/__init__.py'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.DaskHistogramHelper" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">DaskHistogramHelper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr:</span> <span class="pre">&lt;module</span> <span class="pre">'dask.array'</span> <span class="pre">from</span> <span class="pre">'/opt/hostedtoolcache/Python/3.9.17/x64/lib/python3.9/site-packages/dask/array/__init__.py'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.DaskHistogramHelper" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pytools.utils.histogram.HistogramBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">HistogramBase</span></span><a class="headerlink" href="#pytools.utils.histogram.HistogramBase" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">HistogramBase</span></span><a class="headerlink" href="#pytools.utils.histogram.HistogramBase" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pytools.utils.histogram.ZARRHistogramHelper">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">ZARRHistogramHelper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.ZARRHistogramHelper" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">ZARRHistogramHelper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.ZARRHistogramHelper" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pytools.utils.histogram.histogram_robust_stats">
-<span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">histogram_robust_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_edges</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.histogram_robust_stats" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">histogram_robust_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_edges</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.histogram_robust_stats" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the “median” and “mad” (Median Absolute Deviation).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -174,7 +174,7 @@ reducing the resolution in the “shrink” dimensions, by a factor of 2.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pytools.utils.histogram.histogram_stats">
-<span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">histogram_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_edges</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.histogram_stats" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">histogram_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_edges</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.histogram_stats" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the “mean”, “var” (variance), and “sigma” (standard deviation) from the provided histogram.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -188,7 +188,7 @@ reducing the resolution in the “shrink” dimensions, by a factor of 2.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pytools.utils.histogram.weighted_quantile">
-<span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">weighted_quantile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.weighted_quantile" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">weighted_quantile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.weighted_quantile" title="Link to this definition">¶</a></dt>
 <dd><p>Very close to numpy.percentile, but supports weights.
 NOTE: quantiles should be in [0, 1]!
 :param values: numpy.array with data
@@ -201,9 +201,9 @@ with numpy.percentile.
 :return: numpy.array with computed quantiles.</p>
 </dd></dl>
 
-<span class="target" id="module-pytools.convert"></span><dl class="py function">
+<dl class="py function" id="module-pytools.convert">
 <dt class="sig sig-object py" id="pytools.convert.file_to_uint8">
-<span class="sig-prename descclassname"><span class="pre">pytools.convert.</span></span><span class="sig-name descname"><span class="pre">file_to_uint8</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pytools.convert.file_to_uint8" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pytools.convert.</span></span><span class="sig-name descname"><span class="pre">file_to_uint8</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pytools.convert.file_to_uint8" title="Link to this definition">¶</a></dt>
 <dd><p>Read an image file, scale the input pixel intensity range to 0-255, and write an image as an unsigned 8-bit integer.</p>
 <p>Supported file formats include TIFF, and others supported by SimpleITK and the Insight toolkit.</p>
 <dl class="field-list simple">
@@ -225,7 +225,7 @@ considered an implementation detail that may change.</p>
 </div>
 </dd></dl>
 
-<span class="target" id="module-pytools.zarr_rechunk"></span><span class="target" id="module-pytools.zarr_build_multiscales"></span></section>
+<span class="target" id="module-pytools.zarr_build_multiscales"><span id="module-pytools.zarr_rechunk"></span></span></section>
 
 
             <div class="clearer"></div>
@@ -298,8 +298,8 @@ considered an implementation detail that may change.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Bradley Lowekamp.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    &#169; Copyright 2022, Bradley Lowekamp.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
     </div>
   </body>
 </html>
