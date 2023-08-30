@@ -10,3 +10,6 @@ exclude: # exclude matching issues
      pattern: USERNAME:PASSWORD@artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi/simple
      paths:
        - README.rst
+   - message: Test Data in LFS
+     paths:
+       - test/data/**
