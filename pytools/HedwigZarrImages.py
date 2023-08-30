@@ -15,7 +15,7 @@ from pathlib import Path
 
 import zarr
 from typing import Optional, Iterable, Tuple, AnyStr
-from pytools.utils.xml_info import OMEInfo
+from pytools.utils import OMEInfo
 from pytools.HedwigZarrImage import HedwigZarrImage
 import logging
 
