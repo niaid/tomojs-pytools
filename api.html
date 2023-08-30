@@ -41,6 +41,119 @@
             
   <section id="module-pytools">
 <span id="api"></span><h1>API<a class="headerlink" href="#module-pytools" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.</span></span><span class="sig-name descname"><span class="pre">HedwigZarrImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zarr_grp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_ome_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OMEInfo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_ome_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.HedwigZarrImage" title="Link to this definition">¶</a></dt>
+<dd><p>Represents a OME-NGFF Zarr pyramidal image.</p>
+<p>The member provide information useful for the Hedwig imaging pipelines.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImage.dims">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dims</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pytools.HedwigZarrImage.dims" title="Link to this definition">¶</a></dt>
+<dd><p>The Hedwig dimension of the image XY, XYC, XYZCT etc.</p>
+<p>Collapses ZCT dimensions if of size 1.</p>
+<p>Note: this is the reverse order of axis for numpy/zarr/dask.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImage.extract_2d">
+<span class="sig-name descname"><span class="pre">extract_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_size_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_size_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_uint8</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Image</span></span></span><a class="headerlink" href="#pytools.HedwigZarrImage.extract_2d" title="Link to this definition">¶</a></dt>
+<dd><p>Extracts a 2D SimpleITK Image from an OME-NGFF pyramid structured with ZARR array that is 2D-like.</p>
+<dl class="simple">
+<dt>The OME-NGFF pyramid structured ZARR array is assumed to have the following structure:</dt><dd><ul class="simple">
+<li><p>The axes spacial dimensions must be labeled as “X”, “Y”, and optionally “Z”.</p></li>
+<li><p>If a “Z” space dimension exists then it must be of size 1.</p></li>
+<li><p>If a time dimension exists then it must be if of size 1.</p></li>
+<li><p>If a channel dimension exists all channels are extracted.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The extracted subvolume will be resized to the target size while maintaining the aspect ratio.</p>
+<p>The resized extracted subvolume with be the same pixel type as the OME-NGFF pyramid structured ZARR array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_size_x</strong> – The target size of the extracted subvolume in the x dimension.</p></li>
+<li><p><strong>target_size_y</strong> – The target size of the extracted subvolume in the y dimension.</p></li>
+<li><p><strong>size_factor</strong> – The size of the subvolume to extract will be increased by this factor so that the
+extracted subvolume can have antialiasing applied to it.</p></li>
+<li><p><strong>auto_uint8</strong> – If True the output image will be automatically linearly shifted and scaled to fit into uint8
+component pixel types.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The extracted subvolume as a SimpleITK image.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImage.neuroglancer_shader_parameters">
+<span class="sig-name descname"><span class="pre">neuroglancer_shader_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mad_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pytools.HedwigZarrImage.neuroglancer_shader_parameters" title="Link to this definition">¶</a></dt>
+<dd><p>Produces the “shaderParameters” portion of the metadata for Neuroglancer
+returns JSON serializable object</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImage.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><a class="headerlink" href="#pytools.HedwigZarrImage.path" title="Link to this definition">¶</a></dt>
+<dd><p>Returns full path to the ZARR group suitable for Neuroglancer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImage.rechunk">
+<span class="sig-name descname"><span class="pre">rechunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pytools.HedwigZarrImage.rechunk" title="Link to this definition">¶</a></dt>
+<dd><p>Change the chunk size of each ZARR array inplace in the pyramid.</p>
+<p>The chunk_size is applied to all spacial dimension, and other dimension (CT) are the full size.</p>
+<p>The ImageZarrImage need write access to the ZARR.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImage.shader_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shader_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#pytools.HedwigZarrImage.shader_type" title="Link to this definition">¶</a></dt>
+<dd><p>Produces the shader type one of: RGB, Grayscale, or MultiChannel.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImage.shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.HedwigZarrImage.shape" title="Link to this definition">¶</a></dt>
+<dd><p>The size of the dimensions of the full resolution image.</p>
+<p>This is in numpy/zarr/dask order.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImages">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.</span></span><span class="sig-name descname"><span class="pre">HedwigZarrImages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zarr_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.HedwigZarrImages" title="Link to this definition">¶</a></dt>
+<dd><p>Represents the set of images in a OME-NGFF ZARR structure.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImages.get_series_keys">
+<span class="sig-name descname"><span class="pre">get_series_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pytools.HedwigZarrImages.get_series_keys" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an iterable of strings of the names or labels of the images. Will be extracted from
+the OME-XML if available otherwise the ZARR group names.
+e.g. “label_image”</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImages.ome_info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ome_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyStr</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pytools.HedwigZarrImages.ome_info" title="Link to this definition">¶</a></dt>
+<dd><p>Returns OME XML as string is if exists.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImages.ome_xml_path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ome_xml_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pytools.HedwigZarrImages.ome_xml_path" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the path to the OME-XML file, if it exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImages.series">
+<span class="sig-name descname"><span class="pre">series</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#pytools.HedwigZarrImage" title="pytools.HedwigZarrImage.HedwigZarrImage"><span class="pre">HedwigZarrImage</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pytools.HedwigZarrImages.series" title="Link to this definition">¶</a></dt>
+<dd><p>An Iterable of key and HedwigZarrImages stored in the ZARR structure.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="pytools.visual_min_max">
 <span class="sig-prename descclassname"><span class="pre">pytools.</span></span><span class="sig-name descname"><span class="pre">visual_min_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mad_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pytools.visual_min_max" title="Link to this definition">¶</a></dt>
@@ -238,6 +351,23 @@ considered an implementation detail that may change.</p>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">API</a><ul>
+<li><a class="reference internal" href="#pytools.HedwigZarrImage"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage</span></code></a><ul>
+<li><a class="reference internal" href="#pytools.HedwigZarrImage.dims"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.dims</span></code></a></li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImage.extract_2d"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.extract_2d()</span></code></a></li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImage.neuroglancer_shader_parameters"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.neuroglancer_shader_parameters()</span></code></a></li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImage.path"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.path</span></code></a></li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImage.rechunk"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.rechunk()</span></code></a></li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImage.shader_type"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.shader_type</span></code></a></li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImage.shape"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.shape</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImages"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImages</span></code></a><ul>
+<li><a class="reference internal" href="#pytools.HedwigZarrImages.get_series_keys"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImages.get_series_keys()</span></code></a></li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImages.ome_info"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImages.ome_info</span></code></a></li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImages.ome_xml_path"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImages.ome_xml_path</span></code></a></li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImages.series"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImages.series()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#pytools.visual_min_max"><code class="docutils literal notranslate"><span class="pre">visual_min_max()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.zarr_extract_2d"><code class="docutils literal notranslate"><span class="pre">zarr_extract_2d()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.meta.is_int16"><code class="docutils literal notranslate"><span class="pre">is_int16()</span></code></a></li>
