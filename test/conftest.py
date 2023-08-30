@@ -14,6 +14,12 @@
 import pytest
 import SimpleITK as sitk
 import numpy as np
+from pathlib import Path
+
+
+@pytest.fixture(scope="session")
+def data_path():
+    return Path(__file__).parent / "data"
 
 
 @pytest.fixture(

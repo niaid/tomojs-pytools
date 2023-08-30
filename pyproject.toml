@@ -42,5 +42,6 @@ local_scheme = "dirty-tag"
 
 [project.scripts]
 zarr_rechunk = "pytools.zarr_rechunk:main"
+zarr_info = "pytools.zarr_info:main"
 zarr_build_multiscales = "pytools.zarr_build_multiscales:main"
 
