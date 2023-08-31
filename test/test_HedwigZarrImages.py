@@ -21,7 +21,7 @@ import json
 
 @pytest.fixture(
     scope="function",
-    params=["2013-1220-dA30_5-BSC-1_22_full_rec.zarr", "OM_P1_S1_ScanOnly_1k.zarr"],
+    params=["2013-1220-dA30_5-BSC-1_22_full_rec.zarr", "OM_P1_S1_ScanOnly_1k.zarr", "OM_P1_S1_ScanOnly_1k_tiff.zarr"],
 )
 def temp_zarr_path(request, tmp_path_factory, data_path):
     """Copies ZARRs to temporary directory for modification."""
@@ -36,7 +36,7 @@ def temp_zarr_path(request, tmp_path_factory, data_path):
 
 @pytest.mark.parametrize(
     "zarr_name",
-    ["2013-1220-dA30_5-BSC-1_22_full_rec.zarr", "OM_P1_S1_ScanOnly_1k.zarr"],
+    ["2013-1220-dA30_5-BSC-1_22_full_rec.zarr", "OM_P1_S1_ScanOnly_1k.zarr", "OM_P1_S1_ScanOnly_1k_tiff.zarr"],
 )
 def test_HedwigZarrImage_info(data_path, zarr_name):
     zi = HedwigZarrImages(data_path / zarr_name)
