@@ -43,14 +43,13 @@ class OMEInfo:
         px_element = self._image_element(image_index).find("OME:Pixels", self._ome_ns)
         channel_elements = px_element.findall("./OME:Channel", self._ome_ns)
         three_or_four = len(channel_elements) in [3, 4]
-        is_interleaved = "Interleaved" in px_element.attrib and px_element.attrib["Interleaved"].lower() == "true"
 
         def _check_channel(channel_element: ET.Element):
             exclude_list_attribs = ["EmissionWavelength", "IlluminationType", "Flour"]
             no_rgb_exclude_attrib = all([False for x in exclude_list_attribs if x in channel_element.keys()])
             return no_rgb_exclude_attrib and channel_element.attrib["SamplesPerPixel"] == "1"
 
-        return three_or_four and is_interleaved and all([_check_channel(ce) for ce in channel_elements])
+        return three_or_four and all([_check_channel(ce) for ce in channel_elements])
 
     def dimension_order(self, image_index):
         return self._image_element(image_index).find("OME:Pixels", self._ome_ns).attrib["DimensionOrder"]

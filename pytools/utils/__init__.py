@@ -13,5 +13,6 @@
 #
 
 from .click_mutually_exclusive_option import MutuallyExclusiveOption
+from .OMEInfo import OMEInfo
 
-__all__ = ["MutuallyExclusiveOption"]
+__all__ = ["MutuallyExclusiveOption", "OMEInfo"]

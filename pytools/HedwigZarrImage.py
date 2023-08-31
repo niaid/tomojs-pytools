@@ -16,7 +16,7 @@ from pathlib import Path
 import SimpleITK as sitk
 import zarr
 from typing import Tuple, Dict, List
-from pytools.utils.xml_info import OMEInfo
+from pytools.utils import OMEInfo
 import logging
 import math
 import re
