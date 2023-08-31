@@ -67,13 +67,17 @@ class HedwigZarrImage:
         """
         return self._ome_ngff_multiscale_get_array(0).shape
 
-    def rechunk(self, chunk_size: int) -> None:
+    def rechunk(self, chunk_size: int, compressor=None) -> None:
         """
         Change the chunk size of each ZARR array inplace in the pyramid.
 
         The chunk_size is applied to all spacial dimension, and other dimension (CT) are the full size.
 
         The ImageZarrImage need write access to the ZARR.
+
+        :param chunk_size: The size as an integer to resize the chunk sizes.
+        :param compressor: The output arrays will be written with the provided compressor, if None then the compressor
+         of the input arrays will be used.
         """
 
         logger.info(f'Processing group: "{self.zarr_group.name}"...')
@@ -96,13 +100,15 @@ class HedwigZarrImage:
                 logger.info("Chunks already requested size")
                 continue
 
+            if compressor is None:
+                compressor = arr.compressor
             # copy array to a temp zarr array on file
             zarr.copy(
                 arr,
                 self.zarr_group,
                 name=arr_name + ".temp",
                 chunks=chunks,
-                compressor=arr.compressor,
+                compressor=arr.compressor if compressor is None else compressor,
                 dimension_separator=arr._dimension_separator,
                 filters=arr.filters,
                 overwrite=False,
