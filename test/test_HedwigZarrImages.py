@@ -14,8 +14,24 @@
 
 from pytools.HedwigZarrImages import HedwigZarrImages
 import pytest
+import shutil
 
 import json
+
+
+@pytest.fixture(
+    scope="function",
+    params=["2013-1220-dA30_5-BSC-1_22_full_rec.zarr", "OM_P1_S1_ScanOnly_1k.zarr"],
+)
+def temp_zarr_path(request, tmp_path_factory, data_path):
+    """Copies ZARRs to temporary directory for modification."""
+
+    zarr_name = request.param
+    tmp_zarr = tmp_path_factory.mktemp("Z") / zarr_name
+    shutil.copytree(data_path / zarr_name, tmp_zarr)
+
+    print(f"temp_zarr_path: {tmp_zarr}")
+    return tmp_zarr
 
 
 @pytest.mark.parametrize(
@@ -37,3 +53,27 @@ def test_HedwigZarrImage_info(data_path, zarr_name):
         print(f"\tshader type: {z_img.shader_type}")
         print(f"\tNGFF dims: {z_img._ome_ngff_multiscale_dims()}")
         print(f"\tshader params: {json.dumps(z_img.neuroglancer_shader_parameters())}")
+
+
+@pytest.mark.parametrize(
+    "target_chunk",
+    [2048, 512, 64],
+)
+def test_HedwigZarrImage_rechunk(target_chunk, temp_zarr_path):
+    """Test rechunking all array is a ZARR structure"""
+
+    zi = HedwigZarrImages(temp_zarr_path, read_only=False)
+    for k, hzi in zi.series():
+        hzi.rechunk(target_chunk)
+
+    for k, hzi in zi.series():
+        for level in range(len(hzi._ome_ngff_multiscales()["datasets"])):
+            arr = hzi._ome_ngff_multiscale_get_array(level)
+            # check for expected chunking
+            for s, c, d in zip(arr.shape, arr.chunks, hzi._ome_ngff_multiscale_dims()):
+                if d == "T":
+                    assert s == 1
+                elif d == "C" or s < target_chunk:
+                    assert s == c
+                else:
+                    assert c == target_chunk

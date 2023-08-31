@@ -24,7 +24,6 @@ def test_pytools_version():
 
 
 def test_zarr_extract(image_ome_ngff_2d):
-
     img = pytools.zarr_extract_2d(image_ome_ngff_2d, 8, 8)
     assert img.GetSize()[0] <= 8
     assert img.GetSize()[1] <= 8
