@@ -16,8 +16,6 @@ from pytools.HedwigZarrImages import HedwigZarrImages
 import pytest
 import shutil
 
-import json
-
 
 @pytest.fixture(
     scope="function",
@@ -35,10 +33,24 @@ def temp_zarr_path(request, tmp_path_factory, data_path):
 
 
 @pytest.mark.parametrize(
-    "zarr_name",
-    ["2013-1220-dA30_5-BSC-1_22_full_rec.zarr", "OM_P1_S1_ScanOnly_1k.zarr", "OM_P1_S1_ScanOnly_1k_tiff.zarr"],
+    "zarr_name, image_ext, array_shape, dims, shader_type, ngff_dims, shader_params",
+    [
+        (
+            "2013-1220-dA30_5-BSC-1_22_full_rec.zarr",
+            "mrc",
+            (1, 1, 512, 87, 512),
+            "XYZ",
+            "Grayscale",
+            "TCZYX",
+            {"window": [263, 413], "range": [-2664, 1677]},
+        ),
+        ("OM_P1_S1_ScanOnly_1k.zarr", "png", (1, 3, 1, 1024, 521), "XYC", "RGB", "TCZYX", {}),
+        ("OM_P1_S1_ScanOnly_1k_tiff.zarr", "tiff", (1, 3, 1, 1024, 521), "XYC", "RGB", "TCZYX", {}),
+    ],
 )
-def test_HedwigZarrImage_info(data_path, zarr_name):
+def test_HedwigZarrImage_info(
+    data_path, zarr_name, image_ext, array_shape, dims, shader_type, ngff_dims, shader_params
+):
     zi = HedwigZarrImages(data_path / zarr_name)
     keys = list(zi.get_series_keys())
     print(f"zarr groups: {keys}")
@@ -46,13 +58,13 @@ def test_HedwigZarrImage_info(data_path, zarr_name):
     print(zi.ome_xml_path)
 
     for k, z_img in zi.series():
-        print(f'image name: "{k}"')
-        print(f"\tarray shape: {z_img.shape}")
-        print(f"\tzarr path: {z_img.path}")
-        print(f"\tdims: {z_img.dims}")
-        print(f"\tshader type: {z_img.shader_type}")
-        print(f"\tNGFF dims: {z_img._ome_ngff_multiscale_dims()}")
-        print(f"\tshader params: {json.dumps(z_img.neuroglancer_shader_parameters())}")
+        assert image_ext in k
+        assert array_shape == z_img.shape
+        print(f"{z_img.path=}")
+        assert dims == z_img.dims
+        assert shader_type == z_img.shader_type
+        assert ngff_dims == z_img._ome_ngff_multiscale_dims()
+        assert shader_params == z_img.neuroglancer_shader_parameters()
 
 
 @pytest.mark.parametrize(
