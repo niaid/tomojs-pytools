@@ -1,3 +1,8 @@
 pytest>=6.0
 ome_zarr
--rrequirements.txt
+setuptools_scm
+flake8
+black
+wheel
+packaging
+-r requirements.txt
