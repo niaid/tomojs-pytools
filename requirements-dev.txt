@@ -6,4 +6,5 @@ flake8
 black
 wheel
 packaging
+pytest-cov
 -r requirements.txt
