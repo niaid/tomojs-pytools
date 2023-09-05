@@ -94,20 +94,17 @@ master.
 Linting
 =======
 
-The linting processes are configured and run with `pre-commit <https://pre-commit.com>`_. Using pre-commit provides
-a single file ( ".pre-commit-config.yaml" ) configuration for both execution of CI and local git pre-commit hooks. The
-"pre-commit" package does not need to be installed in the projects venv. Once initialized for the project, pre-commit
-will manage the versions of the tools in a separate environment, that is automatically managed.
-
-The following is the `quick start guide <https://pre-commit.com/#quick-start>`_.
-
 The linting process uses both `Black <https://black.readthedocs.io/en/stable/>`_  and
-`flake8 <https://flake8.pycqa.org/en/latest/>`_ to ensure uncompromising code formatting and identify programmatic
-problems. The black code formatting tool must be used to auto format new code before committing:
+`flake8 <https://flake8.pycqa.org/en/latest/>`_ to ensure uncompromising code formatting and some programmatic problems.
+The Black must be used to auto format new code before committing. As the continuous integration enforces black style, it
+can safely be run on the whole repository without changing old code:
 
 .. code:: bash
 
     python -m black .
+
+
+Black is installed as part for the development requirements.
 
 As part of the linting process the secret scanner `tufflehog3 <https://github.com/feeltheajf/truffleHog3>`_ is also
 used.
