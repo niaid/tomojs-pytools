@@ -15,15 +15,19 @@
 import pytest
 import shutil
 from pytools.HedwigZarrImages import HedwigZarrImages
+from pytools.HedwigZarrImage import HedwigZarrImage
 
 
 @pytest.mark.parametrize(
     "zarr_name, image_ext, array_shape, dims, shader_type, ngff_dims, shader_params",
     [("OM_P1_S1_ScanOnly_1k.zarr", "png", (1, 3, 1, 1024, 521), "XYC", "MultiChannel", "TCZYX", {})],
 )
-def test_HedwigZarrImage_info(
+def test_HedwigZarrImage_info_bad_ome(
     data_path, zarr_name, image_ext, array_shape, dims, shader_type, ngff_dims, shader_params, tmp_path
 ):
+    """
+    Testcase assumes that OME directory can be missing.
+    """
     # Remove OME directory from the .zarr file
     shutil.copytree(data_path / zarr_name, tmp_path / zarr_name)
     shutil.rmtree(tmp_path / zarr_name / "OME")
@@ -39,3 +43,87 @@ def test_HedwigZarrImage_info(
         assert shader_type == z_img.shader_type
         assert ngff_dims == z_img._ome_ngff_multiscale_dims()
         assert shader_params == z_img.neuroglancer_shader_parameters()
+
+
+@pytest.mark.parametrize(
+    "zarr_name, attrs",
+    [
+        (
+            "KC_M3_S2_ReducedImageSubset2.zarr",
+            [
+                ("czi", (1, 2, 1, 3102, 206), "XYC", "MultiChannel", "TCZYX", {"channelArray": 2}),
+                ("label", (1, 3, 1, 758, 1588), "XYC", "RGB", "TCZYX", {}),
+                ("macro", (1, 3, 1, 685, 567), "XYC", "RGB", "TCZYX", {}),
+            ],
+        )
+    ],
+)
+def test_HedwigZarrImage_info_for_czi(data_path, zarr_name, attrs):
+    """
+    Tests ZarrImages attributes generated from valid .czi files
+    """
+    zi = HedwigZarrImages(data_path / zarr_name)
+    assert zi.ome_xml_path is not None
+    image_names = list(zi.get_series_keys())
+    assert len(image_names) == 3
+    assert all(image_names)
+
+    for (k, z_img), attr in zip(zi.series(), attrs):
+        image_ext, array_shape, dims, shader_type, ngff_dims, shader_params = attr
+        # assert image_ext in k
+        assert array_shape == z_img.shape
+        assert dims == z_img.dims
+        assert shader_type == z_img.shader_type
+        assert ngff_dims == z_img._ome_ngff_multiscale_dims()
+        for param_key in shader_params:
+            shader_params[param_key] == len(z_img.neuroglancer_shader_parameters()[param_key])
+
+
+@pytest.mark.parametrize("targetx, targety", [(300, 300), (600, 600), (1024, 1024)])
+def test_hedwigimage_extract_2d(data_path, targetx, targety):
+    """
+    Tests extract_2d image extraction method for HedwigZarrImage
+    Asserts largest dimension matches with the target size of the dimension
+    """
+    zarr_name = "KC_M3_S2_ReducedImageSubset2.zarr"
+    zi = HedwigZarrImages(data_path / zarr_name)
+    for k, z_img in zi.series():
+        sitk_img = z_img.extract_2d(targetx, targety)
+        x, y = sitk_img.GetSize()
+        shape = dict(zip(z_img._ome_ngff_multiscale_dims(), z_img.shape))
+        actualx, actualy = shape["X"], shape["Y"]
+        assert x == targetx if actualx > actualy else y == targety
+
+
+def test_hedwigimage_extract_2d_invalid_shapes(data_path, monkeypatch):
+    """
+    Asserts extract_2d does not work with zarr image having dimensions:
+        time > 1
+        z-axis > 1
+    """
+    zarr_name = "KC_M3_S2_ReducedImageSubset2.zarr"
+    zi = HedwigZarrImages(data_path / zarr_name)
+
+    @property
+    def _mock_shape(obj):
+        return (2, 3, 1, 100, 100)
+
+    monkeypatch.setattr(HedwigZarrImage, "shape", _mock_shape)
+
+    z_img = zi[list(zi.get_series_keys())[0]]
+    assert z_img.shape[0] == 2
+    with pytest.raises(ValueError) as execinfo:
+        z_img.extract_2d(300, 300)
+    assert "Time dimension" in str(execinfo.value)
+
+    @property
+    def _mock_shape(obj):
+        return (1, 3, 3, 100, 100)
+
+    monkeypatch.setattr(HedwigZarrImage, "shape", _mock_shape)
+
+    z_img = zi[list(zi.get_series_keys())[0]]
+    assert z_img.shape[2] == 3
+    with pytest.raises(ValueError) as execinfo:
+        z_img.extract_2d(300, 300)
+    assert "Z dimension" in str(execinfo.value)
