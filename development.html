@@ -110,14 +110,17 @@ Github Actions automatically run the linting and test suite, when a PR is made. 
 master.</p>
 <section id="linting">
 <h3>Linting<a class="headerlink" href="#linting" title="Link to this heading">¶</a></h3>
+<p>The linting processes are configured and run with <a class="reference external" href="https://pre-commit.com">pre-commit</a>. Using pre-commit provides
+a single file ( “.pre-commit-config.yaml” ) configuration for both execution of CI and local git pre-commit hooks. The
+“pre-commit” package does not need to be installed in the projects venv. Once initialized for the project, pre-commit
+will manage the versions of the tools in a separate environment, that is automatically managed.</p>
+<p>The following is the <a class="reference external" href="https://pre-commit.com/#quick-start">quick start guide</a>.</p>
 <p>The linting process uses both <a class="reference external" href="https://black.readthedocs.io/en/stable/">Black</a>  and
-<a class="reference external" href="https://flake8.pycqa.org/en/latest/">flake8</a> to ensure uncompromising code formatting and some programmatic problems.
-The Black must be used to auto format new code before committing. As the continuous integration enforces black style, it
-can safely be run on the whole repository without changing old code:</p>
+<a class="reference external" href="https://flake8.pycqa.org/en/latest/">flake8</a> to ensure uncompromising code formatting and identify programmatic
+problems. The black code formatting tool must be used to auto format new code before committing:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>black<span class="w"> </span>.
 </pre></div>
 </div>
-<p>Black is installed as part for the development requirements.</p>
 <p>As part of the linting process the secret scanner <a class="reference external" href="https://github.com/feeltheajf/truffleHog3">tufflehog3</a> is also
 used.</p>
 </section>
