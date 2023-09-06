@@ -48,8 +48,6 @@ class HedwigZarrImages:
             _xml_path = Path(self.zarr_store.path) / self.zarr_root["OME"].path / "METADATA.ome.xml"
             if _xml_path.exists():
                 return _xml_path
-            else:
-                return None
 
     @property
     def ome_info(self) -> Optional[AnyStr]:
@@ -79,12 +77,12 @@ class HedwigZarrImages:
 
     def __getitem__(self, item) -> HedwigZarrImage:
         for k_idx, k in enumerate(self.get_series_keys()):
-            if item == k:
+            if item == k and "OME" in self.zarr_root.group_keys():
                 ome_index_to_zarr_group = self.zarr_root["OME"].attrs["series"]
                 zarr_idx = ome_index_to_zarr_group[k_idx]
                 return HedwigZarrImage(self.zarr_root[zarr_idx], self.ome_info, k_idx)
 
-        return HedwigZarrImage(self.zarr_root[item])
+        return HedwigZarrImage(self.zarr_root[item], None, 404)
 
     def series(self) -> Iterable[Tuple[str, HedwigZarrImage]]:
         """An Iterable of key and HedwigZarrImages stored in the ZARR structure."""

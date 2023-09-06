@@ -1,5 +1,6 @@
 .pytest_cache
 coverage.xml
+.coverage*
 htmlcov
 pytools/_version.py
 __pycache__

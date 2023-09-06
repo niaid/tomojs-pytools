@@ -28,7 +28,6 @@ def temp_zarr_path(request, tmp_path_factory, data_path):
     tmp_zarr = tmp_path_factory.mktemp("Z") / zarr_name
     shutil.copytree(data_path / zarr_name, tmp_zarr)
 
-    print(f"temp_zarr_path: {tmp_zarr}")
     return tmp_zarr
 
 
@@ -52,15 +51,10 @@ def test_HedwigZarrImage_info(
     data_path, zarr_name, image_ext, array_shape, dims, shader_type, ngff_dims, shader_params
 ):
     zi = HedwigZarrImages(data_path / zarr_name)
-    keys = list(zi.get_series_keys())
-    print(f"zarr groups: {keys}")
-
-    print(zi.ome_xml_path)
 
     for k, z_img in zi.series():
         assert image_ext in k
         assert array_shape == z_img.shape
-        print(f"{z_img.path=}")
         assert dims == z_img.dims
         assert shader_type == z_img.shader_type
         assert ngff_dims == z_img._ome_ngff_multiscale_dims()

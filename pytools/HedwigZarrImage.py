@@ -196,7 +196,7 @@ class HedwigZarrImage:
         """
         Produces the shader type one of: RGB, Grayscale, or MultiChannel.
         """
-        if self.ome_info.maybe_rgb(self.ome_idx):
+        if self.ome_info and self.ome_info.maybe_rgb(self.ome_idx):
             return "RGB"
         if self._ome_ngff_multiscale_dims()[1] == "C" and self.shape[1] == 1:
             return "Grayscale"
@@ -207,6 +207,9 @@ class HedwigZarrImage:
         Produces the "shaderParameters" portion of the metadata for Neuroglancer
         returns JSON serializable object
         """
+        if self.ome_info is None:
+            return {}
+
         _shader_type = self.shader_type
         if _shader_type == "RGB":
             return {}
