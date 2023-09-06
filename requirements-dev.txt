@@ -1,4 +1,5 @@
 pytest>=6.0
+fsspec!=2023.9.0
 ome_zarr
 setuptools_scm
 flake8
