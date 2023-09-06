@@ -233,7 +233,7 @@ class HedwigZarrImage:
                 # replace non-alpha numeric with a underscore
                 name = re.sub(r"[^a-zA-Z0-9]+", "_", c_name.lower())
 
-                stats = self._image_statistics(mad_scale=5, clamp=True, channel=c)
+                stats = self._image_statistics(channel=c)
                 window = (stats["median"] - stats["mad"] * mad_scale, stats["median"] + stats["mad"] * mad_scale)
                 window = (max(window[0], stats["min"]), min(window[1], stats["max"]))
 
