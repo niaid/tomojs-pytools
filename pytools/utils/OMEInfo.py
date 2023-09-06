@@ -30,8 +30,8 @@ class OMEInfo:
         return len(self._root_element.findall("OME:Image", self._ome_ns))
 
     def image_names(self) -> Iterable[str]:
-        for e in self._root_element.iterfind("OME:Image", self._ome_ns):
-            yield e.attrib["Name"]
+        for counter, e in enumerate(self._root_element.iterfind("OME:Image", self._ome_ns)):
+            yield e.attrib["Name"] or f"Scene #{counter}"
 
     def channel_names(self, image_index) -> Iterable[str]:
         el = self._image_element(image_index).iterfind("OME:Pixels/OME:Channel", self._ome_ns)
