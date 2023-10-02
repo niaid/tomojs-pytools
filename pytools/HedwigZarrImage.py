@@ -157,17 +157,18 @@ class HedwigZarrImage:
 
         zarr_request_size = [1, 0, 1, target_size_y * size_factor, target_size_x * size_factor]
 
-        arr = self._ome_ngff_get_array_from_size(zarr_request_size)
-        logger.debug(arr.info)
+        z_arr = self._ome_ngff_get_array_from_size(zarr_request_size)
+        logger.debug(z_arr.info)
 
-        arr = dask.array.from_zarr(arr.astype(arr.dtype.newbyteorder("=")))
+        d_arr = dask.array.from_zarr(z_arr)
+        d_arr = d_arr.astype(d_arr.dtype.newbyteorder("="))
         if is_vector:
-            arr = dask.array.squeeze(arr, axis=(0, 2))  # Output CYX
-            arr = dask.array.moveaxis(arr, 0, -1)  # transpose to YXC
+            d_arr = dask.array.squeeze(d_arr, axis=(0, 2))  # Output CYX
+            d_arr = dask.array.moveaxis(d_arr, 0, -1)  # transpose to YXC
         else:
-            arr = dask.array.squeeze(arr, axis=(0, 1, 2))
+            d_arr = dask.array.squeeze(d_arr, axis=(0, 1, 2))
 
-        img = sitk.GetImageFromArray(arr.compute(), isVector=is_vector)
+        img = sitk.GetImageFromArray(d_arr.compute(), isVector=is_vector)
 
         logger.debug(img)
 
