@@ -225,9 +225,20 @@ class HedwigZarrImage:
 
         if _shader_type == "MultiChannel":
             assert self._ome_ngff_multiscale_dims()[1] == "C"
-            assert len(list(self.ome_info.channel_names(self.ome_idx))) == self.shape[1]
+
+            if len(list(self.ome_info.channel_names(self.ome_idx))) != self.shape[1]:
+                raise RuntimeError(
+                    f"Mismatch of number of Channels! Array has {self.shape[1]} but there"
+                    f"are {len(list(self.ome_info.channel_names(self.ome_idx)))} names:"
+                    f"{list(self.ome_info.channel_names(self.ome_idx))}"
+                )
             color_sequence = ["red", "green", "blue", "cyan", "yellow", "magenta"]
-            assert self.shape[1] <= len(color_sequence)
+
+            if self.shape[1] > len(color_sequence):
+                raise RuntimeError(
+                    f"Too many channels! The array has {self.shape[1]} channels but"
+                    f" only {len(color_sequence)} is supported!"
+                )
 
             json_channel_array = []
 
