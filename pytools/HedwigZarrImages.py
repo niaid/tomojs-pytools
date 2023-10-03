@@ -79,6 +79,10 @@ class HedwigZarrImages:
         for k_idx, k in enumerate(self.get_series_keys()):
             if item == k and "OME" in self.zarr_root.group_keys():
                 ome_index_to_zarr_group = self.zarr_root["OME"].attrs["series"]
+
+                if len(ome_index_to_zarr_group) != len(set(ome_index_to_zarr_group)):
+                    raise RuntimeError(f'The OME "series" contains duplicated paths: f{ome_index_to_zarr_group}')
+
                 zarr_idx = ome_index_to_zarr_group[k_idx]
                 return HedwigZarrImage(self.zarr_root[zarr_idx], self.ome_info, k_idx)
 
