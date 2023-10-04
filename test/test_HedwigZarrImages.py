@@ -41,7 +41,7 @@ def temp_zarr_path(request, tmp_path_factory, data_path):
             "XYZ",
             "Grayscale",
             "TCZYX",
-            {"window": [263, 413], "range": [-2664, 1677]},
+            {"window": [-2664, 1677], "range": [263, 413]},
         ),
         ("OM_P1_S1_ScanOnly_1k.zarr", "png", (1, 3, 1, 1024, 521), "XYC", "RGB", "TCZYX", {}),
         ("OM_P1_S1_ScanOnly_1k_tiff.zarr", "tiff", (1, 3, 1, 1024, 521), "XYC", "RGB", "TCZYX", {}),
