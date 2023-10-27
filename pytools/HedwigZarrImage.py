@@ -15,7 +15,7 @@ from pathlib import Path
 
 import SimpleITK as sitk
 import zarr
-from typing import Tuple, Dict, List
+from typing import Tuple, Dict, List, Optional
 from pytools.utils import OMEInfo
 import logging
 import math
@@ -203,11 +203,21 @@ class HedwigZarrImage:
             return "Grayscale"
         return "MultiChannel"
 
-    def neuroglancer_shader_parameters(self, mad_scale=3) -> dict:
+    def neuroglancer_shader_parameters(
+        self, *, mad_scale=3, middle_quantile: Optional[Tuple[float, float]] = None
+    ) -> dict:
         """
         Produces the "shaderParameters" portion of the metadata for Neuroglancer
+        :param mad_scale:
+        :param middle_quantile:
         returns JSON serializable object
         """
+
+        if middle_quantile:
+            assert len(middle_quantile) == 2
+            assert 0.0 <= middle_quantile[0] <= 1.0
+            assert 0.0 <= middle_quantile[1] <= 1.0
+
         if self.ome_info is None:
             return {}
 
@@ -248,8 +258,12 @@ class HedwigZarrImage:
                 # replace non-alpha numeric with a underscore
                 name = re.sub(r"[^a-zA-Z0-9]+", "_", c_name.lower())
 
-                stats = self._image_statistics(channel=c)
-                range = (stats["median"] - stats["mad"] * mad_scale, stats["median"] + stats["mad"] * mad_scale)
+                stats = self._image_statistics(quantiles=middle_quantile, channel=c)
+                if middle_quantile:
+                    range = (stats["quantiles"][middle_quantile[0]], stats["quantiles"][middle_quantile[1]])
+                else:
+                    range = (stats["median"] - stats["mad"] * mad_scale, stats["median"] + stats["mad"] * mad_scale)
+
                 range = (max(range[0], stats["min"]), min(range[1], stats["max"]))
 
                 json_channel_array.append(
@@ -314,11 +328,12 @@ class HedwigZarrImage:
             return drequest
         return dshape
 
-    def _image_statistics(self, channel=None) -> Dict[str, List[int]]:
+    def _image_statistics(self, quantiles=None, channel=None) -> Dict[str, List[int]]:
         """Processes the full resolution Zarr image. Dask is used for parallel reading and statistics computation. The
          global scheduler is used for all operations which can be changed with standard Dask configurations.
 
         :param channel: The index of the channel to perform calculation on
+        :param quantiles: values of quantiles to return in option "quantiles" element.
 
         :returns: The resulting dictionary will contain the following data elements:
             "min",
@@ -355,6 +370,9 @@ class HedwigZarrImage:
         stats = histogram_robust_stats(h, bins)
         stats.update(histogram_stats(h, bins))
         stats["min"], stats["max"] = weighted_quantile(mids, quantiles=[0.0, 1.0], sample_weight=h, values_sorted=True)
+        if quantiles:
+            quantile_value = weighted_quantile(mids, quantiles=quantiles, sample_weight=h, values_sorted=True)
+            stats["quantiles"] = {q: v for q, v in zip(quantiles, quantile_value)}
         logger.debug(f"stats: {stats}")
 
         return stats
