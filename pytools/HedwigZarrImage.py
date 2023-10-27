@@ -377,6 +377,7 @@ class HedwigZarrImage:
         stats.update(histogram_stats(h, bins))
         stats["min"], stats["max"] = weighted_quantile(mids, quantiles=[0.0, 1.0], sample_weight=h, values_sorted=True)
         if quantiles:
+            h[0] = 0
             quantile_value = weighted_quantile(mids, quantiles=quantiles, sample_weight=h, values_sorted=True)
             stats["quantiles"] = {q: v for q, v in zip(quantiles, quantile_value)}
         logger.debug(f"stats: {stats}")
