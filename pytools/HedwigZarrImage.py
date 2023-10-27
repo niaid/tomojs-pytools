@@ -258,7 +258,13 @@ class HedwigZarrImage:
                 # replace non-alpha numeric with a underscore
                 name = re.sub(r"[^a-zA-Z0-9]+", "_", c_name.lower())
 
-                stats = self._image_statistics(quantiles=middle_quantile, channel=c)
+                upper_quantile = 0.9999
+                stats = self._image_statistics(
+                    quantiles=[
+                        upper_quantile,
+                    ].a(middle_quantile),
+                    channel=c,
+                )
                 if middle_quantile:
                     range = (stats["quantiles"][middle_quantile[0]], stats["quantiles"][middle_quantile[1]])
                 else:
@@ -269,7 +275,7 @@ class HedwigZarrImage:
                 json_channel_array.append(
                     {
                         "range": [math.floor(range[0]), math.ceil(range[1])],
-                        "window": [math.floor(stats["min"]), math.ceil(stats["max"])],
+                        "window": [math.floor(stats["min"]), math.ceil(stats["quantiles"][upper_quantile])],
                         "name": name,
                         "color": color_sequence[c],
                         "channel": c,
