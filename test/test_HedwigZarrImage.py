@@ -11,8 +11,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-
+import numpy as np
 import pytest
+from pytest import approx
 import shutil
 from pytools.HedwigZarrImages import HedwigZarrImages
 from pytools.HedwigZarrImage import HedwigZarrImage
@@ -77,6 +78,44 @@ def test_HedwigZarrImage_info_for_czi(data_path, zarr_name, attrs):
         assert ngff_dims == z_img._ome_ngff_multiscale_dims()
         for param_key in shader_params:
             shader_params[param_key] == len(z_img.neuroglancer_shader_parameters()[param_key])
+
+
+@pytest.mark.parametrize(
+    "zarr_name, key",
+    [
+        ("KC_M3_S2_ReducedImageSubset2.zarr", "Scene #0"),
+    ],
+)
+def test_HedwigZarrImage_info_for_czi_quantiles(data_path, zarr_name, key):
+    """
+    Test that the quantiles are computed correctly for the neuroglancer shader parameters
+    """
+    zi = HedwigZarrImages(data_path / zarr_name)
+    assert zi.ome_xml_path is not None
+    image_names = list(zi.get_series_keys())
+    assert len(image_names) == 3
+    assert all(image_names)
+
+    z_img = zi[key]
+    assert z_img._ome_ngff_multiscale_dims() == "TCZYX"
+
+    shader_params = z_img._neuroglancer_shader_parameters_multichannel(zero_black_quantiles=False)
+
+    for idx, channel_params in enumerate(shader_params["channelArray"]):
+        param_window_min, param_window_max = channel_params["window"]
+        qvalues = np.quantile(z_img._ome_ngff_multiscale_get_array(0)[:, idx, ...], [0.0, 0.9999])
+
+        assert param_window_min == approx(qvalues[0], abs=1)
+        # not sure why this is not more accurate
+        assert param_window_max == approx(qvalues[1], abs=20)
+
+    shader_params = z_img.neuroglancer_shader_parameters(middle_quantile=(0.25, 0.75))
+
+    for idx, channel_params in enumerate(shader_params["channelArray"]):
+        param_range_min, param_range_max = channel_params["range"]
+        qvalues = np.quantile(z_img._ome_ngff_multiscale_get_array(0)[:, idx, ...], [0.25, 0.75])
+        assert param_range_min == approx(qvalues[0], abs=1)
+        assert param_range_max == approx(qvalues[1], abs=1)
 
 
 @pytest.mark.parametrize("targetx, targety", [(300, 300), (600, 600), (1024, 1024)])

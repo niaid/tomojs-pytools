@@ -204,7 +204,7 @@ class HedwigZarrImage:
         return "MultiChannel"
 
     def _neuroglancer_shader_parameters_multichannel(
-        self, *, mad_scale=3, middle_quantile: Optional[Tuple[float, float]] = None
+        self, *, mad_scale=3, middle_quantile: Optional[Tuple[float, float]] = None, zero_black_quantiles=True
     ) -> dict:
         assert self._ome_ngff_multiscale_dims()[1] == "C"
 
@@ -235,7 +235,7 @@ class HedwigZarrImage:
             stats = self._image_statistics(
                 quantiles=[*middle_quantile, upper_quantile] if middle_quantile else [upper_quantile],
                 channel=c,
-                zero_black_quantiles=True,
+                zero_black_quantiles=zero_black_quantiles,
             )
             if middle_quantile:
                 range = (stats["quantiles"][middle_quantile[0]], stats["quantiles"][middle_quantile[1]])
