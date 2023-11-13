@@ -203,6 +203,59 @@ class HedwigZarrImage:
             return "Grayscale"
         return "MultiChannel"
 
+    def _neuroglancer_shader_parameters_multichannel(
+        self, *, mad_scale=3, middle_quantile: Optional[Tuple[float, float]] = None
+    ) -> dict:
+        assert self._ome_ngff_multiscale_dims()[1] == "C"
+
+        if len(list(self.ome_info.channel_names(self.ome_idx))) != self.shape[1]:
+            raise RuntimeError(
+                f"Mismatch of number of Channels! Array has {self.shape[1]} but there"
+                f"are {len(list(self.ome_info.channel_names(self.ome_idx)))} names:"
+                f"{list(self.ome_info.channel_names(self.ome_idx))}"
+            )
+
+        color_sequence = ["red", "green", "blue", "cyan", "yellow", "magenta"]
+
+        if self.shape[1] > len(color_sequence):
+            raise RuntimeError(
+                f"Too many channels! The array has {self.shape[1]} channels but"
+                f" only {len(color_sequence)} is supported!"
+            )
+
+        json_channel_array = []
+
+        for c, c_name in enumerate(self.ome_info.channel_names(self.ome_idx)):
+            logger.debug(f"Processing channel: {c_name}")
+
+            # replace non-alpha numeric with an underscore
+            name = re.sub(r"[^a-zA-Z0-9]+", "_", c_name.lower())
+
+            upper_quantile = 0.9999
+            stats = self._image_statistics(
+                quantiles=[*middle_quantile, upper_quantile] if middle_quantile else [upper_quantile], channel=c
+            )
+            if middle_quantile:
+                range = (stats["quantiles"][middle_quantile[0]], stats["quantiles"][middle_quantile[1]])
+            else:
+                range = (stats["median"] - stats["mad"] * mad_scale, stats["median"] + stats["mad"] * mad_scale)
+
+            range = (max(range[0], stats["min"]), min(range[1], stats["max"]))
+
+            json_channel_array.append(
+                {
+                    "range": [math.floor(range[0]), math.ceil(range[1])],
+                    "window": [math.floor(stats["min"]), math.ceil(stats["quantiles"][upper_quantile])],
+                    "name": name,
+                    "color": color_sequence[c],
+                    "channel": c,
+                    "clamp": False,
+                    "enabled": True,
+                }
+            )
+
+        return {"brightness": 0.0, "contrast": 0.0, "channelArray": json_channel_array}
+
     def neuroglancer_shader_parameters(
         self, *, mad_scale=3, middle_quantile: Optional[Tuple[float, float]] = None
     ) -> dict:
@@ -217,6 +270,7 @@ class HedwigZarrImage:
             assert len(middle_quantile) == 2
             assert 0.0 <= middle_quantile[0] <= 1.0
             assert 0.0 <= middle_quantile[1] <= 1.0
+            assert middle_quantile[0] < middle_quantile[1]
 
         if self.ome_info is None:
             return {}
@@ -234,57 +288,9 @@ class HedwigZarrImage:
             }
 
         if _shader_type == "MultiChannel":
-            assert self._ome_ngff_multiscale_dims()[1] == "C"
-
-            if len(list(self.ome_info.channel_names(self.ome_idx))) != self.shape[1]:
-                raise RuntimeError(
-                    f"Mismatch of number of Channels! Array has {self.shape[1]} but there"
-                    f"are {len(list(self.ome_info.channel_names(self.ome_idx)))} names:"
-                    f"{list(self.ome_info.channel_names(self.ome_idx))}"
-                )
-            color_sequence = ["red", "green", "blue", "cyan", "yellow", "magenta"]
-
-            if self.shape[1] > len(color_sequence):
-                raise RuntimeError(
-                    f"Too many channels! The array has {self.shape[1]} channels but"
-                    f" only {len(color_sequence)} is supported!"
-                )
-
-            json_channel_array = []
-
-            for c, c_name in enumerate(self.ome_info.channel_names(self.ome_idx)):
-                logger.debug(f"Processing channel: {c_name}")
-
-                # replace non-alpha numeric with a underscore
-                name = re.sub(r"[^a-zA-Z0-9]+", "_", c_name.lower())
-
-                upper_quantile = 0.9999
-                stats = self._image_statistics(
-                    quantiles=[
-                        upper_quantile,
-                    ].a(middle_quantile),
-                    channel=c,
-                )
-                if middle_quantile:
-                    range = (stats["quantiles"][middle_quantile[0]], stats["quantiles"][middle_quantile[1]])
-                else:
-                    range = (stats["median"] - stats["mad"] * mad_scale, stats["median"] + stats["mad"] * mad_scale)
-
-                range = (max(range[0], stats["min"]), min(range[1], stats["max"]))
-
-                json_channel_array.append(
-                    {
-                        "range": [math.floor(range[0]), math.ceil(range[1])],
-                        "window": [math.floor(stats["min"]), math.ceil(stats["quantiles"][upper_quantile])],
-                        "name": name,
-                        "color": color_sequence[c],
-                        "channel": c,
-                        "clamp": False,
-                        "enabled": True,
-                    }
-                )
-
-            return {"brightness": 0.0, "contrast": 0.0, "channelArray": json_channel_array}
+            return self._neuroglancer_shader_parameters_multichannel(
+                mad_scale=mad_scale, middle_quantile=middle_quantile
+            )
 
         raise RuntimeError(f'Unknown shader type: "{self.shader_type}"')
 
