@@ -179,11 +179,11 @@ class HedwigZarrImage:
             if is_vector:
                 img.ToScalarImage(True)
 
-            min_max = sitk.MinimumMaximum(img)
+            min, max = sitk.MinimumMaximum(img)
 
-            logger.debug(f"Adjusting output pixel intensity range from {min_max} -> {(0, 255)}.")
+            logger.debug(f"Adjusting output pixel intensity range from {min, max} -> {(0, 255)}.")
 
-            img = sitk.ShiftScale(img, -min_max[0], 255.0 / (min_max[1] - min_max[0]), sitk.sitkUInt8)
+            img = sitk.ShiftScale(img, -min, 255.0 / (max - min), sitk.sitkUInt8)
 
             if is_vector:
                 img.ToVectorImage(True)
