@@ -233,7 +233,9 @@ class HedwigZarrImage:
 
             upper_quantile = 0.9999
             stats = self._image_statistics(
-                quantiles=[*middle_quantile, upper_quantile] if middle_quantile else [upper_quantile], channel=c
+                quantiles=[*middle_quantile, upper_quantile] if middle_quantile else [upper_quantile],
+                channel=c,
+                zero_black_quantiles=True,
             )
             if middle_quantile:
                 range = (stats["quantiles"][middle_quantile[0]], stats["quantiles"][middle_quantile[1]])
@@ -340,7 +342,7 @@ class HedwigZarrImage:
             return drequest
         return dshape
 
-    def _image_statistics(self, quantiles=None, channel=None) -> Dict[str, List[int]]:
+    def _image_statistics(self, quantiles=None, channel=None, *, zero_black_quantiles=False) -> Dict[str, List[int]]:
         """Processes the full resolution Zarr image. Dask is used for parallel reading and statistics computation. The
          global scheduler is used for all operations which can be changed with standard Dask configurations.
 
@@ -383,7 +385,9 @@ class HedwigZarrImage:
         stats.update(histogram_stats(h, bins))
         stats["min"], stats["max"] = weighted_quantile(mids, quantiles=[0.0, 1.0], sample_weight=h, values_sorted=True)
         if quantiles:
-            h[0] = 0
+            if zero_black_quantiles:
+                h[0] = 0
+
             quantile_value = weighted_quantile(mids, quantiles=quantiles, sample_weight=h, values_sorted=True)
             stats["quantiles"] = {q: v for q, v in zip(quantiles, quantile_value)}
         logger.debug(f"stats: {stats}")
