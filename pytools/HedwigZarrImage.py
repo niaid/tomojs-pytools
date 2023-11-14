@@ -204,8 +204,37 @@ class HedwigZarrImage:
         return "MultiChannel"
 
     def _neuroglancer_shader_parameters_multichannel(
-        self, *, mad_scale=3, middle_quantile: Optional[Tuple[float, float]] = None, zero_black_quantiles=True
+        self,
+        *,
+        mad_scale=3,
+        middle_quantile: Optional[Tuple[float, float]] = None,
+        zero_black_quantiles=True,
+        upper_quantile=0.9999,
     ) -> dict:
+        """
+        Produces the "shaderParameters" portion of the metadata for Neuroglancer when the shader type is MultiChannel.
+
+        The output window parameters are used for the visible histogram range. The computation improves the robustness
+         to outliers and the background pixel values with the zero_black_quantiles option and the upper_quantile value.
+
+        :param mad_scale: The scale factor for the robust median absolute deviation (MAD) about the median to produce
+            the minimum and maximum range that is used to select the visible pixel intensities.
+        :param middle_quantile: If not None then the range is computed from the  provided quantiles of the image data.
+            The middle_quantile is a tuple of two floats that are between 0.0 and 1.0. The first value is the lower
+             quantile and the second value is the upper quantile.
+        :param zero_black_quantiles: If True then the zero values are removed from the histogram before computing the
+            quantiles.
+        :param upper_quantile: The upper quantile to use for the "window", which is the extent of the visible histogram.
+        :return: The dictionary of the shader parameters suitable for JSON serialization.
+
+        """
+
+        if middle_quantile:
+            assert len(middle_quantile) == 2
+            assert 0.0 <= middle_quantile[0] <= 1.0
+            assert 0.0 <= middle_quantile[1] <= 1.0
+            assert middle_quantile[0] < middle_quantile[1]
+
         assert self._ome_ngff_multiscale_dims()[1] == "C"
 
         if len(list(self.ome_info.channel_names(self.ome_idx))) != self.shape[1]:
@@ -231,7 +260,6 @@ class HedwigZarrImage:
             # replace non-alpha numeric with an underscore
             name = re.sub(r"[^a-zA-Z0-9]+", "_", c_name.lower())
 
-            upper_quantile = 0.9999
             stats = self._image_statistics(
                 quantiles=[*middle_quantile, upper_quantile] if middle_quantile else [upper_quantile],
                 channel=c,
@@ -262,17 +290,24 @@ class HedwigZarrImage:
         self, *, mad_scale=3, middle_quantile: Optional[Tuple[float, float]] = None
     ) -> dict:
         """
-        Produces the "shaderParameters" portion of the metadata for Neuroglancer
-        :param mad_scale:
-        :param middle_quantile:
-        returns JSON serializable object
-        """
+        Produces the "shaderParameters" portion of the metadata for Neuroglancer.
 
-        if middle_quantile:
-            assert len(middle_quantile) == 2
-            assert 0.0 <= middle_quantile[0] <= 1.0
-            assert 0.0 <= middle_quantile[1] <= 1.0
-            assert middle_quantile[0] < middle_quantile[1]
+        Determines which shader type to use to render the image. The shader type is one of: RGB, Grayscale, or
+        MultiChannel. The shader parameters are computed from the full resolution Zarr image. Dask is used for parallel
+        reading and statistics computation. The global scheduler is used for all operations which can be changed with
+        standard Dask configurations.
+
+        For the MultiChannel shader type the default algorithm for the range is to compute the robust median absolute
+        deviation (MAD) about the median to produce the minimum and maximum range. If the middle_quantile is not None
+        then the range is computed from the provided quantiles of the image data.
+
+        :param mad_scale: The scale factor for the robust median absolute deviation (MAD) about the median to produce
+            the minimum and maximum range that is used to select the visible pixel intensities.
+        :param middle_quantile: If not None then the range is computed from the  provided quantiles of the image data.
+         The middle_quantile is a tuple of two floats that are between 0.0 and 1.0. The first value is the lower
+         quantile and the second value is the upper quantile. The range is computed from the lower and upper quantiles.
+        :return: The dictionary of the shader parameters suitable for JSON serialization
+        """
 
         if self.ome_info is None:
             return {}
@@ -356,7 +391,8 @@ class HedwigZarrImage:
             "mad",
             "mean",
             "var",
-            "sigma"
+            "sigma",
+            "quantiles" (if quantiles is not None)
 
         """
 
