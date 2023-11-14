@@ -88,9 +88,29 @@ component pixel types.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.HedwigZarrImage.neuroglancer_shader_parameters">
-<span class="sig-name descname"><span class="pre">neuroglancer_shader_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mad_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pytools.HedwigZarrImage.neuroglancer_shader_parameters" title="Link to this definition">¶</a></dt>
-<dd><p>Produces the “shaderParameters” portion of the metadata for Neuroglancer
-returns JSON serializable object</p>
+<span class="sig-name descname"><span class="pre">neuroglancer_shader_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mad_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">middle_quantile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pytools.HedwigZarrImage.neuroglancer_shader_parameters" title="Link to this definition">¶</a></dt>
+<dd><p>Produces the “shaderParameters” portion of the metadata for Neuroglancer.</p>
+<p>Determines which shader type to use to render the image. The shader type is one of: RGB, Grayscale, or
+MultiChannel. The shader parameters are computed from the full resolution Zarr image. Dask is used for parallel
+reading and statistics computation. The global scheduler is used for all operations which can be changed with
+standard Dask configurations.</p>
+<p>For the MultiChannel shader type the default algorithm for the range is to compute the robust median absolute
+deviation (MAD) about the median to produce the minimum and maximum range. If the middle_quantile is not None
+then the range is computed from the provided quantiles of the image data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mad_scale</strong> – The scale factor for the robust median absolute deviation (MAD) about the median to produce
+the minimum and maximum range that is used to select the visible pixel intensities.</p></li>
+<li><p><strong>middle_quantile</strong> – If not None then the range is computed from the  provided quantiles of the image data.
+The middle_quantile is a tuple of two floats that are between 0.0 and 1.0. The first value is the lower
+quantile and the second value is the upper quantile. The range is computed from the lower and upper quantiles.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dictionary of the shader parameters suitable for JSON serialization</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
