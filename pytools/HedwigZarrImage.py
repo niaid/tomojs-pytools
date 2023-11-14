@@ -15,7 +15,7 @@ from pathlib import Path
 
 import SimpleITK as sitk
 import zarr
-from typing import Tuple, Dict, List
+from typing import Tuple, Dict, List, Optional
 from pytools.utils import OMEInfo
 import logging
 import math
@@ -179,11 +179,11 @@ class HedwigZarrImage:
             if is_vector:
                 img.ToScalarImage(True)
 
-            min_max = sitk.MinimumMaximum(img)
+            min, max = sitk.MinimumMaximum(img)
 
-            logger.debug(f"Adjusting output pixel intensity range from {min_max} -> {(0, 255)}.")
+            logger.debug(f"Adjusting output pixel intensity range from {min, max} -> {(0, 255)}.")
 
-            img = sitk.ShiftScale(img, -min_max[0], 255.0 / (min_max[1] - min_max[0]), sitk.sitkUInt8)
+            img = sitk.ShiftScale(img, -min, 255.0 / (max - min), sitk.sitkUInt8)
 
             if is_vector:
                 img.ToVectorImage(True)
@@ -203,11 +203,112 @@ class HedwigZarrImage:
             return "Grayscale"
         return "MultiChannel"
 
-    def neuroglancer_shader_parameters(self, mad_scale=3) -> dict:
+    def _neuroglancer_shader_parameters_multichannel(
+        self,
+        *,
+        mad_scale=3,
+        middle_quantile: Optional[Tuple[float, float]] = None,
+        zero_black_quantiles=True,
+        upper_quantile=0.9999,
+    ) -> dict:
         """
-        Produces the "shaderParameters" portion of the metadata for Neuroglancer
-        returns JSON serializable object
+        Produces the "shaderParameters" portion of the metadata for Neuroglancer when the shader type is MultiChannel.
+
+        The output window parameters are used for the visible histogram range. The computation improves the robustness
+         to outliers and the background pixel values with the zero_black_quantiles option and the upper_quantile value.
+
+        :param mad_scale: The scale factor for the robust median absolute deviation (MAD) about the median to produce
+            the minimum and maximum range that is used to select the visible pixel intensities.
+        :param middle_quantile: If not None then the range is computed from the  provided quantiles of the image data.
+            The middle_quantile is a tuple of two floats that are between 0.0 and 1.0. The first value is the lower
+             quantile and the second value is the upper quantile.
+        :param zero_black_quantiles: If True then the zero values are removed from the histogram before computing the
+            quantiles.
+        :param upper_quantile: The upper quantile to use for the "window", which is the extent of the visible histogram.
+        :return: The dictionary of the shader parameters suitable for JSON serialization.
+
         """
+
+        if middle_quantile:
+            assert len(middle_quantile) == 2
+            assert 0.0 <= middle_quantile[0] <= 1.0
+            assert 0.0 <= middle_quantile[1] <= 1.0
+            assert middle_quantile[0] < middle_quantile[1]
+
+        assert self._ome_ngff_multiscale_dims()[1] == "C"
+
+        if len(list(self.ome_info.channel_names(self.ome_idx))) != self.shape[1]:
+            raise RuntimeError(
+                f"Mismatch of number of Channels! Array has {self.shape[1]} but there"
+                f"are {len(list(self.ome_info.channel_names(self.ome_idx)))} names:"
+                f"{list(self.ome_info.channel_names(self.ome_idx))}"
+            )
+
+        color_sequence = ["red", "green", "blue", "cyan", "yellow", "magenta"]
+
+        if self.shape[1] > len(color_sequence):
+            raise RuntimeError(
+                f"Too many channels! The array has {self.shape[1]} channels but"
+                f" only {len(color_sequence)} is supported!"
+            )
+
+        json_channel_array = []
+
+        for c, c_name in enumerate(self.ome_info.channel_names(self.ome_idx)):
+            logger.debug(f"Processing channel: {c_name}")
+
+            # replace non-alpha numeric with an underscore
+            name = re.sub(r"[^a-zA-Z0-9]+", "_", c_name.lower())
+
+            stats = self._image_statistics(
+                quantiles=[*middle_quantile, upper_quantile] if middle_quantile else [upper_quantile],
+                channel=c,
+                zero_black_quantiles=zero_black_quantiles,
+            )
+            if middle_quantile:
+                range = (stats["quantiles"][middle_quantile[0]], stats["quantiles"][middle_quantile[1]])
+            else:
+                range = (stats["median"] - stats["mad"] * mad_scale, stats["median"] + stats["mad"] * mad_scale)
+
+            range = (max(range[0], stats["min"]), min(range[1], stats["max"]))
+
+            json_channel_array.append(
+                {
+                    "range": [math.floor(range[0]), math.ceil(range[1])],
+                    "window": [math.floor(stats["min"]), math.ceil(stats["quantiles"][upper_quantile])],
+                    "name": name,
+                    "color": color_sequence[c],
+                    "channel": c,
+                    "clamp": False,
+                    "enabled": True,
+                }
+            )
+
+        return {"brightness": 0.0, "contrast": 0.0, "channelArray": json_channel_array}
+
+    def neuroglancer_shader_parameters(
+        self, *, mad_scale=3, middle_quantile: Optional[Tuple[float, float]] = None
+    ) -> dict:
+        """
+        Produces the "shaderParameters" portion of the metadata for Neuroglancer.
+
+        Determines which shader type to use to render the image. The shader type is one of: RGB, Grayscale, or
+        MultiChannel. The shader parameters are computed from the full resolution Zarr image. Dask is used for parallel
+        reading and statistics computation. The global scheduler is used for all operations which can be changed with
+        standard Dask configurations.
+
+        For the MultiChannel shader type the default algorithm for the range is to compute the robust median absolute
+        deviation (MAD) about the median to produce the minimum and maximum range. If the middle_quantile is not None
+        then the range is computed from the provided quantiles of the image data.
+
+        :param mad_scale: The scale factor for the robust median absolute deviation (MAD) about the median to produce
+            the minimum and maximum range that is used to select the visible pixel intensities.
+        :param middle_quantile: If not None then the range is computed from the  provided quantiles of the image data.
+         The middle_quantile is a tuple of two floats that are between 0.0 and 1.0. The first value is the lower
+         quantile and the second value is the upper quantile. The range is computed from the lower and upper quantiles.
+        :return: The dictionary of the shader parameters suitable for JSON serialization
+        """
+
         if self.ome_info is None:
             return {}
 
@@ -224,47 +325,9 @@ class HedwigZarrImage:
             }
 
         if _shader_type == "MultiChannel":
-            assert self._ome_ngff_multiscale_dims()[1] == "C"
-
-            if len(list(self.ome_info.channel_names(self.ome_idx))) != self.shape[1]:
-                raise RuntimeError(
-                    f"Mismatch of number of Channels! Array has {self.shape[1]} but there"
-                    f"are {len(list(self.ome_info.channel_names(self.ome_idx)))} names:"
-                    f"{list(self.ome_info.channel_names(self.ome_idx))}"
-                )
-            color_sequence = ["red", "green", "blue", "cyan", "yellow", "magenta"]
-
-            if self.shape[1] > len(color_sequence):
-                raise RuntimeError(
-                    f"Too many channels! The array has {self.shape[1]} channels but"
-                    f" only {len(color_sequence)} is supported!"
-                )
-
-            json_channel_array = []
-
-            for c, c_name in enumerate(self.ome_info.channel_names(self.ome_idx)):
-                logger.debug(f"Processing channel: {c_name}")
-
-                # replace non-alpha numeric with a underscore
-                name = re.sub(r"[^a-zA-Z0-9]+", "_", c_name.lower())
-
-                stats = self._image_statistics(channel=c)
-                range = (stats["median"] - stats["mad"] * mad_scale, stats["median"] + stats["mad"] * mad_scale)
-                range = (max(range[0], stats["min"]), min(range[1], stats["max"]))
-
-                json_channel_array.append(
-                    {
-                        "range": [math.floor(range[0]), math.ceil(range[1])],
-                        "window": [math.floor(stats["min"]), math.ceil(stats["max"])],
-                        "name": name,
-                        "color": color_sequence[c],
-                        "channel": c,
-                        "clamp": False,
-                        "enabled": True,
-                    }
-                )
-
-            return {"brightness": 0.0, "contrast": 0.0, "channelArray": json_channel_array}
+            return self._neuroglancer_shader_parameters_multichannel(
+                mad_scale=mad_scale, middle_quantile=middle_quantile
+            )
 
         raise RuntimeError(f'Unknown shader type: "{self.shader_type}"')
 
@@ -314,11 +377,12 @@ class HedwigZarrImage:
             return drequest
         return dshape
 
-    def _image_statistics(self, channel=None) -> Dict[str, List[int]]:
+    def _image_statistics(self, quantiles=None, channel=None, *, zero_black_quantiles=False) -> Dict[str, List[int]]:
         """Processes the full resolution Zarr image. Dask is used for parallel reading and statistics computation. The
          global scheduler is used for all operations which can be changed with standard Dask configurations.
 
         :param channel: The index of the channel to perform calculation on
+        :param quantiles: values of quantiles to return in option "quantiles" element.
 
         :returns: The resulting dictionary will contain the following data elements:
             "min",
@@ -327,7 +391,8 @@ class HedwigZarrImage:
             "mad",
             "mean",
             "var",
-            "sigma"
+            "sigma",
+            "quantiles" (if quantiles is not None)
 
         """
 
@@ -355,6 +420,12 @@ class HedwigZarrImage:
         stats = histogram_robust_stats(h, bins)
         stats.update(histogram_stats(h, bins))
         stats["min"], stats["max"] = weighted_quantile(mids, quantiles=[0.0, 1.0], sample_weight=h, values_sorted=True)
+        if quantiles:
+            if zero_black_quantiles:
+                h[0] = 0
+
+            quantile_value = weighted_quantile(mids, quantiles=quantiles, sample_weight=h, values_sorted=True)
+            stats["quantiles"] = {q: v for q, v in zip(quantiles, quantile_value)}
         logger.debug(f"stats: {stats}")
 
         return stats

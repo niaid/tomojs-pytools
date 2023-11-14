@@ -38,6 +38,14 @@ def test_weighted_quantile():
     assert pytools_hist.weighted_quantile(v, [0.5], sample_weight=h) == approx(4)
     assert pytools_hist.weighted_quantile(v, [1], sample_weight=h) == approx(6)
 
+    data = list(range(100))
+    h, b = np.histogram(data, bins=np.arange(-0.5, 100.5))
+    v = 0.5 * (b[1:] + b[:-1])
+    print(b)
+    quantiles_values = list(pytools_hist.weighted_quantile(v, [0.25, 0.5, 0.75], sample_weight=h))
+    for value, baseline in zip(quantiles_values, [24.5, 49.5, 74.5]):
+        assert value == approx(baseline)
+
 
 def test_histogram_stats():
     data = [3]
