@@ -67,7 +67,7 @@ class HedwigZarrImage:
         """
         return self._ome_ngff_multiscale_get_array(0).shape
 
-    def rechunk(self, chunk_size: int, compressor=None) -> None:
+    def rechunk(self, chunk_size: int, compressor=None, *, in_memory=True) -> None:
         """
         Change the chunk size of each ZARR array inplace in the pyramid.
 
@@ -100,11 +100,17 @@ class HedwigZarrImage:
                 logger.info("Chunks already requested size")
                 continue
 
-            if compressor is None:
-                compressor = arr.compressor
+            temp_arr = arr
+            if in_memory:
+                memory_group = zarr.group(store=zarr.MemoryStore(), overwrite=True)
+
+                zarr.copy(temp_arr, memory_group, compressor=None)
+
+                temp_arr = memory_group[temp_arr.name]
+
             # copy array to a temp zarr array on file
             zarr.copy(
-                arr,
+                temp_arr,
                 self.zarr_group,
                 name=arr_name + ".temp",
                 chunks=chunks,
