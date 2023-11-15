@@ -87,7 +87,7 @@ jobs:
         python -m twine check dist/*
         ls -la dist
     - name: Upload package
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' and matrix.python-version == '3.11'
       uses: actions/upload-artifact@v3
       with:
         name: python-packages
