@@ -67,7 +67,7 @@ class HedwigZarrImage:
         """
         return self._ome_ngff_multiscale_get_array(0).shape
 
-    def rechunk(self, chunk_size: int, compressor=None) -> None:
+    def rechunk(self, chunk_size: int, compressor=None, *, in_memory=False) -> None:
         """
         Change the chunk size of each ZARR array inplace in the pyramid.
 
@@ -78,6 +78,9 @@ class HedwigZarrImage:
         :param chunk_size: The size as an integer to resize the chunk sizes.
         :param compressor: The output arrays will be written with the provided compressor, if None then the compressor
          of the input arrays will be used.
+        :param in_memory: If true the entire arrays will be loaded into memory uncompressed, before writing to the
+        rechunked size, otherwise the arrays will be written directly to the rechunked size. The former is faster but
+        requires enough memory to hold the arrays.
         """
 
         logger.info(f'Processing group: "{self.zarr_group.name}"...')
@@ -100,11 +103,19 @@ class HedwigZarrImage:
                 logger.info("Chunks already requested size")
                 continue
 
-            if compressor is None:
-                compressor = arr.compressor
+            temp_arr = arr
+            if in_memory:
+                logger.info(f'Loading array: "{arr.name}" into memory...')
+                # optionally load the entire array uncompressed into memory
+                memory_group = zarr.group(store=zarr.MemoryStore(), overwrite=True)
+                zarr.copy(temp_arr, memory_group, name="temp", compressor=None)
+                temp_arr = memory_group["temp"]
+
+                logger.info(f'Rechunking array: "{arr.name} to disk"...')
+
             # copy array to a temp zarr array on file
             zarr.copy(
-                arr,
+                temp_arr,
                 self.zarr_group,
                 name=arr_name + ".temp",
                 chunks=chunks,
