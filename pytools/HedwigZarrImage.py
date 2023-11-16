@@ -105,10 +105,13 @@ class HedwigZarrImage:
 
             temp_arr = arr
             if in_memory:
+                logger.info(f'Loading array: "{arr.name}" into memory...')
                 # optionally load the entire array uncompressed into memory
                 memory_group = zarr.group(store=zarr.MemoryStore(), overwrite=True)
                 zarr.copy(temp_arr, memory_group, name="temp", compressor=None)
                 temp_arr = memory_group["temp"]
+
+                logger.info(f'Rechunking array: "{arr.name} to disk"...')
 
             # copy array to a temp zarr array on file
             zarr.copy(
