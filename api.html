@@ -121,7 +121,7 @@ quantile and the second value is the upper quantile. The range is computed from 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.HedwigZarrImage.rechunk">
-<span class="sig-name descname"><span class="pre">rechunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pytools.HedwigZarrImage.rechunk" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">rechunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_memory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pytools.HedwigZarrImage.rechunk" title="Link to this definition">¶</a></dt>
 <dd><p>Change the chunk size of each ZARR array inplace in the pyramid.</p>
 <p>The chunk_size is applied to all spacial dimension, and other dimension (CT) are the full size.</p>
 <p>The ImageZarrImage need write access to the ZARR.</p>
@@ -131,9 +131,12 @@ quantile and the second value is the upper quantile. The range is computed from 
 <li><p><strong>chunk_size</strong> – The size as an integer to resize the chunk sizes.</p></li>
 <li><p><strong>compressor</strong> – The output arrays will be written with the provided compressor, if None then the compressor
 of the input arrays will be used.</p></li>
+<li><p><strong>in_memory</strong> – If true the entire arrays will be loaded into memory uncompressed, before writing to the</p></li>
 </ul>
 </dd>
 </dl>
+<p>rechunked size, otherwise the arrays will be written directly to the rechunked size. The former is faster but
+requires enough memory to hold the arrays.</p>
 </dd></dl>
 
 <dl class="py property">
