@@ -67,6 +67,15 @@ class HedwigZarrImage:
         """
         return self._ome_ngff_multiscale_get_array(0).shape
 
+    @property
+    def spacing(self) -> Tuple[float]:
+        """The size of the dimensions of the full resolution image.
+
+        This is in numpy/zarr/dask order.
+        """
+
+        return self._ome_ngff_multiscales(idx=0)["datasets"][0]["coordinateTransformations"][0]["scale"]
+
     def rechunk(self, chunk_size: int, compressor=None, *, in_memory=False) -> None:
         """
         Change the chunk size of each ZARR array inplace in the pyramid.
@@ -168,7 +177,8 @@ class HedwigZarrImage:
 
         zarr_request_size = [1, 0, 1, target_size_y * size_factor, target_size_x * size_factor]
 
-        z_arr = self._ome_ngff_get_array_from_size(zarr_request_size)
+        z_arr, spacing_tczyx = self._ome_ngff_get_array_from_size(zarr_request_size)
+
         logger.debug(z_arr.info)
 
         d_arr = dask.array.from_zarr(z_arr)
@@ -180,6 +190,7 @@ class HedwigZarrImage:
             d_arr = dask.array.squeeze(d_arr, axis=(0, 1, 2))
 
         img = sitk.GetImageFromArray(d_arr.compute(), isVector=is_vector)
+        img.SetSpacing((spacing_tczyx[4], spacing_tczyx[3]))
 
         logger.debug(img)
 
@@ -360,7 +371,7 @@ class HedwigZarrImage:
             dims += ax["name"].upper()
         return dims
 
-    def _ome_ngff_get_array_from_size(self, target_size: List[int]) -> zarr.Array:
+    def _ome_ngff_get_array_from_size(self, target_size: List[int]) -> Tuple[zarr.Array, List[float]]:
         """Returns the smallest array in the OME-NGFF pyramid structured ZARR array that is larger than the target sizes
         in all dimensions.
 
@@ -369,18 +380,19 @@ class HedwigZarrImage:
         """
 
         for dataset in reversed(self._ome_ngff_multiscales(idx=0)["datasets"]):
+            spacing = dataset["coordinateTransformations"][0]["scale"]
             level_path = dataset["path"]
 
             arr = self.zarr_group[level_path]
 
             if any([s > t for s, t in zip(arr.shape, target_size) if t > 0]):
-                return self.zarr_group[level_path]
+                return self.zarr_group[level_path], spacing
 
         logger.warning(
             f"Could not find an array in the OME-NGFF pyramid structured ZARR array that is larger"
             f" than the target size: {target_size}"
         )
-        return self.zarr_group[self._ome_ngff_multiscales(idx=0)["datasets"][0]["path"]]
+        return self.zarr_group[level_path], spacing
 
     @staticmethod
     def _chunk_logic_dim(drequest: int, dshape: int) -> int:
