@@ -33,7 +33,7 @@ class HedwigZarrImage:
     The member provide information useful for the Hedwig imaging pipelines.
     """
 
-    def __init__(self, zarr_grp: zarr.Group, _ome_info: OMEInfo, _ome_idx: int):
+    def __init__(self, zarr_grp: zarr.Group, _ome_info: OMEInfo, _ome_idx: Optional[int] = None):
         self.zarr_group = zarr_grp
         self.ome_info = _ome_info
         self.ome_idx = _ome_idx

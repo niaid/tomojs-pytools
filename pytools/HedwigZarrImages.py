@@ -12,9 +12,8 @@
 #  limitations under the License.
 
 from pathlib import Path
-
 import zarr
-from typing import Optional, Iterable, Tuple, AnyStr
+from typing import Optional, Iterable, Tuple, AnyStr, Union
 from pytools.utils import OMEInfo
 from pytools.HedwigZarrImage import HedwigZarrImage
 import logging
@@ -75,7 +74,21 @@ class HedwigZarrImages:
 
         return filter(lambda x: x != "OME", self.zarr_root.group_keys())
 
-    def __getitem__(self, item) -> HedwigZarrImage:
+    def group(self, name: str) -> HedwigZarrImage:
+        """
+        Returns a HedwigZarrImage from the given ZARR group name or path.
+        """
+
+        if self.ome_xml_path is None:
+            return HedwigZarrImage(self.zarr_root[name])
+
+        ome_index_to_zarr_group = self.zarr_root["OME"].attrs["series"]
+        k_idx = ome_index_to_zarr_group.index(name)
+        print(f"k_idx: {k_idx}")
+        return HedwigZarrImage(self.zarr_root[name], self.ome_info, k_idx)
+
+    def __getitem__(self, item: Union[str, int]) -> HedwigZarrImage:
+
         for k_idx, k in enumerate(self.get_series_keys()):
             if item == k and "OME" in self.zarr_root.group_keys():
                 ome_index_to_zarr_group = self.zarr_root["OME"].attrs["series"]
