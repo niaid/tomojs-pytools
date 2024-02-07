@@ -61,10 +61,51 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
+    --chunk-size
+
+      <ul>
+        <li><a href="commandline.html#cmdoption-zarr_rechunk-chunk-size">zarr_rechunk command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --in-memory
+
+      <ul>
+        <li><a href="commandline.html#cmdoption-zarr_rechunk-in-memory">zarr_rechunk command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --log-level
+
+      <ul>
+        <li><a href="commandline.html#cmdoption-zarr_info-log-level">zarr_info command line option</a>
+</li>
+        <li><a href="commandline.html#cmdoption-zarr_rechunk-log-level">zarr_rechunk command line option</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    --recompress
+
+      <ul>
+        <li><a href="commandline.html#cmdoption-zarr_rechunk-recompress">zarr_rechunk command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --show
+
+      <ul>
+        <li><a href="commandline.html#cmdoption-zarr_info-show">zarr_info command line option</a>
+</li>
+      </ul></li>
+      <li>
     --version
 
       <ul>
-        <li><a href="commandline.html#cmdoption-mrc2nifti-version">mrc2nifti command line option</a>
+        <li><a href="commandline.html#cmdoption-zarr_info-version">zarr_info command line option</a>
+</li>
+        <li><a href="commandline.html#cmdoption-zarr_rechunk-version">zarr_rechunk command line option</a>
 </li>
       </ul></li>
   </ul></td>
@@ -140,10 +181,12 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    INPUT_IMAGE
+    INPUT_ZARR
 
       <ul>
-        <li><a href="commandline.html#cmdoption-mrc2nifti-arg-INPUT_IMAGE">mrc2nifti command line option</a>
+        <li><a href="commandline.html#cmdoption-zarr_info-arg-INPUT_ZARR">zarr_info command line option</a>
+</li>
+        <li><a href="commandline.html#cmdoption-zarr_rechunk-arg-INPUT_ZARR">zarr_rechunk command line option</a>
 </li>
       </ul></li>
   </ul></td>
@@ -176,19 +219,6 @@
 </li>
       </ul></li>
   </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    mrc2nifti command line option
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-mrc2nifti-version">--version</a>
-</li>
-        <li><a href="commandline.html#cmdoption-mrc2nifti-arg-INPUT_IMAGE">INPUT_IMAGE</a>
-</li>
-        <li><a href="commandline.html#cmdoption-mrc2nifti-arg-OUTPUT_IMAGE">OUTPUT_IMAGE</a>
-</li>
-      </ul></li>
-  </ul></td>
 </tr></table>
 
 <h2 id="N">N</h2>
@@ -204,17 +234,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pytools.HedwigZarrImages.ome_info">ome_info (pytools.HedwigZarrImages property)</a>
 </li>
-      <li><a href="api.html#pytools.HedwigZarrImages.ome_xml_path">ome_xml_path (pytools.HedwigZarrImages property)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    OUTPUT_IMAGE
-
-      <ul>
-        <li><a href="commandline.html#cmdoption-mrc2nifti-arg-OUTPUT_IMAGE">mrc2nifti command line option</a>
+      <li><a href="api.html#pytools.HedwigZarrImages.ome_xml_path">ome_xml_path (pytools.HedwigZarrImages property)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -322,6 +345,36 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pytools.zarr_extract_2d">zarr_extract_2d() (in module pytools)</a>
 </li>
+      <li>
+    zarr_info command line option
+
+      <ul>
+        <li><a href="commandline.html#cmdoption-zarr_info-log-level">--log-level</a>
+</li>
+        <li><a href="commandline.html#cmdoption-zarr_info-show">--show</a>
+</li>
+        <li><a href="commandline.html#cmdoption-zarr_info-version">--version</a>
+</li>
+        <li><a href="commandline.html#cmdoption-zarr_info-arg-INPUT_ZARR">INPUT_ZARR</a>
+</li>
+      </ul></li>
+      <li>
+    zarr_rechunk command line option
+
+      <ul>
+        <li><a href="commandline.html#cmdoption-zarr_rechunk-chunk-size">--chunk-size</a>
+</li>
+        <li><a href="commandline.html#cmdoption-zarr_rechunk-in-memory">--in-memory</a>
+</li>
+        <li><a href="commandline.html#cmdoption-zarr_rechunk-log-level">--log-level</a>
+</li>
+        <li><a href="commandline.html#cmdoption-zarr_rechunk-recompress">--recompress</a>
+</li>
+        <li><a href="commandline.html#cmdoption-zarr_rechunk-version">--version</a>
+</li>
+        <li><a href="commandline.html#cmdoption-zarr_rechunk-arg-INPUT_ZARR">INPUT_ZARR</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pytools.utils.histogram.ZARRHistogramHelper">ZARRHistogramHelper (class in pytools.utils.histogram)</a>

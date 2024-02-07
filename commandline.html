@@ -46,39 +46,115 @@
   <section id="command-line-interface">
 <h1>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Link to this heading">¶</a></h1>
 <p>The Pytools packages contain a command line executables for various tasks. They can be invoke directly as an executable:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mrc2nifti<span class="w"> </span>--help
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>zarr_rechunk<span class="w"> </span>--help
 </pre></div>
 </div>
 <p>Or the preferred way using the <cite>python</cite> executable to execute the module entry point:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>mrc2nifti<span class="w"> </span>--help
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>zarr_rechunk<span class="w"> </span>--help
 </pre></div>
 </div>
 <p>With either method of invoking the command line interface, the following sections describes the sub-commands available
 and the command line options available.</p>
-<section id="mrc2nifti">
-<h2>mrc2nifti<a class="headerlink" href="#mrc2nifti" title="Link to this heading">¶</a></h2>
-<p>Reads the INPUT_IMAGE as an MRC formatted file to OUTPUT_IMAGE as a NIFTI formatted file.</p>
-<p>The OUTPUT_IMAGE file name must not already exist.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mrc2nifti<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>INPUT_IMAGE<span class="w"> </span>OUTPUT_IMAGE
+<section id="zarr-rechunk">
+<h2>zarr_rechunk<a class="headerlink" href="#zarr-rechunk" title="Link to this heading">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>zarr_rechunk<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>INPUT_ZARR
 </pre></div>
 </div>
 <p class="rubric">Options</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-mrc2nifti-version">
-<span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mrc2nifti-version" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-zarr_rechunk-log-level">
+<span class="sig-name descname"><span class="pre">--log-level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-zarr_rechunk-log-level" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Options<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DEBUG | INFO | WARNING | ERROR</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-zarr_rechunk-chunk-size">
+<span class="sig-name descname"><span class="pre">--chunk-size</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;chunk_size&gt;</span></span><a class="headerlink" href="#cmdoption-zarr_rechunk-chunk-size" title="Link to this definition">¶</a></dt>
+<dd><p>The size of zarr chunks stored in spatial dimensions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">64</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-zarr_rechunk-recompress">
+<span class="sig-name descname"><span class="pre">--recompress</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-zarr_rechunk-recompress" title="Link to this definition">¶</a></dt>
+<dd><p>Use the preferred compressor when recompressing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-zarr_rechunk-in-memory">
+<span class="sig-name descname"><span class="pre">--in-memory</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-zarr_rechunk-in-memory" title="Link to this definition">¶</a></dt>
+<dd><p>Use in-memory zarr store when recompressing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-zarr_rechunk-version">
+<span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-zarr_rechunk-version" title="Link to this definition">¶</a></dt>
 <dd><p>Show the version and exit.</p>
 </dd></dl>
 
 <p class="rubric">Arguments</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-mrc2nifti-arg-INPUT_IMAGE">
-<span class="sig-name descname"><span class="pre">INPUT_IMAGE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mrc2nifti-arg-INPUT_IMAGE" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-zarr_rechunk-arg-INPUT_ZARR">
+<span class="sig-name descname"><span class="pre">INPUT_ZARR</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-zarr_rechunk-arg-INPUT_ZARR" title="Link to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
+</section>
+<section id="zarr-info">
+<h2>zarr_info<a class="headerlink" href="#zarr-info" title="Link to this heading">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>zarr_info<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>INPUT_ZARR
+</pre></div>
+</div>
+<p class="rubric">Options</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-mrc2nifti-arg-OUTPUT_IMAGE">
-<span class="sig-name descname"><span class="pre">OUTPUT_IMAGE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mrc2nifti-arg-OUTPUT_IMAGE" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-zarr_info-show">
+<span class="sig-name descname"><span class="pre">--show</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-zarr_info-show" title="Link to this definition">¶</a></dt>
+<dd><p>Use SimpleITK Show function to display images at 1024x1024 resolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-zarr_info-log-level">
+<span class="sig-name descname"><span class="pre">--log-level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-zarr_info-log-level" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Options<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DEBUG | INFO | WARNING | ERROR</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-zarr_info-version">
+<span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-zarr_info-version" title="Link to this definition">¶</a></dt>
+<dd><p>Show the version and exit.</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-zarr_info-arg-INPUT_ZARR">
+<span class="sig-name descname"><span class="pre">INPUT_ZARR</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-zarr_info-arg-INPUT_ZARR" title="Link to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
@@ -96,7 +172,8 @@ and the command line options available.</p>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">Command Line Interface</a><ul>
-<li><a class="reference internal" href="#mrc2nifti">mrc2nifti</a></li>
+<li><a class="reference internal" href="#zarr-rechunk">zarr_rechunk</a></li>
+<li><a class="reference internal" href="#zarr-info">zarr_info</a></li>
 </ul>
 </li>
 </ul>
