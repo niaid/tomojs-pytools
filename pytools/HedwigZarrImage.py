@@ -28,9 +28,7 @@ logger = logging.getLogger(__name__)
 
 class HedwigZarrImage:
     """
-    Represents a OME-NGFF Zarr pyramidal image.
-
-    The member provide information useful for the Hedwig imaging pipelines.
+    Represents a OME-NGFF Zarr pyramidal image. The members provide information useful for the Hedwig imaging pipelines.
     """
 
     def __init__(self, zarr_grp: zarr.Group, _ome_info: OMEInfo, _ome_idx: int):
