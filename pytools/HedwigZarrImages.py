@@ -84,7 +84,6 @@ class HedwigZarrImages:
 
         ome_index_to_zarr_group = self.zarr_root["OME"].attrs["series"]
         k_idx = ome_index_to_zarr_group.index(name)
-        print(f"k_idx: {k_idx}")
         return HedwigZarrImage(self.zarr_root[name], self.ome_info, k_idx)
 
     def __getitem__(self, item: Union[str, int]) -> HedwigZarrImage:

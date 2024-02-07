@@ -154,7 +154,7 @@ def add_zarr_image(viewer_txn: neuroglancer.Viewer, zarr_path: Path, server_url:
     :param server_url: The url to the server hosting the zarr file. The zarr_path will be appended to this url with the
     component containing the "zarr" extensions and the subsequent key.
     :param transform_filename: The filename of a SimpleITK transform file. The provided transform file is a SimpleITK
-     format. The transform mapps points from the output space to the input space, and is inteverted before being passed
+     format. The transform maps points from the output space to the input space, and is inverted before being passed
      to neuroglancer. If None, then the identity transform is used.
 
     """
@@ -182,7 +182,24 @@ def add_zarr_image(viewer_txn: neuroglancer.Viewer, zarr_path: Path, server_url:
 
 
 def add_roi_annotations(viewer_txn, ome_xml_filename, *, layername="roi annotation", reference_zarr=None):
+    """
+    Add ROI annotations to the neuroglancer viewer. The annotations are read from the OME-XML file.
+
+    The OME-XML specifications for ROI models is here:
+      https://docs.openmicroscopy.org/ome-model/5.6.3/developers/roi.html
+
+    :param viewer_txn: The neuroglancer viewer transaction object.
+    :param ome_xml_filename: The path to the OME-XML file.
+    :param layername: The name of the annotation layer in the viewer.
+    :param reference_zarr: The path to the reference zarr file. The ROI is specified in the image coordinate space and
+    the image meta-data is needed to convert to the physical space. NOTE: This could come from the OME-XML description
+    for an image but currently does not.
+
+    """
+
     if reference_zarr:
+        # Coordinate for the ROI rectangles are in the space of an image. The dimensions/CoordinateSpace map the
+        # index space to physical space and the "scales" from the reference image are needed to map the space.
         zarr_root = Path(reference_zarr).parent
         zarr_key = Path(reference_zarr).name
         hwz_images = HedwigZarrImages(zarr_root)
@@ -207,9 +224,10 @@ def add_roi_annotations(viewer_txn, ome_xml_filename, *, layername="roi annotati
 
     viewer_txn.layers[layername] = layer
 
-    # Coordinates are in the space of the original input image. The dimensions/CooridinateSpace map the
-    # index space to physical space.
     for roi in xml_root.iterfind("OME:ROI", ns):
+        text = roi.attrib["ID"]
+        if "Name" in roi.attrib:
+            text = roi.attrib["Name"]
         for r in roi.iterfind("./OME:Union/OME:Rectangle", ns):
             height = float(r.attrib["Height"])
             width = float(r.attrib["Width"])
