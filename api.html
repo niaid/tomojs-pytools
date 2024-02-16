@@ -43,7 +43,7 @@
 <span id="api"></span><h1>API<a class="headerlink" href="#module-pytools" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="pytools.HedwigZarrImage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.</span></span><span class="sig-name descname"><span class="pre">HedwigZarrImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zarr_grp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_ome_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OMEInfo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_ome_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.HedwigZarrImage" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.</span></span><span class="sig-name descname"><span class="pre">HedwigZarrImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zarr_grp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_ome_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OMEInfo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_ome_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.HedwigZarrImage" title="Link to this definition">¶</a></dt>
 <dd><p>Represents a OME-NGFF Zarr pyramidal image. The members provide information useful for the Hedwig imaging pipelines.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="pytools.HedwigZarrImage.dims">
@@ -170,6 +170,12 @@ requires enough memory to hold the arrays.</p>
 <dd><p>Returns an iterable of strings of the names or labels of the images. Will be extracted from
 the OME-XML if available otherwise the ZARR group names.
 e.g. “label_image”</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImages.group">
+<span class="sig-name descname"><span class="pre">group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pytools.HedwigZarrImage" title="pytools.HedwigZarrImage.HedwigZarrImage"><span class="pre">HedwigZarrImage</span></a></span></span><a class="headerlink" href="#pytools.HedwigZarrImages.group" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a HedwigZarrImage from the given ZARR group name or path.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -402,6 +408,7 @@ considered an implementation detail that may change.</p>
 </li>
 <li><a class="reference internal" href="#pytools.HedwigZarrImages"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImages</span></code></a><ul>
 <li><a class="reference internal" href="#pytools.HedwigZarrImages.get_series_keys"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImages.get_series_keys()</span></code></a></li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImages.group"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImages.group()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.HedwigZarrImages.ome_info"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImages.ome_info</span></code></a></li>
 <li><a class="reference internal" href="#pytools.HedwigZarrImages.ome_xml_path"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImages.ome_xml_path</span></code></a></li>
 <li><a class="reference internal" href="#pytools.HedwigZarrImages.series"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImages.series()</span></code></a></li>
