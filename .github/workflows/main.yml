@@ -75,7 +75,7 @@ jobs:
       run: |
         python -m pytest --junitxml=junit/test-results-${{ matrix.python-version }}.xml
     - name: Upload pytest test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: pytest-results-${{ matrix.python-version }}
         path: junit/test-results-${{ matrix.python-version }}.xml
@@ -88,7 +88,7 @@ jobs:
         ls -la dist
     - name: Upload package
       if: github.event_name == 'push' && matrix.python-version == '3.11'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: python-packages
         path: dist
@@ -115,7 +115,7 @@ jobs:
         make -C docs html
     - name: Upload documentation
       if: github.event_name == 'push'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: sphinx-docs
         path: docs/_build/html
