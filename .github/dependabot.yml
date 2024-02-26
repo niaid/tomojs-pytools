@@ -11,7 +11,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/"
-    versioning-strategy: "widen"
+    versioning-strategy: "increase-if-necessary"
     schedule:
       interval: "weekly"
       day: "sunday"
