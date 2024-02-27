@@ -346,16 +346,27 @@ reducing the resolution in the “shrink” dimensions, by a factor of 2.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pytools.utils.histogram.weighted_quantile">
 <span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">weighted_quantile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.weighted_quantile" title="Link to this definition">¶</a></dt>
-<dd><p>Very close to numpy.percentile, but supports weights.
-NOTE: quantiles should be in [0, 1]!
-:param values: numpy.array with data
-:param quantiles: array-like with many quantiles needed
-:param sample_weight: array-like of the same length as <cite>array</cite>
-:param values_sorted: bool, if True, then will avoid sorting of
-initial array
-:param old_style: if True, will correct output to be consistent
-with numpy.percentile.
-:return: numpy.array with computed quantiles.</p>
+<dd><p>Very close to numpy.percentile, but supports weights.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>quantiles should be in [0, 1]!</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> – numpy.array with data</p></li>
+<li><p><strong>quantiles</strong> – array-like with many quantiles needed</p></li>
+<li><p><strong>sample_weight</strong> – array-like of the same length as <cite>array</cite></p></li>
+<li><p><strong>values_sorted</strong> – bool, if True, then will avoid sorting of
+initial array</p></li>
+<li><p><strong>old_style</strong> – if True, will correct output to be consistent
+with numpy.percentile.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.array with computed quantiles.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function" id="module-pytools.convert">
