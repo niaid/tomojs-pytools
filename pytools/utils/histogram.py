@@ -25,14 +25,16 @@ logger = logging.getLogger(__name__)
 
 def weighted_quantile(values, quantiles, sample_weight=None, values_sorted=False, old_style=False):
     """Very close to numpy.percentile, but supports weights.
-    NOTE: quantiles should be in [0, 1]!
+
+    .. note:: quantiles should be in [0, 1]!
+
     :param values: numpy.array with data
     :param quantiles: array-like with many quantiles needed
     :param sample_weight: array-like of the same length as `array`
     :param values_sorted: bool, if True, then will avoid sorting of
-    initial array
+      initial array
     :param old_style: if True, will correct output to be consistent
-    with numpy.percentile.
+      with numpy.percentile.
     :return: numpy.array with computed quantiles.
     """
     values = np.array(values)
