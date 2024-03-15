@@ -98,13 +98,11 @@ class HedwigZarrImages:
             return HedwigZarrImage(self.zarr_root[item], self.ome_info, item)
 
         elif isinstance(item, str):
-            series_keys = list(self.get_series_keys())
             ome_index_to_zarr_group = self.zarr_root["OME"].attrs["series"]
-            if item not in series_keys:
-                raise KeyError(f"Series name {item} not found: {series_keys}! ")
-            ome_idx = series_keys.index(item)
-            zarr_key = ome_index_to_zarr_group[ome_idx]
-            return HedwigZarrImage(self.zarr_root[zarr_key], self.ome_info, ome_idx)
+            for ome_idx, k in enumerate(self.get_series_keys()):
+                if k == item:
+                    return HedwigZarrImage(self.zarr_root[ome_index_to_zarr_group[ome_idx]], self.ome_info, ome_idx)
+            raise KeyError(f"Series name {item} not found: {list(self.get_series_keys())}! ")
 
     def series(self) -> Iterable[Tuple[str, HedwigZarrImage]]:
         """An Iterable of key and HedwigZarrImages stored in the ZARR structure."""
