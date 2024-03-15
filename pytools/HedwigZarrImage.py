@@ -74,6 +74,14 @@ class HedwigZarrImage:
 
         return self._ome_ngff_multiscales(idx=0)["datasets"][0]["coordinateTransformations"][0]["scale"]
 
+    @property
+    def units(self) -> Tuple[str]:
+        """The units of the dimensions of the full resolution image.
+
+        This is in numpy/zarr/dask order.
+        """
+        return tuple(str(ax["unit"]) if "unit" in ax else "" for ax in self._ome_ngff_multiscales(idx=0)["axes"])
+
     def rechunk(self, chunk_size: int, compressor=None, *, in_memory=False) -> None:
         """
         Change the chunk size of each ZARR array inplace in the pyramid.

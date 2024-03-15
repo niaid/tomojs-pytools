@@ -16,7 +16,7 @@ import SimpleITK as sitk
 import neuroglancer
 from pathlib import Path
 import jinja2
-import xml.etree.ElementTree as ET
+from pytools.utils import OMEInfo
 from pytools import HedwigZarrImages
 from typing import Union
 
@@ -64,6 +64,41 @@ void main() {
 
 
 _shader_parameter_cache = {}
+
+
+def _convert_si_units_from_long_to_abbr(s: str) -> str:
+    """
+    Convert a string with long SI units to the abbreviated form.
+
+    :param s: The string to convert.
+    :return: The string with the long SI units converted to the abbreviated form.
+    """
+
+    # A map of long SI units to their abbreviated form.
+    si_units = {
+        "yoctometer": "ym",
+        "zeptometer": "zm",
+        "attometer": "am",
+        "femtometer": "fm",
+        "picometer": "pm",
+        "nanometer": "nm",
+        "micrometer": "µm",
+        "millimeter": "mm",
+        "centimeter": "cm",
+        "decimeter": "dm",
+        "meter": "m",
+        "decameter": "da",
+        "hectometer": "hm",
+        "kilometer": "km",
+        "megameter": "Mm",
+        "gigameter": "Gm",
+        "terameter": "Tm",
+        "petameter": "Pm",
+        "exagram": "Em",
+        "zettameter": "Zm",
+        "yottameter": "Ym",
+    }
+    return si_units.get(s, s)
 
 
 def _homogeneous_identity(ndim: int) -> np.array:
@@ -188,47 +223,59 @@ def add_roi_annotations(viewer_txn, ome_xml_filename, *, layername="roi annotati
     The OME-XML specifications for ROI models is here:
       https://docs.openmicroscopy.org/ome-model/5.6.3/developers/roi.html
 
+    The ROI is specified in the image coordinate space and the image meta-data is needed to convert to the physical
+     space. If the reference_zarr is provided, then the image meta-data is extracted from the zarr file. Otherwise,
+     the image meta-data is extracted from the OME-XML file.
+
     :param viewer_txn: The neuroglancer viewer transaction object.
     :param ome_xml_filename: The path to the OME-XML file.
     :param layername: The name of the annotation layer in the viewer.
-    :param reference_zarr: The path to the reference zarr file. The ROI is specified in the image coordinate space and
-    the image meta-data is needed to convert to the physical space. NOTE: This could come from the OME-XML description
-    for an image but currently does not.
+    :param reference_zarr: If specified the image meta-data is extracted from the zarr file. Otherwise, the image
+     meta-data is extracted from the OME-XML file.
 
     """
 
-    if reference_zarr:
+    xml_path = Path(ome_xml_filename)
+
+    ome_idx = 0
+
+    with open(xml_path, "r") as fp:
+        data = fp.read()
+        ome_info = OMEInfo(data)
+
+    if reference_zarr is None:
+        assert ome_info.dimension_order(ome_idx) == "XYZCT"
+        scales = ome_info.spacing(ome_idx)[:2]
+        units = ome_info.units(ome_idx)[:2]
+    else:
         # Coordinate for the ROI rectangles are in the space of an image. The dimensions/CoordinateSpace map the
         # index space to physical space and the "scales" from the reference image are needed to map the space.
         zarr_root = Path(reference_zarr).parent
         zarr_key = Path(reference_zarr).name
         hwz_images = HedwigZarrImages(zarr_root)
         hwz_image = hwz_images.group(zarr_key)
-        spacing_tczyx = hwz_image.spacing
-        scales = spacing_tczyx[:2:-1]
 
-    xml_path = Path(ome_xml_filename)
+        # Convert TCZYX to XY
+        scales = hwz_image.spacing[:2:-1]
+        units = hwz_image.units[:2:-1]
 
-    ns = {"OME": "http://www.openmicroscopy.org/Schemas/OME/2016-06"}
-    with open(xml_path, "r") as fp:
-        data = fp.read()
-        xml_root = ET.fromstring(data)
+    units = [_convert_si_units_from_long_to_abbr(u) for u in units]
 
     layer = neuroglancer.LocalAnnotationLayer(
         dimensions=neuroglancer.CoordinateSpace(
             names=["x", "y"],
-            units="µm",
+            units=units,
             scales=scales,
         ),
     )
 
     viewer_txn.layers[layername] = layer
 
-    for roi in xml_root.iterfind("OME:ROI", ns):
+    for roi in ome_info._root_element.iterfind("OME:ROI", ome_info._ome_ns):
         text = roi.attrib["ID"]
         if "Name" in roi.attrib:
             text = roi.attrib["Name"]
-        for r in roi.iterfind("./OME:Union/OME:Rectangle", ns):
+        for r in roi.iterfind("./OME:Union/OME:Rectangle", ome_info._ome_ns):
             height = float(r.attrib["Height"])
             width = float(r.attrib["Width"])
             x = float(r.attrib["X"])
@@ -236,7 +283,7 @@ def add_roi_annotations(viewer_txn, ome_xml_filename, *, layername="roi annotati
 
             a = (x, y)
             b = (x + width, y + height)
-        for label in roi.iterfind("./OME:Union/OME:Label", ns):
+        for label in roi.iterfind("./OME:Union/OME:Label", ome_info._ome_ns):
             text = label.attrib["Text"]
 
         layer.annotations.append(
