@@ -13,6 +13,8 @@
 #
 
 from pytools.HedwigZarrImages import HedwigZarrImages
+from pytools.utils.OMEInfo import OMEInfo
+import pytest
 
 
 def test_ome_info(data_path):
@@ -30,3 +32,17 @@ def test_ome_info(data_path):
     assert len(list(ome.channel_names(0))) == 2
     assert len(list(ome.channel_names(1))) == 0
     assert len(list(ome.channel_names(2))) == 0
+
+
+@pytest.mark.parametrize("xml_file", ["IA_P2_S1.ome.xml"])
+def test_ome_annotations_infor(data_path, xml_file):
+    """
+    Tests attributes of valid zarr image OMEInfo object
+    """
+    with open(data_path / xml_file, "r") as fp:
+        ome_info = OMEInfo(fp.read())
+
+    assert ome_info.number_of_images() == 1
+
+    for obj in ome_info.roi(0):
+        print(obj)

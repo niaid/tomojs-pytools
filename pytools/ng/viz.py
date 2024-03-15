@@ -16,9 +16,10 @@ import SimpleITK as sitk
 import neuroglancer
 from pathlib import Path
 import jinja2
-from pytools.utils import OMEInfo
 from pytools import HedwigZarrImages
 from typing import Union
+from pytools.utils import OMEInfo
+from pytools.data import ROIRectangle, ROILabel
 
 
 _rgb_shader_template = """
@@ -271,23 +272,16 @@ def add_roi_annotations(viewer_txn, ome_xml_filename, *, layername="roi annotati
 
     viewer_txn.layers[layername] = layer
 
-    for roi in ome_info._root_element.iterfind("OME:ROI", ome_info._ome_ns):
-        text = roi.attrib["ID"]
-        if "Name" in roi.attrib:
-            text = roi.attrib["Name"]
-        for r in roi.iterfind("./OME:Union/OME:Rectangle", ome_info._ome_ns):
-            height = float(r.attrib["Height"])
-            width = float(r.attrib["Width"])
-            x = float(r.attrib["X"])
-            y = float(r.attrib["Y"])
-
-            a = (x, y)
-            b = (x + width, y + height)
-        for label in roi.iterfind("./OME:Union/OME:Label", ome_info._ome_ns):
-            text = label.attrib["Text"]
-
-        layer.annotations.append(
-            neuroglancer.AxisAlignedBoundingBoxAnnotation(
-                description=text, id=neuroglancer.random_token.make_random_token(), point_a=a, point_b=b
+    label = "unknown"
+    for roi in ome_info.roi(ome_idx):
+        if isinstance(roi, ROILabel):
+            label = roi.text
+        elif isinstance(roi, ROIRectangle):
+            layer.annotations.append(
+                neuroglancer.AxisAlignedBoundingBoxAnnotation(
+                    description=label,
+                    id=neuroglancer.random_token.make_random_token(),
+                    point_a=roi.point_a,
+                    point_b=roi.point_b,
+                )
             )
-        )
