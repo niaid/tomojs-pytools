@@ -248,6 +248,7 @@ def add_roi_annotations(viewer_txn, ome_xml_filename, *, layername="roi annotati
         assert ome_info.dimension_order(ome_idx) == "XYZCT"
         scales = ome_info.spacing(ome_idx)[:2]
         units = ome_info.units(ome_idx)[:2]
+
     else:
         # Coordinate for the ROI rectangles are in the space of an image. The dimensions/CoordinateSpace map the
         # index space to physical space and the "scales" from the reference image are needed to map the space.
@@ -267,14 +268,15 @@ def add_roi_annotations(viewer_txn, ome_xml_filename, *, layername="roi annotati
             names=["x", "y"],
             units=units,
             scales=scales,
-        ),
+        )
     )
 
     viewer_txn.layers[layername] = layer
 
     label = "unknown"
-    for roi in ome_info.roi(ome_idx):
+    for roi in (x for x in ome_info.roi(ome_idx)):
         if isinstance(roi, ROILabel):
+            # Assuming that label is followed by the associated rectangle in the OME-XML file.
             label = roi.text
         elif isinstance(roi, ROIRectangle):
             layer.annotations.append(
@@ -285,3 +287,4 @@ def add_roi_annotations(viewer_txn, ome_xml_filename, *, layername="roi annotati
                     point_b=roi.point_b,
                 )
             )
+            label = "unknown"

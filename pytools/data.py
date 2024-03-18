@@ -1,11 +1,11 @@
 from dataclasses import dataclass, field
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Tuple
 
 
 @dataclass
 class OMEDataObject:
     """
-    Generic base object for OME data defined in the OME XML
+    Generic base object for OME data defined in the OME XML.
     """
 
     pass
@@ -13,6 +13,12 @@ class OMEDataObject:
 
 @dataclass
 class ROIRectangle(OMEDataObject):
+    """
+    Represents a rectangle ROI in the OME XML
+
+    Coordinates are in pixels.
+    """
+
     x: float
     y: float
     width: float
@@ -23,16 +29,28 @@ class ROIRectangle(OMEDataObject):
     the_c: Optional[float] = None
 
     @property
-    def point_a(self):
+    def point_a(self) -> Tuple[float, float]:
+        """
+        Returns the top left point of the rectangle.
+        """
         return self.x, self.y
 
     @property
-    def point_b(self):
+    def point_b(self) -> Tuple[float, float]:
+        """
+        Returns the bottom right point of the rectangle.
+        """
         return self.x + self.width, self.y + self.height
 
 
 @dataclass
 class ROILabel(OMEDataObject):
+    """
+    A spacial text label.
+
+    Coordinates are in pixels.
+    """
+
     x: float
     y: float
     text: str
@@ -41,7 +59,12 @@ class ROILabel(OMEDataObject):
 @dataclass
 class OMEROIModel(OMEDataObject):
     """
-    Represents the OME ROI model. Which contains a set of annotations.
+    Represents the OME ROI model. Which contains a union/list of annotations.
+
+    See https://docs.openmicroscopy.org/ome-model/5.6.3/developers/roi.html for more information.
+
+    The OME.TIFF files generated in spacial-omics microscopy have the label followed by the rectangle, so
+    that the label could be used as the description of the Neuroglancer annotation.
     """
 
     id: str

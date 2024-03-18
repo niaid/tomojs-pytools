@@ -15,13 +15,15 @@ from pathlib import Path
 
 import SimpleITK as sitk
 import zarr
-from typing import Tuple, Dict, List, Optional
+from typing import Tuple, Dict, List, Optional, Iterable
 from pytools.utils import OMEInfo
 import logging
 import math
 import re
 import dask
 from pytools.utils.histogram import DaskHistogramHelper, histogram_robust_stats, histogram_stats, weighted_quantile
+from pytools.data import OMEROIModel
+
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +39,16 @@ class HedwigZarrImage:
         self.ome_idx = _ome_idx
 
         assert "multiscales" in self.zarr_group.attrs
+
+    def ome_roi_model(self) -> Iterable[OMEROIModel]:
+        """
+        Parses the OME-XML for a ROI model referenced by the current image
+
+        The OME ROI model is generically union of annotations such as labels and rectangles.
+
+        :return: The ROI model as an iterable of OMEROIModels, which may be empty.
+        """
+        return self.ome_info.roi(self.ome_idx)
 
     @property
     def path(self) -> Path:
