@@ -1,9 +1,18 @@
-from dataclasses import dataclass
-from typing import Optional
+from dataclasses import dataclass, field
+from typing import Optional, List, Union
 
 
 @dataclass
-class ROIRectangle:
+class OMEDataObject:
+    """
+    Generic base object for OME data defined in the OME XML
+    """
+
+    pass
+
+
+@dataclass
+class ROIRectangle(OMEDataObject):
     x: float
     y: float
     width: float
@@ -23,7 +32,19 @@ class ROIRectangle:
 
 
 @dataclass
-class ROILabel:
+class ROILabel(OMEDataObject):
     x: float
     y: float
     text: str
+
+
+@dataclass
+class OMEROIModel(OMEDataObject):
+    """
+    Represents the OME ROI model. Which contains a set of annotations.
+    """
+
+    id: str
+    name: Optional[str] = None
+    description: Optional[str] = None
+    union: List[Union[ROIRectangle, ROILabel]] = field(default_factory=list)
