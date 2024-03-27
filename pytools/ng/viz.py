@@ -273,18 +273,19 @@ def add_roi_annotations(viewer_txn, ome_xml_filename, *, layername="roi annotati
 
     viewer_txn.layers[layername] = layer
 
-    label = "unknown"
-    for roi in (x for x in ome_info.roi(ome_idx)):
-        if isinstance(roi, ROILabel):
-            # Assuming that label is followed by the associated rectangle in the OME-XML file.
-            label = roi.text
-        elif isinstance(roi, ROIRectangle):
-            layer.annotations.append(
-                neuroglancer.AxisAlignedBoundingBoxAnnotation(
-                    description=label,
-                    id=neuroglancer.random_token.make_random_token(),
-                    point_a=roi.point_a,
-                    point_b=roi.point_b,
+    for roi_model in ome_info.roi(ome_idx):
+        label = roi_model.id
+        for roi in roi_model.union:
+            if isinstance(roi, ROILabel):
+                # Assuming that label is followed by the associated rectangle in the OME-XML file.
+                label = roi.text
+            elif isinstance(roi, ROIRectangle):
+                layer.annotations.append(
+                    neuroglancer.AxisAlignedBoundingBoxAnnotation(
+                        description=label,
+                        id=neuroglancer.random_token.make_random_token(),
+                        point_a=roi.point_a,
+                        point_b=roi.point_b,
+                    )
                 )
-            )
-            label = "unknown"
+                label = "unknown"

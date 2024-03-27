@@ -42,13 +42,17 @@ class HedwigZarrImage:
 
     def ome_roi_model(self) -> Iterable[OMEROIModel]:
         """
-        Parses the OME-XML for a ROI model referenced by the current image
+        Get the OME ROI models for the current image, if they exist.
 
-        The OME ROI model is generically union of annotations such as labels and rectangles.
+        Parses the OME-XML file and returns the ROI models. The OME ROI model is generically union of annotations such
+         as labels and rectangles.
 
         :return: The ROI model as an iterable of OMEROIModels, which may be empty.
         """
-        return self.ome_info.roi(self.ome_idx)
+        if self.ome_info is None:
+            yield from ()
+        else:
+            yield from self.ome_info.roi(self.ome_idx)
 
     @property
     def path(self) -> Path:
@@ -70,7 +74,7 @@ class HedwigZarrImage:
         return "".join(dims[::-1])
 
     @property
-    def shape(self) -> Tuple[int]:
+    def shape(self) -> Tuple[int, ...]:
         """The size of the dimensions of the full resolution image.
 
         This is in numpy/zarr/dask order.
@@ -78,7 +82,7 @@ class HedwigZarrImage:
         return self._ome_ngff_multiscale_get_array(0).shape
 
     @property
-    def spacing(self) -> Tuple[float]:
+    def spacing(self) -> Tuple[float, ...]:
         """The size of the dimensions of the full resolution image.
 
         This is in numpy/zarr/dask order.
@@ -87,7 +91,7 @@ class HedwigZarrImage:
         return self._ome_ngff_multiscales(idx=0)["datasets"][0]["coordinateTransformations"][0]["scale"]
 
     @property
-    def units(self) -> Tuple[str]:
+    def units(self) -> Tuple[str, ...]:
         """The units of the dimensions of the full resolution image.
 
         This is in numpy/zarr/dask order.

@@ -15,6 +15,7 @@
 from pytools.HedwigZarrImages import HedwigZarrImages
 from pytools.utils.OMEInfo import OMEInfo
 import pytest
+from pytools.data import ROILabel, ROIRectangle, OMEROIModel
 
 
 def test_ome_info(data_path):
@@ -35,7 +36,7 @@ def test_ome_info(data_path):
 
 
 @pytest.mark.parametrize("xml_file", ["IA_P2_S1.ome.xml"])
-def test_ome_annotations_infor(data_path, xml_file):
+def test_ome_annotations_info(data_path, xml_file):
     """
     Tests attributes of valid zarr image OMEInfo object
     """
@@ -44,5 +45,19 @@ def test_ome_annotations_infor(data_path, xml_file):
 
     assert ome_info.number_of_images() == 1
 
-    for obj in ome_info.roi(0):
-        print(obj)
+    # check the number of ROI models in the OMEInfo object
+    assert len(list(ome_info.roi(0))) == 12
+
+    for i, ome_roi_model in enumerate(ome_info.roi(0)):
+        # check ome_roi_model is of type OMEROIModel
+        assert isinstance(ome_roi_model, OMEROIModel)
+
+        assert ome_roi_model.id == f"ROI:{i}"
+        assert len(ome_roi_model.union) == 2
+
+        # check the first ROI in the union is of type ROILabel
+        assert isinstance(ome_roi_model.union[0], ROILabel)
+        assert ome_roi_model.union[0].text == f"{i+1:03d}"
+
+        # check the second ROI in the union is of type ROIRectangle
+        assert isinstance(ome_roi_model.union[1], ROIRectangle)

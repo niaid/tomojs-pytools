@@ -58,6 +58,9 @@ def test_HedwigZarrImage_info_bad_ome(
         for i in range(len(spacing)):
             assert spacing[i] == approx(z_img.spacing[i])
 
+        assert z_img.units == ("",) * len(z_img.shape)
+        assert len(list(z_img.ome_roi_model())) == 0
+
 
 @pytest.mark.parametrize(
     "zarr_name, attrs",
@@ -73,9 +76,28 @@ def test_HedwigZarrImage_info_bad_ome(
                     "TCZYX",
                     [1.0, 1.0, 1.0, 0.3252445, 0.3252445],
                     {"channelArray": 2},
+                    ("", "", "", "micrometer", "micrometer"),
                 ),
-                ("label", (1, 3, 1, 758, 1588), "XYC", "RGB", "TCZYX", [1.0, 1.0, 1.0, 0.3252445, 0.3252445], {}),
-                ("macro", (1, 3, 1, 685, 567), "XYC", "RGB", "TCZYX", [1.0, 1.0, 1.0, 0.3252445, 0.3252445], {}),
+                (
+                    "label",
+                    (1, 3, 1, 758, 1588),
+                    "XYC",
+                    "RGB",
+                    "TCZYX",
+                    [1.0, 1.0, 1.0, 0.3252445, 0.3252445],
+                    {},
+                    ("", "", "", "micrometer", "micrometer"),
+                ),
+                (
+                    "macro",
+                    (1, 3, 1, 685, 567),
+                    "XYC",
+                    "RGB",
+                    "TCZYX",
+                    [1.0, 1.0, 1.0, 0.3252445, 0.3252445],
+                    {},
+                    ("", "", "", "micrometer", "micrometer"),
+                ),
             ],
         )
     ],
@@ -91,7 +113,7 @@ def test_HedwigZarrImage_info_for_czi(data_path, zarr_name, attrs):
     assert all(image_names)
 
     for (k, z_img), attr in zip(zi.series(), attrs):
-        image_ext, array_shape, dims, shader_type, ngff_dims, spacing, shader_params = attr
+        image_ext, array_shape, dims, shader_type, ngff_dims, spacing, shader_params, units = attr
         # assert image_ext in k
         assert array_shape == z_img.shape
         assert dims == z_img.dims
@@ -102,6 +124,11 @@ def test_HedwigZarrImage_info_for_czi(data_path, zarr_name, attrs):
 
         for param_key in shader_params:
             shader_params[param_key] == len(z_img.neuroglancer_shader_parameters()[param_key])
+
+        assert z_img.units == units
+
+        # check ome_roi_model is an iterable with no elements
+        assert len(list(z_img.ome_roi_model())) == 0
 
 
 @pytest.mark.parametrize(

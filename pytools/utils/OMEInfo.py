@@ -100,7 +100,6 @@ class OMEInfo:
                 roi_model = OMEROIModel(
                     id=roi_id, name=roi_el.attrib.get("Name", None), description=roi_el.attrib.get("Description", None)
                 )
-
                 # iterate over all child elements of the ROI/Unions
                 for union_el in roi_el.findall(".//OME:Union", self._ome_ns):
                     for child_el in union_el:
