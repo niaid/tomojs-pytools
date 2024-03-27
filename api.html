@@ -112,6 +112,21 @@ quantile and the second value is the upper quantile. The range is computed from 
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImage.ome_roi_model">
+<span class="sig-name descname"><span class="pre">ome_roi_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">OMEROIModel</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pytools.HedwigZarrImage.ome_roi_model" title="Link to this definition">¶</a></dt>
+<dd><p>Get the OME ROI models for the current image, if they exist.</p>
+<dl class="simple">
+<dt>Parses the OME-XML file and returns the ROI models. The OME ROI model is generically union of annotations such</dt><dd><p>as labels and rectangles.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The ROI model as an iterable of OMEROIModels, which may be empty.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="pytools.HedwigZarrImage.path">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><a class="headerlink" href="#pytools.HedwigZarrImage.path" title="Link to this definition">¶</a></dt>
@@ -146,15 +161,22 @@ requires enough memory to hold the arrays.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytools.HedwigZarrImage.shape">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.HedwigZarrImage.shape" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.HedwigZarrImage.shape" title="Link to this definition">¶</a></dt>
 <dd><p>The size of the dimensions of the full resolution image.</p>
 <p>This is in numpy/zarr/dask order.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pytools.HedwigZarrImage.spacing">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spacing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.HedwigZarrImage.spacing" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spacing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.HedwigZarrImage.spacing" title="Link to this definition">¶</a></dt>
 <dd><p>The size of the dimensions of the full resolution image.</p>
+<p>This is in numpy/zarr/dask order.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pytools.HedwigZarrImage.units">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">units</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.HedwigZarrImage.units" title="Link to this definition">¶</a></dt>
+<dd><p>The units of the dimensions of the full resolution image.</p>
 <p>This is in numpy/zarr/dask order.</p>
 </dd></dl>
 
@@ -302,7 +324,7 @@ reducing the resolution in the “shrink” dimensions, by a factor of 2.</p>
 
 <dl class="py class" id="module-pytools.utils.histogram">
 <dt class="sig sig-object py" id="pytools.utils.histogram.DaskHistogramHelper">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">DaskHistogramHelper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr:</span> <span class="pre">&lt;module</span> <span class="pre">'dask.array'</span> <span class="pre">from</span> <span class="pre">'/opt/hostedtoolcache/Python/3.9.18/x64/lib/python3.9/site-packages/dask/array/__init__.py'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.DaskHistogramHelper" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.utils.histogram.</span></span><span class="sig-name descname"><span class="pre">DaskHistogramHelper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr:</span> <span class="pre">&lt;module</span> <span class="pre">'dask.array'</span> <span class="pre">from</span> <span class="pre">'/opt/hostedtoolcache/Python/3.9.19/x64/lib/python3.9/site-packages/dask/array/__init__.py'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.histogram.DaskHistogramHelper" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
@@ -410,11 +432,13 @@ considered an implementation detail that may change.</p>
 <li><a class="reference internal" href="#pytools.HedwigZarrImage.dims"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.dims</span></code></a></li>
 <li><a class="reference internal" href="#pytools.HedwigZarrImage.extract_2d"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.extract_2d()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.HedwigZarrImage.neuroglancer_shader_parameters"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.neuroglancer_shader_parameters()</span></code></a></li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImage.ome_roi_model"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.ome_roi_model()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.HedwigZarrImage.path"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.path</span></code></a></li>
 <li><a class="reference internal" href="#pytools.HedwigZarrImage.rechunk"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.rechunk()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.HedwigZarrImage.shader_type"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.shader_type</span></code></a></li>
 <li><a class="reference internal" href="#pytools.HedwigZarrImage.shape"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.shape</span></code></a></li>
 <li><a class="reference internal" href="#pytools.HedwigZarrImage.spacing"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.spacing</span></code></a></li>
+<li><a class="reference internal" href="#pytools.HedwigZarrImage.units"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImage.units</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pytools.HedwigZarrImages"><code class="docutils literal notranslate"><span class="pre">HedwigZarrImages</span></code></a><ul>
