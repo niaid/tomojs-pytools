@@ -15,6 +15,11 @@
 
 import xml.etree.ElementTree as ET
 from typing import Iterable
+import logging
+
+from pytools.data import ROILabel, ROIRectangle, OMEROIModel
+
+logging.getLogger(__name__)
 
 
 class OMEInfo:
@@ -77,3 +82,42 @@ class OMEInfo:
             attr = "PhysicalSize{}Unit".format(d)
             units.append(px_element.get(attr, default))
         return units
+
+    def roi(self, image_index) -> Iterable[OMEROIModel]:
+        """
+        Extracts the ROI referenced by an image in the OME XML data.
+
+        The OME-XML specifications for ROI models is here:
+            https://docs.openmicroscopy.org/ome-model/5.6.3/developers/roi.html
+
+        """
+
+        for roiref_el in self._image_element(image_index).iterfind("OME:ROIRef", self._ome_ns):
+            roi_id = roiref_el.attrib["ID"]
+            for roi_el in self._root_element.iterfind(f".//OME:ROI[@ID='{roi_id}']", self._ome_ns):
+                # The ROI element may have and ID and Name attribute may be useful context if the label is not
+                # sufficient. This is not currently used in the implementation.
+                roi_model = OMEROIModel(
+                    id=roi_id, name=roi_el.attrib.get("Name", None), description=roi_el.attrib.get("Description", None)
+                )
+                # iterate over all child elements of the ROI/Unions
+                for union_el in roi_el.findall(".//OME:Union", self._ome_ns):
+                    for child_el in union_el:
+                        if child_el.tag == f"{{{self._ome_ns['OME']}}}Rectangle":
+                            roi_model.union.append(
+                                ROIRectangle(
+                                    x=float(child_el.attrib["X"]),
+                                    y=float(child_el.attrib["Y"]),
+                                    width=float(child_el.attrib["Width"]),
+                                    height=float(child_el.attrib["Height"]),
+                                )
+                            )
+                        elif child_el.tag == f"{{{self._ome_ns['OME']}}}Label":
+                            roi_model.union.append(
+                                ROILabel(
+                                    x=float(child_el.attrib["X"]),
+                                    y=float(child_el.attrib["Y"]),
+                                    text=child_el.attrib["Text"],
+                                )
+                            )
+                yield roi_model

@@ -87,18 +87,22 @@ class HedwigZarrImages:
         return HedwigZarrImage(self.zarr_root[name], self.ome_info, k_idx)
 
     def __getitem__(self, item: Union[str, int]) -> HedwigZarrImage:
+        """
+        Returns a HedwigZarrImage from the given the OME series name or a ZARR index.
+        """
 
-        for k_idx, k in enumerate(self.get_series_keys()):
-            if item == k and "OME" in self.zarr_root.group_keys():
-                ome_index_to_zarr_group = self.zarr_root["OME"].attrs["series"]
+        if "OME" not in self.zarr_root.group_keys():
+            return HedwigZarrImage(self.zarr_root[item], self.ome_info, 404)
 
-                if len(ome_index_to_zarr_group) != len(set(ome_index_to_zarr_group)):
-                    raise RuntimeError(f'The OME "series" contains duplicated paths: f{ome_index_to_zarr_group}')
+        elif isinstance(item, int):
+            return HedwigZarrImage(self.zarr_root[item], self.ome_info, item)
 
-                zarr_idx = ome_index_to_zarr_group[k_idx]
-                return HedwigZarrImage(self.zarr_root[zarr_idx], self.ome_info, k_idx)
-
-        return HedwigZarrImage(self.zarr_root[item], None, 404)
+        elif isinstance(item, str):
+            ome_index_to_zarr_group = self.zarr_root["OME"].attrs["series"]
+            for ome_idx, k in enumerate(self.get_series_keys()):
+                if k == item:
+                    return HedwigZarrImage(self.zarr_root[ome_index_to_zarr_group[ome_idx]], self.ome_info, ome_idx)
+            raise KeyError(f"Series name {item} not found: {list(self.get_series_keys())}! ")
 
     def series(self) -> Iterable[Tuple[str, HedwigZarrImage]]:
         """An Iterable of key and HedwigZarrImages stored in the ZARR structure."""

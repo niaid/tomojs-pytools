@@ -15,13 +15,15 @@ from pathlib import Path
 
 import SimpleITK as sitk
 import zarr
-from typing import Tuple, Dict, List, Optional
+from typing import Tuple, Dict, List, Optional, Iterable
 from pytools.utils import OMEInfo
 import logging
 import math
 import re
 import dask
 from pytools.utils.histogram import DaskHistogramHelper, histogram_robust_stats, histogram_stats, weighted_quantile
+from pytools.data import OMEROIModel
+
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +39,20 @@ class HedwigZarrImage:
         self.ome_idx = _ome_idx
 
         assert "multiscales" in self.zarr_group.attrs
+
+    def ome_roi_model(self) -> Iterable[OMEROIModel]:
+        """
+        Get the OME ROI models for the current image, if they exist.
+
+        Parses the OME-XML file and returns the ROI models. The OME ROI model is generically union of annotations such
+         as labels and rectangles.
+
+        :return: The ROI model as an iterable of OMEROIModels, which may be empty.
+        """
+        if self.ome_info is None:
+            yield from ()
+        else:
+            yield from self.ome_info.roi(self.ome_idx)
 
     @property
     def path(self) -> Path:
@@ -58,7 +74,7 @@ class HedwigZarrImage:
         return "".join(dims[::-1])
 
     @property
-    def shape(self) -> Tuple[int]:
+    def shape(self) -> Tuple[int, ...]:
         """The size of the dimensions of the full resolution image.
 
         This is in numpy/zarr/dask order.
@@ -66,13 +82,21 @@ class HedwigZarrImage:
         return self._ome_ngff_multiscale_get_array(0).shape
 
     @property
-    def spacing(self) -> Tuple[float]:
+    def spacing(self) -> Tuple[float, ...]:
         """The size of the dimensions of the full resolution image.
 
         This is in numpy/zarr/dask order.
         """
 
         return self._ome_ngff_multiscales(idx=0)["datasets"][0]["coordinateTransformations"][0]["scale"]
+
+    @property
+    def units(self) -> Tuple[str, ...]:
+        """The units of the dimensions of the full resolution image.
+
+        This is in numpy/zarr/dask order.
+        """
+        return tuple(str(ax["unit"]) if "unit" in ax else "" for ax in self._ome_ngff_multiscales(idx=0)["axes"])
 
     def rechunk(self, chunk_size: int, compressor=None, *, in_memory=False) -> None:
         """
