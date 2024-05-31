@@ -11,7 +11,7 @@
 #  limitations under the License.
 #
 
-from pytools.meta import is_int16
+from pytools.meta import is_int16, is_16bit
 import pytest
 import SimpleITK as sitk
 
@@ -43,3 +43,18 @@ def test_is_int16_mrc(image_mrc, expected_result):
 )
 def test_is_int16_tif(image_tiff, expected_result):
     assert is_int16(image_tiff) == expected_result
+
+
+@pytest.mark.parametrize(
+    "image_tiff,expected_result",
+    [
+        (sitk.sitkUInt8, False),
+        (sitk.sitkInt8, False),
+        (sitk.sitkInt16, True),
+        (sitk.sitkUInt16, True),
+        (sitk.sitkFloat32, False),
+    ],
+    indirect=["image_tiff"],
+)
+def test_is_16bit_tif(image_tiff, expected_result):
+    assert is_16bit(image_tiff) == expected_result
