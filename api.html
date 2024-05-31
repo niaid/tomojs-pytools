@@ -7,10 +7,10 @@
 
     <title>API &#8212; tomojs-pytools  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=def86cc0" />
     
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
@@ -285,6 +285,21 @@ extracted subvolume can have antialiasing applied to it.</p></li>
 </dd></dl>
 
 <dl class="py function" id="module-pytools.meta">
+<dt class="sig sig-object py" id="pytools.meta.is_16bit">
+<span class="sig-prename descclassname"><span class="pre">pytools.meta.</span></span><span class="sig-name descname"><span class="pre">is_16bit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pytools.meta.is_16bit" title="Link to this definition">¶</a></dt>
+<dd><p>Read an image file header to inspect meta-data.</p>
+<p>Supported file formats include TIFF, and others supported by SimpleITK and the Insight toolkit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> – The path to an image file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the pixel type is a 16-bit integer (signed or unsigned), False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="pytools.meta.is_int16">
 <span class="sig-prename descclassname"><span class="pre">pytools.meta.</span></span><span class="sig-name descname"><span class="pre">is_int16</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pytools.meta.is_int16" title="Link to this definition">¶</a></dt>
 <dd><p>Read an image file header to inspect meta-data.</p>
@@ -451,6 +466,7 @@ considered an implementation detail that may change.</p>
 </li>
 <li><a class="reference internal" href="#pytools.visual_min_max"><code class="docutils literal notranslate"><span class="pre">visual_min_max()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.zarr_extract_2d"><code class="docutils literal notranslate"><span class="pre">zarr_extract_2d()</span></code></a></li>
+<li><a class="reference internal" href="#pytools.meta.is_16bit"><code class="docutils literal notranslate"><span class="pre">is_16bit()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.meta.is_int16"><code class="docutils literal notranslate"><span class="pre">is_int16()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.utils.zarr.bin_shrink"><code class="docutils literal notranslate"><span class="pre">bin_shrink()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.utils.zarr.build_pyramid"><code class="docutils literal notranslate"><span class="pre">build_pyramid()</span></code></a></li>
@@ -478,7 +494,7 @@ considered an implementation detail that may change.</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
@@ -486,7 +502,7 @@ considered an implementation detail that may change.</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
@@ -510,7 +526,7 @@ considered an implementation detail that may change.</p>
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2022, Bradley Lowekamp.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     </div>
   </body>
 </html>
