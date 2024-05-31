@@ -32,4 +32,17 @@ def is_int16(file_path: PathType) -> bool:
     return _make_image_file_reader_with_info(file_path).GetPixelID() == sitk.sitkInt16
 
 
-__all__ = ["is_int16"]
+def is_16bit(file_path: PathType) -> bool:
+    """
+    Read an image file header to inspect meta-data.
+
+    Supported file formats include TIFF, and others supported by SimpleITK and the Insight toolkit.
+
+    :param file_path: The path to an image file.
+    :returns: True if the pixel type is a 16-bit integer (signed or unsigned), False otherwise.
+
+    """
+    return _make_image_file_reader_with_info(file_path).GetPixelID() in [sitk.sitkInt16, sitk.sitkUInt16]
+
+
+__all__ = ["is_int16", "is_16bit"]
