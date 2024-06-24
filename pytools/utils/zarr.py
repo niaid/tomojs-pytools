@@ -34,7 +34,7 @@ def bin_shrink(img, shrink_dim=None):
     return img.astype(input_type)
 
 
-def build_pyramid(zarr_path, components: List[str], chunks=None, shrink=[-1, -2], overwrite=False):
+def build_pyramid(zarr_path, components: List[str], chunks=None, shrink=(-1, -2), overwrite=False):
     """
     Iteratively generate multiple resolutions of zarr arrays.
 
@@ -60,8 +60,9 @@ def build_pyramid(zarr_path, components: List[str], chunks=None, shrink=[-1, -2]
             compressor=arr.compressor,
             dimension_separator=arr._dimension_separator,
             filters=arr.filters,
+            compute=False,
             overwrite=overwrite,
             # dtype=arr.dtype.newbyteorder("="),
-        )
+        ).compute()
 
         source_image = da.from_zarr(zarr_path, component=output_component)
