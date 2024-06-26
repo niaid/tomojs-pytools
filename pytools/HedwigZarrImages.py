@@ -13,7 +13,8 @@
 
 from pathlib import Path
 import zarr
-from typing import Optional, Iterable, Tuple, AnyStr, Union
+from typing import Optional, Iterable, Tuple, AnyStr, Union, Dict
+from types import MappingProxyType
 from pytools.utils import OMEInfo
 from pytools.HedwigZarrImage import HedwigZarrImage
 import logging
@@ -27,9 +28,24 @@ class HedwigZarrImages:
     Represents the set of images in a OME-NGFF ZARR structure.
     """
 
-    def __init__(self, zarr_path: Path, read_only=True):
+    def __init__(
+        self,
+        zarr_path: Path,
+        read_only=True,
+        *,
+        compute_args: Optional[Dict[str, str]] = MappingProxyType({"scheduler": "threads", "num_workers": 4}),
+    ):
         """
         Initialized by the path to a root of an OME zarr structure.
+
+        :param zarr_path: Path to the root of the ZARR structure.
+        :param read_only: If True, the ZARR structure is read only.
+        :param compute_args: A dictionary of arguments to be passed to dask.compute.
+         - The default uses a local threadpool scheduler with 4 threads. This provides reasonable performance and does
+          not oversubscribe the CPU when multiple operations are being performed concurrently.
+         - A 'synchronous' scheduler can be used for debugging or when no parallelism is required.
+         - If `None` then the global dask scheduler or Dask distributed scheduler will be used.
+
         """
         # check zarr is valid
         assert zarr_path.exists()
@@ -37,6 +53,7 @@ class HedwigZarrImages:
         self.zarr_store = zarr.DirectoryStore(zarr_path)
         self.zarr_root = zarr.Group(store=self.zarr_store, read_only=read_only)
         self._ome_info = None
+        self._compute_args = compute_args
 
     @property
     def ome_xml_path(self) -> Optional[Path]:
@@ -80,11 +97,11 @@ class HedwigZarrImages:
         """
 
         if self.ome_xml_path is None:
-            return HedwigZarrImage(self.zarr_root[name])
+            return HedwigZarrImage(self.zarr_root[name], compute_args=self._compute_args)
 
         ome_index_to_zarr_group = self.zarr_root["OME"].attrs["series"]
         k_idx = ome_index_to_zarr_group.index(name)
-        return HedwigZarrImage(self.zarr_root[name], self.ome_info, k_idx)
+        return HedwigZarrImage(self.zarr_root[name], self.ome_info, k_idx, compute_args=self._compute_args)
 
     def __getitem__(self, item: Union[str, int]) -> HedwigZarrImage:
         """
@@ -92,16 +109,21 @@ class HedwigZarrImages:
         """
 
         if "OME" not in self.zarr_root.group_keys():
-            return HedwigZarrImage(self.zarr_root[item], self.ome_info, 404)
+            return HedwigZarrImage(self.zarr_root[item], self.ome_info, 404, compute_args=self._compute_args)
 
         elif isinstance(item, int):
-            return HedwigZarrImage(self.zarr_root[item], self.ome_info, item)
+            return HedwigZarrImage(self.zarr_root[item], self.ome_info, item, compute_args=self._compute_args)
 
         elif isinstance(item, str):
             ome_index_to_zarr_group = self.zarr_root["OME"].attrs["series"]
             for ome_idx, k in enumerate(self.get_series_keys()):
                 if k == item:
-                    return HedwigZarrImage(self.zarr_root[ome_index_to_zarr_group[ome_idx]], self.ome_info, ome_idx)
+                    return HedwigZarrImage(
+                        self.zarr_root[ome_index_to_zarr_group[ome_idx]],
+                        self.ome_info,
+                        ome_idx,
+                        compute_args=self._compute_args,
+                    )
             raise KeyError(f"Series name {item} not found: {list(self.get_series_keys())}! ")
 
     def series(self) -> Iterable[Tuple[str, HedwigZarrImage]]:

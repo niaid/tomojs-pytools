@@ -115,7 +115,20 @@ class DaskHistogramHelper(HistogramBase):
     def dtype(self):
         return self._arr.dtype
 
-    def compute_histogram(self, histogram_bin_edges=None, density=False) -> Tuple[np.array, np.array]:
+    def compute_histogram(
+        self, histogram_bin_edges=None, density=False, *, compute_args=None
+    ) -> Tuple[np.array, np.array]:
+        """
+        Compute the histogram of the array.
+
+        :param histogram_bin_edges: The edges of the bins. If None, the edges are computed from the array, with integers
+         of 16 bits or less, the edges are computed from the dtype for exact bins.
+        :param density: If True, the histogram is normalized to form a probability density, otherwise the count of
+         samples in each bin.
+        :param compute_args: Additional arguments to pass to the dask compute method.
+        """
+        if compute_args is None:
+            compute_args = {}
         if histogram_bin_edges is None:
             if np.issubdtype(self.dtype, np.integer) and np.iinfo(self.dtype).bits <= 16:
                 histogram_bin_edges = self.compute_histogram_bin_edges(
@@ -127,7 +140,7 @@ class DaskHistogramHelper(HistogramBase):
                     new_chunk = (None,) * (self._arr.ndim - 1) + (-1,)
                     arr = self._arr.rechunk(new_chunk).ravel()
                     return (
-                        dask.array.bincount(arr, minlength=len(histogram_bin_edges) - 1).compute(),
+                        dask.array.bincount(arr, minlength=len(histogram_bin_edges) - 1).compute(**compute_args),
                         histogram_bin_edges,
                     )
 
@@ -135,7 +148,7 @@ class DaskHistogramHelper(HistogramBase):
                 histogram_bin_edges = self.compute_histogram_bin_edges()
 
         h, bins = dask.array.histogram(self._arr, bins=histogram_bin_edges, density=density)
-        return h.compute(), bins
+        return h.compute(**compute_args), bins
 
 
 class ZARRHistogramHelper(DaskHistogramHelper):

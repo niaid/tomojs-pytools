@@ -16,6 +16,7 @@ from pathlib import Path
 import SimpleITK as sitk
 import zarr
 from typing import Tuple, Dict, List, Optional, Iterable
+from types import MappingProxyType
 from pytools.utils import OMEInfo
 import logging
 import math
@@ -33,10 +34,18 @@ class HedwigZarrImage:
     Represents a OME-NGFF Zarr pyramidal image. The members provide information useful for the Hedwig imaging pipelines.
     """
 
-    def __init__(self, zarr_grp: zarr.Group, _ome_info: OMEInfo, _ome_idx: Optional[int] = None):
+    def __init__(
+        self,
+        zarr_grp: zarr.Group,
+        _ome_info: OMEInfo,
+        _ome_idx: Optional[int] = None,
+        *,
+        compute_args: Optional[Dict[str, str]] = MappingProxyType({"scheduler": "threads"}),
+    ):
         self.zarr_group = zarr_grp
         self.ome_info = _ome_info
         self.ome_idx = _ome_idx
+        self.compute_args = compute_args if compute_args is not None else {}
 
         assert "multiscales" in self.zarr_group.attrs
 
@@ -211,7 +220,7 @@ class HedwigZarrImage:
         else:
             d_arr = dask.array.squeeze(d_arr, axis=(0, 1, 2))
 
-        img = sitk.GetImageFromArray(d_arr.compute(), isVector=is_vector)
+        img = sitk.GetImageFromArray(d_arr.compute(**self.compute_args), isVector=is_vector)
         img.SetSpacing((spacing_tczyx[4], spacing_tczyx[3]))
 
         logger.debug(img)
@@ -457,7 +466,8 @@ class HedwigZarrImage:
         logger.debug(f"dask.config.global_config: {dask.config.global_config}")
 
         logger.info(f'Building histogram for "{self.path}"...')
-        h, bins = histo.compute_histogram(histogram_bin_edges=None, density=False)
+
+        h, bins = histo.compute_histogram(histogram_bin_edges=None, density=False, compute_args=self.compute_args)
 
         mids = 0.5 * (bins[1:] + bins[:-1])
 
