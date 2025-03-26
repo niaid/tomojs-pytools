@@ -1,6 +1,6 @@
 SimpleITK ~= 2.4.0
 click >=7.1
 numpy >=1.21
-zarr
+zarr ~= 2.0
 dask
 SimpleITKUtilities ~= 0.3.0
