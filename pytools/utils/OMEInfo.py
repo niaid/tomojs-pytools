@@ -50,9 +50,18 @@ class OMEInfo:
         three_or_four = len(channel_elements) in [3, 4]
 
         def _check_channel(channel_element: ET.Element):
+            # return true if IlluminationType="Transmitted"
+            if channel_element.attrib["SamplesPerPixel"] != "1":
+                return False
+
             exclude_list_attribs = ["EmissionWavelength", "IlluminationType", "Fluor"]
             no_rgb_exclude_attrib = all([False for x in exclude_list_attribs if x in channel_element.keys()])
-            return no_rgb_exclude_attrib and channel_element.attrib["SamplesPerPixel"] == "1"
+
+            if channel_element.attrib.get("Fluor") == "TL Brightfield":
+                return True
+            if channel_element.attrib.get("IlluminationType") == "Transmitted":
+                return True
+            return no_rgb_exclude_attrib
 
         return three_or_four and all([_check_channel(ce) for ce in channel_elements])
 
