@@ -14,7 +14,6 @@ repos:
   rev: 22.8.0
   hooks:
    - id: black
-     args: ['--check', '--diff']
 - repo: https://github.com/pycqa/flake8
   rev: 5.0.4
   hooks:
