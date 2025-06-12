@@ -250,8 +250,11 @@ class HedwigZarrImage:
         """
         Produces the shader type one of: RGB, Grayscale, or MultiChannel.
         """
-        if self.ome_info and self.ome_info.maybe_rgb(self.ome_idx):
-            return "RGB"
+        if self.ome_info:
+            if self.ome_info.maybe_rgb(self.ome_idx):
+                return "RGB"
+            elif self.ome_info.maybe_flourescence(self.ome_idx):
+                return "MultiChannel"
         if self._ome_ngff_multiscale_dims()[1] == "C" and self.shape[1] == 1:
             return "Grayscale"
         return "MultiChannel"

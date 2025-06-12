@@ -44,6 +44,23 @@ class OMEInfo:
             if "Name" in e.attrib:
                 yield e.attrib["Name"]
 
+    def maybe_flourescence(self, image_index):
+        """
+        Checks if all the channels' "IlluminationType" attribute is "Epifluorescence".
+        """
+
+        px_element = self._image_element(image_index).find("OME:Pixels", self._ome_ns)
+        channel_elements = px_element.findall("./OME:Channel", self._ome_ns)
+
+        def _check_channel(channel_element: ET.Element):
+            if channel_element.attrib["SamplesPerPixel"] != "1":
+                return False
+            if channel_element.attrib.get("IlluminationType") == "Epifluorescence":
+                return True
+            return False
+
+        return all([_check_channel(ce) for ce in channel_elements])
+
     def maybe_rgb(self, image_index):
         px_element = self._image_element(image_index).find("OME:Pixels", self._ome_ns)
         channel_elements = px_element.findall("./OME:Channel", self._ome_ns)
