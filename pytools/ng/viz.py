@@ -31,8 +31,8 @@ void main() {
 """
 
 _gray_shader_template = """
-#uicontrol invlerp normalized(range=[{{range[0]}}, {{range[1]}}],
-    window=[{{window[0]}}, {{window[1]}}], clamp=true)
+#uicontrol invlerp normalized(range=[{{range[0]}}, {{range[1]}}], \
+window=[{{window[0]}}, {{window[1]}}], clamp=true)
 void main() {
   emitGrayscale(normalized());
 }
