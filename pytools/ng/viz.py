@@ -158,8 +158,8 @@ def generate_ng_shader(path: Path, key: Union[int, str]) -> str:
     This will call teh HewdigZarrImages class to get the shader parameters for the image which can be computationaly
     expensive so the results a cached.
     """
-    global _shader_parameter_cache
 
+    global _shader_parameter_cache  # noqa: F824
     hwz_images = HedwigZarrImages(path)
     hwz_image = hwz_images.group(key)
 

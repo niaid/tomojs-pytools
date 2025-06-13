@@ -57,7 +57,7 @@ def test_ome_annotations_info(data_path, xml_file):
 
         # check the first ROI in the union is of type ROILabel
         assert isinstance(ome_roi_model.union[0], ROILabel)
-        assert ome_roi_model.union[0].text == f"{i+1:03d}"
+        assert ome_roi_model.union[0].text == f"{i + 1:03d}"
 
         # check the second ROI in the union is of type ROIRectangle
         assert isinstance(ome_roi_model.union[1], ROIRectangle)

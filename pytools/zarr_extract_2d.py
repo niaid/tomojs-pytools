@@ -185,7 +185,7 @@ def zarr_extract_2d(
 
     logger.debug(img)
 
-    logger.debug(f"resizing image of: {img.GetSize() } -> {(target_size_x, target_size_y)}")
+    logger.debug(f"resizing image of: {img.GetSize()} -> {(target_size_x, target_size_y)}")
     img = sitk.utilities.resize(img, (target_size_x, target_size_y), interpolator=sitk.sitkLinear, fill=False)
 
     if output_filename is not None:

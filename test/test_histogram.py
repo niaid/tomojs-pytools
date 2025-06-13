@@ -107,10 +107,10 @@ def test_build_histogram_main(image_mrc, expected_min, expected_max, expected_fl
     assert float(res["neuroglancerPrecomputedMax"]) == expected_max
     assert float(res["neuroglancerPrecomputedFloor"]) == expected_floor
     assert float(res["neuroglancerPrecomputedLimit"]) == expected_limit
-    assert type(res["neuroglancerPrecomputedMin"]) == str
-    assert type(res["neuroglancerPrecomputedMax"]) == str
-    assert type(res["neuroglancerPrecomputedFloor"]) == str
-    assert type(res["neuroglancerPrecomputedLimit"]) == str
+    assert isinstance(res["neuroglancerPrecomputedMin"], str)
+    assert isinstance(res["neuroglancerPrecomputedMax"], str)
+    assert isinstance(res["neuroglancerPrecomputedFloor"], str)
+    assert isinstance(res["neuroglancerPrecomputedLimit"], str)
 
 
 def test_build_histogram_zarr_main(image_ome_ngff):
@@ -120,7 +120,7 @@ def test_build_histogram_zarr_main(image_ome_ngff):
     assert "neuroglancerPrecomputedMax" in res
     assert "neuroglancerPrecomputedFloor" in res
     assert "neuroglancerPrecomputedLimit" in res
-    assert type(res["neuroglancerPrecomputedMin"]) == str
-    assert type(res["neuroglancerPrecomputedMax"]) == str
-    assert type(res["neuroglancerPrecomputedFloor"]) == str
-    assert type(res["neuroglancerPrecomputedLimit"]) == str
+    assert isinstance(res["neuroglancerPrecomputedMin"], str)
+    assert isinstance(res["neuroglancerPrecomputedMax"], str)
+    assert isinstance(res["neuroglancerPrecomputedFloor"], str)
+    assert isinstance(res["neuroglancerPrecomputedLimit"], str)
