@@ -296,7 +296,7 @@ class HedwigZarrImage:
         if len(list(self.ome_info.channel_names(self.ome_idx))) != self.shape[1]:
             raise RuntimeError(
                 f"Mismatch of number of Channels! Array has {self.shape[1]} but there"
-                f"are {len(list(self.ome_info.channel_names(self.ome_idx)))} names:"
+                f"are {len(list(self.ome_info.channel_names(self.ome_idx)))} names: "
                 f"{list(self.ome_info.channel_names(self.ome_idx))}"
             )
 
