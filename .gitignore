@@ -6,5 +6,6 @@ pytools/_version.py
 __pycache__
 .idea
 venv*
+.venv
 build
 dist
