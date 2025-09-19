@@ -87,9 +87,9 @@ created to set default options. For example to print all logging messages during
 Contributing
 ************
 
-The repository is configured to work with a branchy workflow, where PRs are made before merging into the master branch.
+The repository is configured to work with a branchy workflow, where PRs are made before merging into the main branch.
 Github Actions automatically run the linting and test suite, when a PR is made. The tests must pass before merging into
-master.
+main.
 
 Linting
 =======
