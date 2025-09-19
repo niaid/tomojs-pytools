@@ -15,7 +15,32 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dynamic = ["dependencies", "version"]
+dependencies = [
+    "SimpleITK ~= 2.5.0",
+    "click>=7.1",
+    "numpy>=1.21",
+    "zarr~=2.0",
+    "dask",
+    "SimpleITKUtilities~=0.3.0",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "fsspec!=2023.9.0",
+    "ome_zarr",
+    "setuptools_scm",
+    "flake8",
+    "black",
+    "wheel",
+    "packaging",
+    "pytest-cov",
+]
+docs = [
+    "sphinx",
+    "sphinx-click",
+]
 
 [tool.setuptools]
 packages = ["pytools"]
@@ -29,8 +54,7 @@ documentation = "https://niaid.github.io/tomojs-pytools/"
 minversion = "6.0"
 junit_family="xunit2"
 
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
+
 
 [tool.black]
 line-length =  120
