@@ -95,6 +95,30 @@ def test_ome_fluorescence(data_path, xml_file):
     )
 
 
+@pytest.mark.parametrize("xml_file", ["xenium_morphology.xml"])
+def test_ome_xenium_morphology(data_path, xml_file):
+    """
+    Tests OMEInfo with a Xenium morphology XML where the Image element has no Name attribute.
+    """
+    with open(data_path / xml_file, "r") as fp:
+        ome_info = OMEInfo(fp.read())
+
+    assert ome_info.number_of_images() == 1
+
+    # Image has no Name attribute — should fall back to the generated scene name
+    assert tuple(ome_info.image_names()) == ("Scene #0",)
+
+    # Single DAPI channel
+    assert tuple(ome_info.channel_names(0)) == ("DAPI",)
+
+    # One channel only, so not RGB; no IlluminationType, so not fluorescence
+    assert ome_info.maybe_rgb(0) is False
+    assert ome_info.maybe_flourescence(0) is False
+
+    # No ROIs
+    assert list(ome_info.roi(0)) == []
+
+
 @pytest.mark.parametrize("xml_file", ["he_rgb.xml"])
 def test_ome_rgb(data_path, xml_file):
     """
