@@ -29,6 +29,14 @@ from pytools.data import OMEROIModel
 logger = logging.getLogger(__name__)
 
 
+def _sanitize_glsl_identifier(name: str) -> str:
+    """Sanitize a string to be a valid GLSL identifier (must start with a letter or underscore)."""
+    sanitized = re.sub(r"[^a-zA-Z0-9_]+", "_", name)
+    if not sanitized or sanitized[0].isdigit():
+        sanitized = "ch_" + sanitized
+    return sanitized
+
+
 class HedwigZarrImage:
     """
     Represents a OME-NGFF Zarr pyramidal image. The members provide information useful for the Hedwig imaging pipelines.
@@ -313,8 +321,7 @@ class HedwigZarrImage:
         for c, c_name in enumerate(self.ome_info.channel_names(self.ome_idx)):
             logger.debug(f"Processing channel: {c_name}")
 
-            # replace non-alpha numeric with an underscore
-            name = re.sub(r"[^a-zA-Z0-9]+", "_", c_name.lower())
+            name = _sanitize_glsl_identifier(c_name.lower())
 
             stats = self._image_statistics(
                 quantiles=[*middle_quantile, upper_quantile] if middle_quantile else [upper_quantile],
