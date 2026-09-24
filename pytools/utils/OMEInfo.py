@@ -44,9 +44,28 @@ class OMEInfo:
             if "Name" in e.attrib:
                 yield e.attrib["Name"]
 
+    def _channel_has_lut_annotation(self, channel_element: ET.Element) -> bool:
+        """Checks if a channel references a MapAnnotation with a "Suggested LUT" key, which indicates
+        display range metadata typically only provided for fluorescence channels."""
+        for annot_ref in channel_element.findall("./OME:AnnotationRef", self._ome_ns):
+            annot_id = annot_ref.attrib["ID"]
+            # IDs are xsd:ID typed and unique document-wide, so at most one MapAnnotation can match.
+            map_annot = self._root_element.find(
+                f".//OME:StructuredAnnotations/OME:MapAnnotation[@ID='{annot_id}']", self._ome_ns
+            )
+            if map_annot is None:
+                continue
+            if any(
+                m.attrib.get("K", "").startswith("Suggested LUT")
+                for m in map_annot.iterfind("./OME:Value/OME:M", self._ome_ns)
+            ):
+                return True
+        return False
+
     def maybe_flourescence(self, image_index):
         """
-        Checks if all the channels' "IlluminationType" attribute is "Epifluorescence".
+        Checks if all the channels' "IlluminationType" attribute is "Epifluorescence", or if the channel
+        has a "Suggested LUT" annotation indicating fluorescence display metadata.
         """
 
         px_element = self._image_element(image_index).find("OME:Pixels", self._ome_ns)
@@ -56,6 +75,8 @@ class OMEInfo:
             if channel_element.attrib["SamplesPerPixel"] != "1":
                 return False
             if channel_element.attrib.get("IlluminationType") == "Epifluorescence":
+                return True
+            if self._channel_has_lut_annotation(channel_element):
                 return True
             return False
 
@@ -73,6 +94,7 @@ class OMEInfo:
 
             exclude_list_attribs = ["EmissionWavelength", "IlluminationType", "Fluor"]
             no_rgb_exclude_attrib = all([False for x in exclude_list_attribs if x in channel_element.keys()])
+            no_rgb_exclude_attrib = no_rgb_exclude_attrib and not self._channel_has_lut_annotation(channel_element)
 
             if channel_element.attrib.get("Fluor") == "TL Brightfield":
                 return True

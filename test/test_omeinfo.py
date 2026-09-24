@@ -111,9 +111,34 @@ def test_ome_xenium_morphology(data_path, xml_file):
     # Single DAPI channel
     assert tuple(ome_info.channel_names(0)) == ("DAPI",)
 
-    # One channel only, so not RGB; no IlluminationType, so not fluorescence
+    # One channel only, so not RGB; channel has a "Suggested LUT" annotation, so it is fluorescence
     assert ome_info.maybe_rgb(0) is False
-    assert ome_info.maybe_flourescence(0) is False
+    assert ome_info.maybe_flourescence(0) is True
+
+    # No ROIs
+    assert list(ome_info.roi(0)) == []
+
+
+@pytest.mark.parametrize("xml_file", ["xenium_morphology_focus.xml"])
+def test_ome_xenium_morphology_focus(data_path, xml_file):
+    """
+    Tests OMEInfo with a multi-channel Xenium morphology focus XML where channels are distinguished
+    only by "Suggested LUT" annotations, not by IlluminationType.
+    """
+    with open(data_path / xml_file, "r") as fp:
+        ome_info = OMEInfo(fp.read())
+
+    assert ome_info.number_of_images() == 1
+
+    # Image has no Name attribute — should fall back to the generated scene name
+    assert tuple(ome_info.image_names()) == ("Scene #0",)
+
+    # Four channels
+    assert tuple(ome_info.channel_names(0)) == ("DAPI", "ATP1A1/CD45/E-Cadherin", "18S", "alphaSMA/Vimentin")
+
+    # Four channels each with a "Suggested LUT" annotation, so it is fluorescence, not RGB
+    assert ome_info.maybe_rgb(0) is False
+    assert ome_info.maybe_flourescence(0) is True
 
     # No ROIs
     assert list(ome_info.roi(0)) == []
