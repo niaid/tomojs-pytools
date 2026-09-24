@@ -11,9 +11,11 @@
 #  limitations under the License.
 #
 
-from pytools.meta import is_int16, is_16bit
+from pytools.meta import is_int16, is_16bit, read_ome_info
 import pytest
 import SimpleITK as sitk
+import tifffile
+import numpy as np
 
 
 @pytest.mark.parametrize(
@@ -58,3 +60,27 @@ def test_is_int16_tif(image_tiff, expected_result):
 )
 def test_is_16bit_tif(image_tiff, expected_result):
     assert is_16bit(image_tiff) == expected_result
+
+
+def test_read_ome_info(tmp_path):
+    ome_xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<OME xmlns="http://www.openmicroscopy.org/Schemas/OME/2016-06">'
+        '<Image ID="Image:0" Name="test"><Pixels ID="Pixels:0" DimensionOrder="XYZCT" '
+        'Type="uint16" SizeX="10" SizeY="9" SizeZ="8" SizeC="1" SizeT="1"/></Image></OME>'
+    )
+
+    fn = tmp_path / "test_read_ome_info.ome.tif"
+    tifffile.imwrite(fn, np.zeros((9, 10), dtype=np.uint16), description=ome_xml)
+
+    ome_info = read_ome_info(fn)
+    assert ome_info.number_of_images() == 1
+    assert tuple(ome_info.image_names()) == ("test",)
+
+
+def test_read_ome_info_not_ome(tmp_path):
+    fn = tmp_path / "not_ome.tif"
+    tifffile.imwrite(fn, np.zeros((9, 10), dtype=np.uint16))
+
+    with pytest.raises(ValueError):
+        read_ome_info(fn)

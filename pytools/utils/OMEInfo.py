@@ -14,7 +14,7 @@
 #
 
 import xml.etree.ElementTree as ET
-from typing import Iterable
+from typing import Dict, Iterable
 import logging
 
 from pytools.data import ROILabel, ROIRectangle, OMEROIModel
@@ -106,6 +106,28 @@ class OMEInfo:
 
     def dimension_order(self, image_index):
         return self._image_element(image_index).find("OME:Pixels", self._ome_ns).attrib["DimensionOrder"]
+
+    def tiff_data_files(self, image_index: int = 0) -> Dict[str, str]:
+        """
+        Maps each TIFF filename referenced by the image's <TiffData><UUID FileName="..."> elements to its
+        OME document UUID. For a multi-file OME-TIFF dataset, each channel/plane's data may live in a
+        separate physical file; this reports which files those are.
+
+        :returns: A dict of filename -> UUID string, in document order. Empty if the OME-XML has no
+            TiffData/UUID FileName references (e.g. a metadata-only document or a single-file TIFF that
+            omits FileName).
+        """
+        px_element = self._image_element(image_index).find("OME:Pixels", self._ome_ns)
+        files: Dict[str, str] = {}
+        for uuid_el in px_element.iterfind("./OME:TiffData/OME:UUID", self._ome_ns):
+            filename = uuid_el.attrib.get("FileName")
+            if filename:
+                files[filename] = uuid_el.text.strip() if uuid_el.text else None
+        return files
+
+    def is_multi_file(self, image_index: int = 0) -> bool:
+        """True if the image's pixel data spans more than one physical TIFF file."""
+        return len(self.tiff_data_files(image_index)) > 1
 
     def size(self, image_index):
         px_element = self._image_element(image_index).find("OME:Pixels", self._ome_ns)
