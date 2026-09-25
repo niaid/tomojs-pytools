@@ -22,6 +22,7 @@ dependencies = [
     "zarr~=2.0",
     "dask",
     "SimpleITKUtilities~=0.3.0",
+    "tifffile",
 ]
 dynamic = ["version"]
 

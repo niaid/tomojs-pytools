@@ -143,6 +143,28 @@ def test_ome_xenium_morphology_focus(data_path, xml_file):
     # No ROIs
     assert list(ome_info.roi(0)) == []
 
+    # No TiffData elements in this fixture, so it is not detected as multi-file
+    assert ome_info.tiff_data_files(0) == {}
+    assert ome_info.is_multi_file(0) is False
+
+
+@pytest.mark.parametrize("xml_file", ["xenium_morphology_focus_multifile.xml"])
+def test_ome_xenium_morphology_focus_multifile(data_path, xml_file):
+    """
+    Tests OMEInfo TiffData/UUID parsing for a Xenium morphology focus dataset split across one
+    physical .ome.tif file per channel.
+    """
+    with open(data_path / xml_file, "r") as fp:
+        ome_info = OMEInfo(fp.read())
+
+    assert ome_info.tiff_data_files(0) == {
+        "ch0000_dapi.ome.tif": "urn:uuid:f1002e12-3ac8-11f1-9995-7cc255e1799a",
+        "ch0001_atp1a1_cd45_e-cadherin.ome.tif": "urn:uuid:f100307e-3ac8-11f1-9995-7cc255e1799a",
+        "ch0002_18s.ome.tif": "urn:uuid:f1003128-3ac8-11f1-9995-7cc255e1799a",
+        "ch0003_alphasma_vimentin.ome.tif": "urn:uuid:f10031d2-3ac8-11f1-9995-7cc255e1799a",
+    }
+    assert ome_info.is_multi_file(0) is True
+
 
 @pytest.mark.parametrize("xml_file", ["he_rgb.xml"])
 def test_ome_rgb(data_path, xml_file):
