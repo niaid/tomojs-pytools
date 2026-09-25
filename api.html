@@ -314,6 +314,23 @@ extracted subvolume can have antialiasing applied to it.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="pytools.meta.read_ome_info">
+<span class="sig-prename descclassname"><span class="pre">pytools.meta.</span></span><span class="sig-name descname"><span class="pre">read_ome_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">OMEInfo</span></span></span><a class="headerlink" href="#pytools.meta.read_ome_info" title="Link to this definition">¶</a></dt>
+<dd><p>Reads the OME-XML embedded in a TIFF file’s “ImageDescription” tag, without loading pixel data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> – The path to an OME-TIFF file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An OMEInfo object parsed from the file’s embedded OME-XML.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the file has no embedded OME-XML (e.g. not an OME-TIFF).</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function" id="module-pytools.utils.zarr">
 <dt class="sig sig-object py" id="pytools.utils.zarr.bin_shrink">
 <span class="sig-prename descclassname"><span class="pre">pytools.utils.zarr.</span></span><span class="sig-name descname"><span class="pre">bin_shrink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shrink_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.utils.zarr.bin_shrink" title="Link to this definition">¶</a></dt>
@@ -485,6 +502,7 @@ considered an implementation detail that may change.</p>
 <li><a class="reference internal" href="#pytools.zarr_extract_2d"><code class="docutils literal notranslate"><span class="pre">zarr_extract_2d()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.meta.is_16bit"><code class="docutils literal notranslate"><span class="pre">is_16bit()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.meta.is_int16"><code class="docutils literal notranslate"><span class="pre">is_int16()</span></code></a></li>
+<li><a class="reference internal" href="#pytools.meta.read_ome_info"><code class="docutils literal notranslate"><span class="pre">read_ome_info()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.utils.zarr.bin_shrink"><code class="docutils literal notranslate"><span class="pre">bin_shrink()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.utils.zarr.build_pyramid"><code class="docutils literal notranslate"><span class="pre">build_pyramid()</span></code></a></li>
 <li><a class="reference internal" href="#pytools.utils.histogram.DaskHistogramHelper"><code class="docutils literal notranslate"><span class="pre">DaskHistogramHelper</span></code></a><ul>
