@@ -148,6 +148,18 @@ def test_ome_xenium_morphology_focus(data_path, xml_file):
     assert ome_info.is_multi_file(0) is False
 
 
+@pytest.mark.parametrize("xml_file", ["xenium_morphology_focus_no_lut.xml"])
+def test_ome_xenium_morphology_focus_no_lut(data_path, xml_file):
+    """
+    Four uint16 channels with descriptive names but no "Suggested LUT" annotation must not be detected as RGB(A).
+    """
+    with open(data_path / xml_file, "r") as fp:
+        ome_info = OMEInfo(fp.read())
+
+    assert tuple(ome_info.channel_names(0)) == ("DAPI", "ATP1A1/CD45/E-Cadherin", "18S", "alphaSMA/Vimentin")
+    assert ome_info.maybe_rgb(0) is False
+
+
 @pytest.mark.parametrize("xml_file", ["xenium_morphology_focus_multifile.xml"])
 def test_ome_xenium_morphology_focus_multifile(data_path, xml_file):
     """

@@ -62,6 +62,13 @@ class OMEInfo:
                 return True
         return False
 
+    @staticmethod
+    def _channel_has_non_rgb_name(channel_element: ET.Element) -> bool:
+        """Checks if a channel is named with something other than a color component. RGB images typically have
+        unnamed channels, while a descriptive name (e.g. "DAPI") indicates an independent data channel."""
+        name = channel_element.attrib.get("Name", "").strip().lower()
+        return name not in {"", "r", "g", "b", "a", "red", "green", "blue", "alpha"}
+
     def maybe_flourescence(self, image_index):
         """
         Checks if all the channels' "IlluminationType" attribute is "Epifluorescence", or if the channel
@@ -100,7 +107,7 @@ class OMEInfo:
                 return True
             if channel_element.attrib.get("IlluminationType") == "Transmitted":
                 return True
-            return no_rgb_exclude_attrib
+            return no_rgb_exclude_attrib and not self._channel_has_non_rgb_name(channel_element)
 
         return three_or_four and all([_check_channel(ce) for ce in channel_elements])
 
