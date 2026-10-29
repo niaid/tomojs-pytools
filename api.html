@@ -156,7 +156,9 @@ requires enough memory to hold the arrays.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="pytools.HedwigZarrImage.shader_type">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">shader_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#pytools.HedwigZarrImage.shader_type" title="Link to this definition">¶</a></dt>
-<dd><p>Produces the shader type one of: RGB, Grayscale, or MultiChannel.</p>
+<dd><p>The shader type: one of RGB, Grayscale, or MultiChannel.</p>
+<p>By default the type is detected from the image metadata and shape. Assigning one of the valid values overrides
+the detection; assigning None restores the detected value.</p>
 </dd></dl>
 
 <dl class="py property">
