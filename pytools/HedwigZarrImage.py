@@ -37,6 +37,9 @@ def _sanitize_glsl_identifier(name: str) -> str:
     return sanitized
 
 
+_SHADER_TYPES = ("RGB", "Grayscale", "MultiChannel")
+
+
 class HedwigZarrImage:
     """
     Represents a OME-NGFF Zarr pyramidal image. The members provide information useful for the Hedwig imaging pipelines.
@@ -54,6 +57,7 @@ class HedwigZarrImage:
         self.ome_info = _ome_info
         self.ome_idx = _ome_idx
         self.compute_args = compute_args if compute_args is not None else {}
+        self._shader_type_override: Optional[str] = None
 
         assert "multiscales" in self.zarr_group.attrs
 
@@ -256,8 +260,13 @@ class HedwigZarrImage:
         self,
     ) -> str:
         """
-        Produces the shader type one of: RGB, Grayscale, or MultiChannel.
+        The shader type: one of RGB, Grayscale, or MultiChannel.
+
+        By default the type is detected from the image metadata and shape. Assigning one of the valid values overrides
+        the detection; assigning None restores the detected value.
         """
+        if self._shader_type_override is not None:
+            return self._shader_type_override
         if self.ome_info:
             if self.ome_info.maybe_rgb(self.ome_idx):
                 return "RGB"
@@ -266,6 +275,12 @@ class HedwigZarrImage:
         if self._ome_ngff_multiscale_dims()[1] == "C" and self.shape[1] == 1:
             return "Grayscale"
         return "MultiChannel"
+
+    @shader_type.setter
+    def shader_type(self, value: Optional[str]) -> None:
+        if value is not None and value not in _SHADER_TYPES:
+            raise ValueError(f'Invalid shader type: "{value}", expected one of {_SHADER_TYPES} or None.')
+        self._shader_type_override = value
 
     def _neuroglancer_shader_parameters_multichannel(
         self,

@@ -247,3 +247,40 @@ def test_hedwigimage_extract_2d_invalid_shapes(data_path, monkeypatch):
     with pytest.raises(ValueError) as execinfo:
         z_img.extract_2d(300, 300)
     assert "Z dimension" in str(execinfo.value)
+
+
+def test_HedwigZarrImage_shader_type_override(data_path):
+    """The detected shader type is the default; assigning a value overrides it and None restores detection."""
+    zi = HedwigZarrImages(data_path / "KC_M3_S2_ReducedImageSubset2.zarr")
+    _, z_img = next(iter(zi.series()))
+
+    assert z_img.shader_type == "MultiChannel"
+    detected_params = z_img.neuroglancer_shader_parameters()
+    assert detected_params != {}
+
+    z_img.shader_type = "RGB"
+    assert z_img.shader_type == "RGB"
+    assert z_img.neuroglancer_shader_parameters() == {}
+
+    z_img.shader_type = None
+    assert z_img.shader_type == "MultiChannel"
+    assert z_img.neuroglancer_shader_parameters() == detected_params
+
+
+def test_HedwigZarrImage_shader_type_override_is_per_image(data_path):
+    zi = HedwigZarrImages(data_path / "OM_P1_S1_ScanOnly_1k.zarr")
+    _, z_img = next(iter(zi.series()))
+    z_img.shader_type = "Grayscale"
+
+    _, other = next(iter(HedwigZarrImages(data_path / "OM_P1_S1_ScanOnly_1k.zarr").series()))
+    assert other.shader_type == "RGB"
+
+
+@pytest.mark.parametrize("value", ["rgb", "", "Other"])
+def test_HedwigZarrImage_shader_type_invalid(data_path, value):
+    zi = HedwigZarrImages(data_path / "OM_P1_S1_ScanOnly_1k.zarr")
+    _, z_img = next(iter(zi.series()))
+
+    with pytest.raises(ValueError):
+        z_img.shader_type = value
+    assert z_img.shader_type == "RGB"
