@@ -16,13 +16,12 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "SimpleITK ~= 2.5.0",
+    "SimpleITK ~= 2.5.7",
     "click>=7.1",
     "numpy>=1.21",
     "zarr~=2.0",
     "dask",
     "SimpleITKUtilities~=0.3.0",
-    "tifffile",
 ]
 dynamic = ["version"]
 
@@ -69,4 +68,3 @@ local_scheme = "dirty-tag"
 zarr_rechunk = "pytools.zarr_rechunk:main"
 zarr_info = "pytools.zarr_info:main"
 zarr_build_multiscales = "pytools.zarr_build_multiscales:main"
-

@@ -1,6 +1,5 @@
 from pathlib import Path
 import SimpleITK as sitk
-import tifffile
 
 from typing import Union
 
@@ -31,14 +30,10 @@ def read_ome_info(file_path: PathType) -> OMEInfo:
     :raises ValueError: If the file has no embedded OME-XML (e.g. not an OME-TIFF).
     """
 
-    # Note: Uses tifffile rather than SimpleITK because some non-standard
-    # compression schemes (e.g. JPEG2000) cause ITK to fail even for header-only reads.
-
-    with tifffile.TiffFile(str(file_path)) as tif:
-        ome_xml = tif.ome_metadata
-    if ome_xml is None:
+    file_reader = _make_image_file_reader_with_info(file_path)
+    if "ImageDescription" not in file_reader.GetMetaDataKeys():
         raise ValueError(f"No OME-XML found in file: {file_path}")
-    return OMEInfo(ome_xml)
+    return OMEInfo(file_reader.GetMetaData("ImageDescription"))
 
 
 def is_int16(file_path: PathType) -> bool:
